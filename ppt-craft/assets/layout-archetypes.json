@@ -1,0 +1,248 @@
+{
+  "version": 1,
+  "stage": { "width": 1280, "height": 720 },
+  "archetypes": [
+    {
+      "id": "split-thesis",
+      "name": "Split Thesis",
+      "description": "Protected claim rail plus one strong visual rail. Use for covers, section openers, and core thesis slides.",
+      "use_when": ["cover", "thesis", "section opener", "single big idea"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "low",
+      "required_slots": ["claim", "support", "visual"],
+      "optional_slots": ["loop", "mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 92, "w": 520, "h": 210 },
+        "support": { "x": 72, "y": 318, "w": 500, "h": 76 },
+        "visual": { "x": 650, "y": 72, "w": 500, "h": 430 },
+        "loop": { "x": 72, "y": 596, "w": 540, "h": 54 },
+        "mask": { "x": 0, "y": 0, "w": 620, "h": 720, "opacity": 0.78 }
+      },
+      "guardrails": [
+        "Visual subject stays away from the claim rail.",
+        "Support copy is one paragraph, not a second headline.",
+        "If a loop appears, it is small and persistent, not the main diagram."
+      ]
+    },
+    {
+      "id": "system-loop",
+      "name": "System Loop",
+      "description": "A claim rail explains the model while the visual rail carries a real loop/path diagram.",
+      "use_when": ["operating model", "flywheel", "workflow", "ecosystem", "strategy loop"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "medium",
+      "required_slots": ["claim", "support", "visual", "loop"],
+      "optional_slots": ["mask", "evidence"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 84, "w": 500, "h": 148 },
+        "support": { "x": 72, "y": 252, "w": 460, "h": 92 },
+        "visual": { "x": 620, "y": 96, "w": 540, "h": 420 },
+        "loop": { "x": 620, "y": 96, "w": 540, "h": 420 },
+        "evidence": { "x": 72, "y": 410, "w": 500, "h": 120 },
+        "mask": { "x": 0, "y": 0, "w": 600, "h": 720, "opacity": 0.78 }
+      },
+      "guardrails": [
+        "Loop nodes must be ordered and directional.",
+        "Only one node is active unless the slide explains the whole system.",
+        "Connectors must not cross the claim text."
+      ]
+    },
+    {
+      "id": "proof-table-plus-signal",
+      "name": "Proof Table Plus Signal",
+      "description": "A dense proof table paired with one larger signal card or metric.",
+      "use_when": ["case evidence", "traction proof", "research summary", "comparison table"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "high",
+      "required_slots": ["claim", "support", "evidence"],
+      "optional_slots": ["visual", "mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 84, "w": 700, "h": 150 },
+        "support": { "x": 72, "y": 248, "w": 650, "h": 54 },
+        "evidence": { "x": 72, "y": 328, "w": 760, "h": 290 },
+        "visual": { "x": 880, "y": 350, "w": 270, "h": 220 },
+        "mask": { "x": 0, "y": 0, "w": 860, "h": 720, "opacity": 0.7 }
+      },
+      "guardrails": [
+        "The table owns the evidence region; do not squeeze another chart into it.",
+        "The signal card explains the insight, not a decorative number.",
+        "Minimum table text size should remain readable after export."
+      ]
+    },
+    {
+      "id": "demo-path",
+      "name": "Demo To Market Path",
+      "description": "A horizontal path for concrete action sequences, especially from user segment to feedback or payment.",
+      "use_when": ["go-to-market step", "workflow path", "first action", "validation path"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "medium",
+      "required_slots": ["claim", "support", "visual"],
+      "optional_slots": ["evidence", "mask", "loop"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 84, "w": 760, "h": 150 },
+        "support": { "x": 72, "y": 248, "w": 650, "h": 70 },
+        "visual": { "x": 120, "y": 360, "w": 1040, "h": 150 },
+        "evidence": { "x": 250, "y": 560, "w": 770, "h": 70 },
+        "mask": { "x": 0, "y": 0, "w": 1280, "h": 720, "opacity": 0.62 }
+      },
+      "guardrails": [
+        "Use 4-6 nodes; more becomes a process manual.",
+        "Every connector direction must be visible.",
+        "The evidence/caption band states the decision rule."
+      ]
+    },
+    {
+      "id": "productization-ladder",
+      "name": "Productization Ladder",
+      "description": "A stage table plus a chart/curve showing the compounding effect of repeat delivery.",
+      "use_when": ["service to product", "maturity model", "pricing ladder", "repeatability"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "medium-high",
+      "required_slots": ["claim", "support", "evidence", "visual"],
+      "optional_slots": ["mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 84, "w": 640, "h": 150 },
+        "support": { "x": 72, "y": 248, "w": 580, "h": 58 },
+        "evidence": { "x": 72, "y": 334, "w": 540, "h": 238 },
+        "visual": { "x": 704, "y": 300, "w": 382, "h": 300 },
+        "mask": { "x": 0, "y": 0, "w": 690, "h": 720, "opacity": 0.74 }
+      },
+      "guardrails": [
+        "The table describes stages; the chart describes trajectory.",
+        "Do not duplicate the same words in both regions.",
+        "The curve is illustrative unless backed by source data."
+      ]
+    },
+    {
+      "id": "timeline",
+      "name": "Timeline",
+      "description": "A sequence of moments or milestones with a protected explanatory rail.",
+      "use_when": ["history", "roadmap", "project plan", "origin story"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "medium",
+      "required_slots": ["claim", "support", "visual"],
+      "optional_slots": ["evidence", "mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 84, "w": 620, "h": 140 },
+        "support": { "x": 72, "y": 244, "w": 560, "h": 70 },
+        "visual": { "x": 100, "y": 372, "w": 1080, "h": 170 },
+        "evidence": { "x": 72, "y": 570, "w": 720, "h": 64 },
+        "mask": { "x": 0, "y": 0, "w": 1280, "h": 720, "opacity": 0.64 }
+      },
+      "guardrails": [
+        "Use only major moments; move detail to appendix.",
+        "Dates and labels must have enough horizontal spacing.",
+        "The timeline should reveal a change, not merely list events."
+      ]
+    },
+    {
+      "id": "metric-wall",
+      "name": "Metric Wall",
+      "description": "A small set of dominant metrics, each with a caption and source note.",
+      "use_when": ["traction", "market size", "benchmark", "board summary"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "medium",
+      "required_slots": ["claim", "support", "evidence"],
+      "optional_slots": ["mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 84, "w": 760, "h": 126 },
+        "support": { "x": 72, "y": 230, "w": 660, "h": 64 },
+        "evidence": { "x": 72, "y": 340, "w": 1120, "h": 220 },
+        "mask": { "x": 0, "y": 0, "w": 1280, "h": 720, "opacity": 0.66 }
+      },
+      "guardrails": [
+        "Use 3-5 metrics, not a dashboard.",
+        "Each metric needs a label and implication.",
+        "Do not use invented precision."
+      ]
+    },
+    {
+      "id": "quote-evidence",
+      "name": "Quote Or Rule Evidence",
+      "description": "A final rule, quote, or principle supported by a small evidence/loop object.",
+      "use_when": ["closing", "principle", "founder lesson", "memorable quote"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "low-medium",
+      "required_slots": ["claim", "support"],
+      "optional_slots": ["visual", "loop", "mask"],
+      "coordinates": {
+        "claim": { "x": 110, "y": 120, "w": 620, "h": 190 },
+        "support": { "x": 112, "y": 340, "w": 600, "h": 86 },
+        "visual": { "x": 790, "y": 110, "w": 330, "h": 420 },
+        "loop": { "x": 112, "y": 540, "w": 660, "h": 72 },
+        "mask": { "x": 0, "y": 0, "w": 1280, "h": 720, "opacity": 0.68 }
+      },
+      "guardrails": [
+        "One memorable sentence only.",
+        "The visual should reinforce the rule, not add a second message.",
+        "Closing action must be explicit if the deck is persuasive."
+      ]
+    },
+    {
+      "id": "product-demo-workbench",
+      "name": "Product Demo Workbench",
+      "description": "A product/UI/demo area with adjacent annotations and a controlled claim rail.",
+      "use_when": ["product demo", "software walkthrough", "feature explanation"],
+      "route_compatibility": ["html-first", "hybrid"],
+      "density": "medium-high",
+      "required_slots": ["claim", "support", "visual"],
+      "optional_slots": ["evidence", "mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 76, "w": 420, "h": 136 },
+        "support": { "x": 72, "y": 232, "w": 400, "h": 92 },
+        "visual": { "x": 520, "y": 82, "w": 640, "h": 440 },
+        "evidence": { "x": 72, "y": 420, "w": 390, "h": 142 },
+        "mask": { "x": 0, "y": 0, "w": 500, "h": 720, "opacity": 0.72 }
+      },
+      "guardrails": [
+        "The product/UI image must be real or clearly marked placeholder.",
+        "Annotations must point to actual features.",
+        "Do not crop away the state being explained."
+      ]
+    },
+    {
+      "id": "board-report-grid",
+      "name": "Board Report Grid",
+      "description": "A dense but disciplined grid for updates, risks, decisions, and charts.",
+      "use_when": ["board update", "consulting report", "status review", "strategy memo"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "high",
+      "required_slots": ["claim", "evidence"],
+      "optional_slots": ["support", "visual", "mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 64, "w": 760, "h": 92 },
+        "support": { "x": 72, "y": 172, "w": 760, "h": 48 },
+        "evidence": { "x": 72, "y": 250, "w": 1120, "h": 360 },
+        "visual": { "x": 880, "y": 64, "w": 312, "h": 156 },
+        "mask": { "x": 0, "y": 0, "w": 1280, "h": 720, "opacity": 0.58 }
+      },
+      "guardrails": [
+        "Grid density must be intentional, not cramped.",
+        "Each panel has a title, state, and takeaway.",
+        "Use appendix for supporting detail."
+      ]
+    },
+    {
+      "id": "comparison-before-after",
+      "name": "Before After Comparison",
+      "description": "Two states with a clear bridge or missing link between them.",
+      "use_when": ["tension", "transformation", "before-after", "problem-solution"],
+      "route_compatibility": ["html-first", "editable-pptx", "hybrid"],
+      "density": "medium",
+      "required_slots": ["claim", "support", "visual"],
+      "optional_slots": ["evidence", "mask"],
+      "coordinates": {
+        "claim": { "x": 72, "y": 76, "w": 700, "h": 128 },
+        "support": { "x": 72, "y": 224, "w": 620, "h": 72 },
+        "visual": { "x": 100, "y": 344, "w": 1080, "h": 190 },
+        "evidence": { "x": 260, "y": 574, "w": 760, "h": 62 },
+        "mask": { "x": 0, "y": 0, "w": 1280, "h": 720, "opacity": 0.64 }
+      },
+      "guardrails": [
+        "Before and after states must be visually balanced.",
+        "The bridge explains the mechanism, not only an arrow.",
+        "Use labels that name the real change."
+      ]
+    }
+  ]
+}

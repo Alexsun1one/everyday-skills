@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PPT Craft Layout Blueprint",
+  "type": "object",
+  "required": ["stage", "slides"],
+  "additionalProperties": false,
+  "properties": {
+    "stage": {
+      "type": "object",
+      "required": ["width", "height", "safe"],
+      "additionalProperties": false,
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "safe": { "$ref": "#/$defs/box" }
+      }
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "job"],
+        "additionalProperties": {
+          "anyOf": [
+            { "$ref": "#/$defs/box" },
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "number" },
+            { "type": "boolean" }
+          ]
+        },
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "archetype": { "type": "string", "minLength": 1 },
+          "job": { "type": "string", "minLength": 1 },
+          "claim": { "$ref": "#/$defs/box" },
+          "support": { "$ref": "#/$defs/box" },
+          "visual": { "$ref": "#/$defs/box" },
+          "evidence": { "$ref": "#/$defs/box" },
+          "loop": { "$ref": "#/$defs/box" },
+          "mask": { "$ref": "#/$defs/box" },
+          "empty": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "box": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number", "exclusiveMinimum": 0 },
+        "h": { "type": "number", "exclusiveMinimum": 0 },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}

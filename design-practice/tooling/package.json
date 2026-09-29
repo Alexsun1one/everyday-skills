@@ -1,0 +1,17 @@
+{
+  "name": "design-practice-render-critique",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Stage 3 render → critique harness for design-practice skill",
+  "scripts": {
+    "critique": "node render-critique.mjs"
+  },
+  "dependencies": {
+    "axe-core": "4.10.2",
+    "playwright": "1.49.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

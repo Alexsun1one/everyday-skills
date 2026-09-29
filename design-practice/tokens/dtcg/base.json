@@ -1,0 +1,422 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Primitive and cross-direction design tokens distilled from tokens/00-token-synthesis.md and tokens/real-extracted-tokens.md. This file is the shared spine; themes override only where a direction is intentionally different.",
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Geist\", \"Inter var\", system-ui, sans-serif"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Geist\", \"Inter var\", system-ui, sans-serif"
+      },
+      "serif": {
+        "$type": "fontFamily",
+        "$value": "\"Lyon Text\", \"Domaine\", Georgia, serif"
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": "\"Geist Mono\", \"Berkeley Mono\", ui-monospace, SFMono-Regular, monospace"
+      }
+    },
+    "size": {
+      "10": {
+        "$type": "dimension",
+        "$value": "10px"
+      },
+      "11": {
+        "$type": "dimension",
+        "$value": "11px"
+      },
+      "12": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "13": {
+        "$type": "dimension",
+        "$value": "13px"
+      },
+      "14": {
+        "$type": "dimension",
+        "$value": "14px"
+      },
+      "15": {
+        "$type": "dimension",
+        "$value": "15px"
+      },
+      "16": {
+        "$type": "dimension",
+        "$value": "16px"
+      },
+      "18": {
+        "$type": "dimension",
+        "$value": "18px"
+      },
+      "20": {
+        "$type": "dimension",
+        "$value": "20px"
+      },
+      "24": {
+        "$type": "dimension",
+        "$value": "24px"
+      },
+      "32": {
+        "$type": "dimension",
+        "$value": "32px"
+      },
+      "48": {
+        "$type": "dimension",
+        "$value": "48px"
+      },
+      "64": {
+        "$type": "dimension",
+        "$value": "64px"
+      }
+    },
+    "weight": {
+      "light": {
+        "$type": "fontWeight",
+        "$value": 300
+      },
+      "body": {
+        "$type": "fontWeight",
+        "$value": 400
+      },
+      "medium": {
+        "$type": "fontWeight",
+        "$value": 500
+      },
+      "linearMedium": {
+        "$type": "fontWeight",
+        "$value": 510
+      },
+      "strong": {
+        "$type": "fontWeight",
+        "$value": 590
+      },
+      "semibold": {
+        "$type": "fontWeight",
+        "$value": 600
+      },
+      "bold": {
+        "$type": "fontWeight",
+        "$value": 700
+      },
+      "black": {
+        "$type": "fontWeight",
+        "$value": 800
+      }
+    },
+    "lineHeight": {
+      "display": {
+        "$type": "number",
+        "$value": 1
+      },
+      "tight": {
+        "$type": "number",
+        "$value": 1.15
+      },
+      "title": {
+        "$type": "number",
+        "$value": 1.25
+      },
+      "body": {
+        "$type": "number",
+        "$value": 1.6
+      },
+      "ui": {
+        "$type": "number",
+        "$value": 1.4
+      }
+    },
+    "letterSpacing": {
+      "none": {
+        "$type": "number",
+        "$value": 0
+      },
+      "caps": {
+        "$type": "dimension",
+        "$value": "0.08em"
+      },
+      "wideCaps": {
+        "$type": "dimension",
+        "$value": "0.14em"
+      }
+    }
+  },
+  "space": {
+    "0": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "1": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "3": {
+      "$type": "dimension",
+      "$value": "12px"
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "5": {
+      "$type": "dimension",
+      "$value": "20px"
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "10": {
+      "$type": "dimension",
+      "$value": "40px"
+    },
+    "12": {
+      "$type": "dimension",
+      "$value": "48px"
+    },
+    "16": {
+      "$type": "dimension",
+      "$value": "64px"
+    },
+    "20": {
+      "$type": "dimension",
+      "$value": "80px"
+    },
+    "24": {
+      "$type": "dimension",
+      "$value": "96px"
+    }
+  },
+  "radius": {
+    "0": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": "6px"
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "12": {
+      "$type": "dimension",
+      "$value": "12px"
+    },
+    "16": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "24": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "pill": {
+      "$type": "dimension",
+      "$value": "9999px"
+    }
+  },
+  "border": {
+    "hairline": {
+      "$type": "dimension",
+      "$value": "1px"
+    },
+    "focus": {
+      "$type": "dimension",
+      "$value": "2px"
+    }
+  },
+  "ease": {
+    "standard": {
+      "$type": "cubicBezier",
+      "$value": [0.4, 0, 0.2, 1]
+    },
+    "outSoft": {
+      "$type": "cubicBezier",
+      "$value": [0.25, 0.46, 0.45, 0.94]
+    },
+    "outExpo": {
+      "$type": "cubicBezier",
+      "$value": [0.16, 1, 0.3, 1]
+    },
+    "outQuint": {
+      "$type": "cubicBezier",
+      "$value": [0.22, 1, 0.36, 1]
+    },
+    "drawer": {
+      "$type": "cubicBezier",
+      "$value": [0.32, 0.72, 0, 1]
+    },
+    "spring": {
+      "$type": "cubicBezier",
+      "$value": [0.34, 1.56, 0.64, 1]
+    },
+    "inOut": {
+      "$type": "cubicBezier",
+      "$value": [0.45, 0.05, 0.55, 0.95]
+    }
+  },
+  "duration": {
+    "instant": {
+      "$type": "duration",
+      "$value": "0ms"
+    },
+    "fast": {
+      "$type": "duration",
+      "$value": "150ms"
+    },
+    "base": {
+      "$type": "duration",
+      "$value": "220ms"
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": "320ms"
+    },
+    "hero": {
+      "$type": "duration",
+      "$value": "520ms"
+    }
+  },
+  "color": {
+    "neutral": {
+      "0": {
+        "$type": "color",
+        "$value": "#FFFFFF"
+      },
+      "50": {
+        "$type": "color",
+        "$value": "#FAFAF8"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "#F4F6FA"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "#E5E7EB"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "#6B7268"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "#2F3437"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "#1A1A1A"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "#0A0A0A"
+      },
+      "darkCanvas": {
+        "$type": "color",
+        "$value": "#0A0E14"
+      },
+      "darkSurface": {
+        "$type": "color",
+        "$value": "#0D1117"
+      },
+      "toolCanvas": {
+        "$type": "color",
+        "$value": "#0B0E0C"
+      },
+      "warmPaper": {
+        "$type": "color",
+        "$value": "#F5F1E8"
+      },
+      "cream": {
+        "$type": "color",
+        "$value": "#F3EFE9"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#5E6AD2"
+      },
+      "precision": {
+        "$type": "color",
+        "$value": "#4AE168"
+      },
+      "precisionAlt": {
+        "$type": "color",
+        "$value": "#3FB950"
+      },
+      "fintech": {
+        "$type": "color",
+        "$value": "#2F5FE0"
+      },
+      "fintechAlt": {
+        "$type": "color",
+        "$value": "#1D4ED8"
+      },
+      "brutalist": {
+        "$type": "color",
+        "$value": "#C6F24E"
+      },
+      "brutalistAlt": {
+        "$type": "color",
+        "$value": "#A3E635"
+      },
+      "warmEditorial": {
+        "$type": "color",
+        "$value": "#B5523A"
+      },
+      "luxury": {
+        "$type": "color",
+        "$value": "#B8924F"
+      },
+      "dataPositive": {
+        "$type": "color",
+        "$value": "#26A69A"
+      },
+      "dataNegative": {
+        "$type": "color",
+        "$value": "#EF5350"
+      }
+    },
+    "status": {
+      "success": {
+        "$type": "color",
+        "$value": "#26A69A"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#EF5350"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#F59E0B"
+      },
+      "info": {
+        "$type": "color",
+        "$value": "#2F5FE0"
+      }
+    }
+  }
+}

@@ -1,0 +1,1242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Relay — Sales workspace</title>
+<meta name="description" content="Relay is a dense CRM workspace for sales and RevOps teams to work deals through the pipeline." />
+<meta name="theme-color" content="#F6F7F9" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;590;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:,">
+<style>
+/* Relay CRM — Stripe/Notion light lineage + editor density discipline */
+:root {
+  --canvas: #F6F7F9;
+  --sidebar: #EEF0F4;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --ink: #15181C;
+  --ink-secondary: #5A6068;
+  --ink-tertiary: #888E96;
+  --line: #E6E8EC;
+  --line-strong: #D4D8DE;
+  --accent: #0B6E5A;
+  --accent-hover: #095C4B;
+  --accent-tint: #E6F4F0;
+  --accent-focus: #0B6E5A;
+  --on-accent: #FFFFFF;
+  --success: #157A4E;
+  --success-bg: #E8F5EE;
+  --warning: #9A6700;
+  --warning-bg: #FEF6E4;
+  --danger: #B42318;
+  --danger-bg: #FEECEB;
+  --info: #175CD3;
+  --info-bg: #EFF4FF;
+  --lost: #4B5563;
+  --lost-bg: #F3F4F6;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --w-body: 400; --w-medium: 500; --w-strong: 590; --w-bold: 600;
+  --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --r-pill: 9999px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 180ms;
+  --shadow-raised:
+    inset 0 1px 0 rgba(255,255,255,0.85),
+    0 1px 2px rgba(16,24,40,0.05),
+    0 8px 24px -12px rgba(16,24,40,0.10);
+  --shadow-card:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 1px 2px rgba(16,24,40,0.04),
+    0 4px 12px -4px rgba(16,24,40,0.08);
+  --ring: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent-focus);
+  --sidebar-w: 240px;
+  --detail-w: 380px;
+  --header-h: 52px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-sans);
+  font-weight: var(--w-body);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+::selection { background: var(--accent-tint); color: var(--ink); }
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: var(--r-pill); }
+
+.mono { font-family: var(--font-mono); font-feature-settings: "tnum" 1; }
+.tnum { font-variant-numeric: tabular-nums; }
+
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  min-height: 100dvh;
+}
+.app.detail-open { grid-template-columns: var(--sidebar-w) 1fr var(--detail-w); }
+
+/* Sidebar */
+.sidebar {
+  background: var(--sidebar);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  transition: transform var(--dur) var(--ease);
+}
+.sidebar-top { padding: 12px 12px 8px; }
+.workspace-switcher {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 8px 10px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); cursor: pointer;
+  font: var(--w-medium) 13px/1.2 var(--font-sans); color: var(--ink);
+  box-shadow: var(--shadow-card);
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.workspace-switcher:hover { border-color: var(--line-strong); }
+.workspace-switcher:active { transform: scale(0.98); }
+.workspace-switcher:focus-visible { outline: none; box-shadow: var(--ring); }
+.ws-mark {
+  width: 24px; height: 24px; border-radius: var(--r-sm);
+  background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center;
+  font: var(--w-bold) 11px/1 var(--font-sans);
+}
+.ws-name { flex: 1; text-align: left; }
+.ws-chevron { color: var(--ink-tertiary); flex-shrink: 0; }
+
+.nav { flex: 1; overflow-y: auto; padding: 4px 8px 16px; }
+.nav-group { margin-top: 16px; }
+.nav-label {
+  font: var(--w-medium) 11px/1 var(--font-sans);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-secondary); padding: 0 10px 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 7px 10px;
+  border: none; background: transparent;
+  border-radius: var(--r-sm); cursor: pointer;
+  font: var(--w-body) 13px/1.3 var(--font-sans); color: var(--ink-secondary);
+  text-align: left; position: relative;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.nav-item:hover { background: rgba(255,255,255,0.6); color: var(--ink); }
+.nav-item:active { transform: scale(0.98); }
+.nav-item:focus-visible { outline: none; box-shadow: var(--ring); }
+.nav-item[aria-current="page"] {
+  background: var(--surface); color: var(--ink);
+  font-weight: var(--w-medium);
+  box-shadow: inset 3px 0 0 var(--accent), var(--shadow-card);
+}
+.nav-item svg { flex-shrink: 0; color: var(--ink-tertiary); }
+.nav-item[aria-current="page"] svg { color: var(--accent); }
+.nav-count {
+  margin-left: auto; font-family: var(--font-mono); font-size: 11px;
+  font-variant-numeric: tabular-nums; color: var(--ink-secondary);
+}
+.nav-item[aria-current="page"] .nav-count { color: var(--ink-secondary); }
+.view-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-emerald { background: #0B6E5A; }
+.dot-cobalt { background: #175CD3; }
+.dot-amber { background: #B45309; }
+.dot-rose { background: #BE185D; }
+
+.sidebar-footer {
+  padding: 12px; border-top: 1px solid var(--line);
+  background: rgba(255,255,255,0.35);
+}
+.user-row { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
+.user-avatar {
+  width: 28px; height: 28px; border-radius: var(--r-pill);
+  background: var(--accent-tint); color: var(--accent);
+  display: grid; place-items: center;
+  font: var(--w-bold) 11px/1 var(--font-sans);
+  border: 1px solid var(--line);
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font: var(--w-medium) 12px/1.3 var(--font-sans); color: var(--ink); }
+.user-role { font-size: 11px; color: var(--ink-secondary); }
+.usage-hint {
+  margin-top: 8px; padding: 8px 10px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-sm); font-size: 11px; color: var(--ink-secondary);
+  box-shadow: var(--shadow-card);
+}
+.usage-hint strong { color: var(--accent); font-weight: var(--w-medium); }
+
+/* Main */
+.main-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 100dvh; }
+.main-header {
+  height: var(--header-h); flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px; background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+}
+.sidebar-toggle {
+  display: none; width: 32px; height: 32px;
+  align-items: center; justify-content: center;
+  border: 1px solid var(--line); background: var(--canvas);
+  border-radius: var(--r-sm); cursor: pointer; color: var(--ink-secondary);
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.sidebar-toggle:hover { background: var(--sidebar); color: var(--ink); }
+.sidebar-toggle:active { transform: scale(0.98); }
+.sidebar-toggle:focus-visible { outline: none; box-shadow: var(--ring); }
+
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--ink-secondary); min-width: 0;
+}
+.breadcrumb a { color: var(--ink-secondary); text-decoration: none; }
+.breadcrumb a:hover { color: var(--ink); }
+.breadcrumb-sep { color: var(--ink-tertiary); }
+.breadcrumb-current { color: var(--ink); font-weight: var(--w-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.view-toggle {
+  display: flex; background: var(--canvas); border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: 2px;
+}
+.view-toggle-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border: none; background: transparent;
+  border-radius: 4px; cursor: pointer;
+  font: var(--w-body) 12px/1 var(--font-sans); color: var(--ink-secondary);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.view-toggle-btn:hover { color: var(--ink); }
+.view-toggle-btn:active { transform: scale(0.98); }
+.view-toggle-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.view-toggle-btn[aria-pressed="true"] {
+  background: var(--surface); color: var(--ink);
+  font-weight: var(--w-medium); box-shadow: var(--shadow-card);
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 6px 12px; min-height: 32px;
+  border-radius: var(--r-sm); border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink-secondary);
+  font: var(--w-medium) 12px/1 var(--font-sans); cursor: pointer;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.btn:hover { background: var(--canvas); color: var(--ink); border-color: var(--line-strong); }
+.btn:active { transform: scale(0.98); }
+.btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.btn:disabled, .btn[aria-disabled="true"] {
+  opacity: 0.5; cursor: not-allowed; transform: none;
+}
+.btn--primary {
+  background: var(--accent); color: var(--on-accent); border-color: var(--accent);
+}
+.btn--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-accent); }
+.btn--ghost { background: transparent; border-color: transparent; }
+.btn--ghost:hover { background: var(--canvas); border-color: var(--line); }
+.btn kbd {
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 2px 4px; border-radius: 3px;
+  background: rgba(0,0,0,0.06); border: 1px solid var(--line);
+  color: var(--ink-secondary);
+}
+
+main { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+.content { flex: 1; overflow: auto; padding: 12px 16px 16px; min-height: 0; }
+
+/* Error banner */
+.error-banner {
+  display: none; align-items: center; gap: 8px;
+  padding: 10px 16px; background: var(--danger-bg);
+  border-bottom: 1px solid #FECDCA; color: var(--danger);
+  font-size: 12px;
+}
+.error-banner.is-visible { display: flex; }
+.error-banner-dismiss {
+  margin-left: auto; background: none; border: none;
+  cursor: pointer; color: var(--danger); padding: 4px;
+  border-radius: var(--r-sm);
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.error-banner-dismiss:hover { background: rgba(180,35,24,0.1); }
+.error-banner-dismiss:active { transform: scale(0.98); }
+.error-banner-dismiss:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* Table */
+.table-wrap {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-lg); overflow: hidden;
+  box-shadow: var(--shadow-raised);
+}
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left; padding: 8px 12px;
+  font: var(--w-medium) 11px/1 var(--font-sans);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--ink-secondary); background: var(--canvas);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap; cursor: pointer; user-select: none;
+  transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.data-table th:hover { color: var(--ink-secondary); background: var(--sidebar); }
+.data-table th:focus-visible { outline: none; box-shadow: inset var(--ring); }
+.data-table th.num { text-align: right; }
+.data-table th .sort-icon { display: inline-block; margin-left: 4px; opacity: 0.4; vertical-align: middle; }
+.data-table th[aria-sort="ascending"] .sort-icon,
+.data-table th[aria-sort="descending"] .sort-icon { opacity: 1; color: var(--accent); }
+
+.data-table td {
+  padding: 8px 12px; border-bottom: 1px solid var(--line);
+  vertical-align: middle; font-size: 13px;
+}
+.data-table tbody tr {
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease);
+}
+.data-table tbody tr:hover { background: var(--canvas); }
+.data-table tbody tr.is-selected { background: var(--accent-tint); }
+.data-table tbody tr:focus-visible { outline: none; box-shadow: inset var(--ring); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+
+.company-cell { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.company-logo {
+  width: 24px; height: 24px; border-radius: var(--r-sm);
+  display: grid; place-items: center;
+  font: var(--w-bold) 9px/1 var(--font-sans);
+  flex-shrink: 0; border: 1px solid var(--line);
+}
+.company-name { font-weight: var(--w-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.stage-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: var(--r-pill);
+  font: var(--w-medium) 11px/1.4 var(--font-sans); white-space: nowrap;
+}
+.stage-pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; }
+.stage-lead { background: var(--info-bg); color: var(--info); }
+.stage-lead::before { background: var(--info); }
+.stage-qualified { background: var(--accent-tint); color: var(--accent); }
+.stage-qualified::before { background: var(--accent); }
+.stage-proposal { background: #F3E8FF; color: #7C3AED; }
+.stage-proposal::before { background: #7C3AED; }
+.stage-negotiation { background: var(--warning-bg); color: var(--warning); }
+.stage-negotiation::before { background: var(--warning); }
+.stage-won { background: var(--success-bg); color: var(--success); }
+.stage-won::before { background: var(--success); }
+.stage-lost { background: var(--lost-bg); color: var(--lost); }
+.stage-lost::before { background: var(--lost); }
+
+.value-cell { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: var(--w-medium); }
+.value-cell .currency { font-size: 11px; color: var(--ink-secondary); font-weight: var(--w-body); margin-right: 1px; }
+
+.owner-cell { display: flex; align-items: center; gap: 6px; }
+.owner-avatar {
+  width: 20px; height: 20px; border-radius: var(--r-pill);
+  display: grid; place-items: center;
+  font: var(--w-bold) 9px/1 var(--font-sans);
+  border: 1px solid var(--line); flex-shrink: 0;
+}
+.prob-cell { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-secondary); }
+.activity-cell { font-family: var(--font-mono); font-size: 12px; color: var(--ink-secondary); white-space: nowrap; }
+.next-cell { color: var(--ink-secondary); max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Pipeline */
+.pipeline-view { display: none; height: 100%; min-height: 0; }
+.pipeline-view.is-active { display: flex; flex-direction: column; }
+.table-view { display: none; }
+.table-view.is-active { display: block; }
+
+.pipeline-board {
+  display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden;
+  flex: 1; min-height: 0; padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.pipeline-col {
+  flex: 0 0 240px; min-width: 240px;
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-lg); overflow: hidden;
+  box-shadow: var(--shadow-raised); max-height: calc(100dvh - var(--header-h) - 48px);
+}
+.pipeline-col-header {
+  padding: 10px 12px; border-bottom: 1px solid var(--line);
+  background: var(--canvas); flex-shrink: 0;
+}
+.pipeline-col-title {
+  font: var(--w-medium) 12px/1.3 var(--font-sans); color: var(--ink);
+  display: flex; align-items: center; gap: 6px;
+}
+.pipeline-col-meta {
+  display: flex; gap: 8px; margin-top: 4px;
+  font-family: var(--font-mono); font-size: 11px;
+  font-variant-numeric: tabular-nums; color: var(--ink-secondary);
+}
+.pipeline-col-meta .sum { color: var(--ink-secondary); font-weight: var(--w-medium); }
+.pipeline-cards {
+  flex: 1; overflow-y: auto; padding: 8px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.deal-card {
+  padding: 10px 12px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  cursor: grab; box-shadow: var(--shadow-card);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.deal-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-raised);
+  border-color: var(--line-strong);
+}
+.deal-card:active { cursor: grabbing; transform: scale(0.99); }
+.deal-card:focus-visible { outline: none; box-shadow: var(--ring); }
+.deal-card.is-selected { border-color: var(--accent); background: var(--accent-tint); }
+.deal-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.deal-card-value {
+  margin-left: auto; font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums; font-weight: var(--w-medium); font-size: 12px;
+}
+.deal-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.prob-bar {
+  flex: 1; height: 4px; background: var(--line); border-radius: var(--r-pill);
+  margin-right: 8px; overflow: hidden;
+}
+.prob-bar-fill { height: 100%; background: var(--accent); border-radius: var(--r-pill); }
+.drag-hint {
+  color: var(--ink-tertiary); opacity: 0; transition: opacity var(--dur) var(--ease);
+}
+.deal-card:hover .drag-hint { opacity: 1; }
+
+.pipeline-empty {
+  padding: 24px 12px; text-align: center;
+  color: var(--ink-secondary); font-size: 13px;
+}
+.pipeline-empty p { margin-bottom: 8px; }
+
+/* Detail panel */
+.detail-panel {
+  background: var(--surface); border-left: 1px solid var(--line);
+  display: none; flex-direction: column;
+  height: 100dvh; position: sticky; top: 0;
+  box-shadow: -4px 0 24px -8px rgba(16,24,40,0.08);
+  z-index: 30;
+}
+.app.detail-open .detail-panel { display: flex; }
+.detail-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(21,24,28,0.25); z-index: 25;
+}
+.detail-backdrop.is-visible { display: block; }
+
+.detail-header {
+  padding: 16px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: flex-start; gap: 12px;
+  flex-shrink: 0;
+}
+.detail-close {
+  width: 28px; height: 28px; flex-shrink: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--line); background: var(--canvas);
+  border-radius: var(--r-sm); cursor: pointer; color: var(--ink-secondary);
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.detail-close:hover { background: var(--sidebar); color: var(--ink); }
+.detail-close:active { transform: scale(0.98); }
+.detail-close:focus-visible { outline: none; box-shadow: var(--ring); }
+.detail-title-block { flex: 1; min-width: 0; }
+.detail-company { font: var(--w-bold) 16px/1.2 var(--font-sans); letter-spacing: -0.02em; }
+.detail-deal-id { font-family: var(--font-mono); font-size: 11px; color: var(--ink-secondary); margin-top: 2px; }
+
+.detail-body { flex: 1; overflow-y: auto; padding: 16px; }
+.detail-section { margin-bottom: 20px; }
+.detail-section-title {
+  font: var(--w-medium) 11px/1 var(--font-sans);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-secondary); margin-bottom: 10px;
+}
+
+.props-grid { display: grid; gap: 8px; }
+.prop-row {
+  display: grid; grid-template-columns: 100px 1fr;
+  align-items: center; gap: 8px;
+}
+.prop-label { font-size: 12px; color: var(--ink-secondary); }
+.prop-value {
+  padding: 6px 10px; background: var(--canvas);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  font-size: 12px; color: var(--ink);
+}
+.prop-value.is-editable { cursor: pointer; transition: border-color var(--dur) var(--ease); }
+.prop-value.is-editable:hover { border-color: var(--line-strong); }
+.prop-value.is-editable:focus-visible { outline: none; box-shadow: var(--ring); }
+
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.timeline-item {
+  display: grid; grid-template-columns: 20px 1fr; gap: 10px;
+  padding-bottom: 16px; position: relative;
+}
+.timeline-item:not(:last-child)::before {
+  content: ""; position: absolute; left: 9px; top: 20px; bottom: 0;
+  width: 1px; background: var(--line);
+}
+.timeline-dot {
+  width: 20px; height: 20px; border-radius: var(--r-pill);
+  background: var(--canvas); border: 1px solid var(--line);
+  display: grid; place-items: center; z-index: 1;
+}
+.timeline-content { min-width: 0; }
+.timeline-type { font: var(--w-medium) 12px/1.3 var(--font-sans); color: var(--ink); }
+.timeline-desc { font-size: 12px; color: var(--ink-secondary); margin-top: 2px; }
+.timeline-time { font-family: var(--font-mono); font-size: 11px; color: var(--ink-secondary); margin-top: 4px; }
+
+.contacts-list { display: flex; flex-direction: column; gap: 8px; }
+.contact-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; background: var(--canvas);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+}
+.contact-avatar {
+  width: 28px; height: 28px; border-radius: var(--r-pill);
+  display: grid; place-items: center;
+  font: var(--w-bold) 10px/1 var(--font-sans);
+  border: 1px solid var(--line); flex-shrink: 0;
+}
+.contact-name { font: var(--w-medium) 12px/1.3 var(--font-sans); }
+.contact-role { font-size: 11px; color: var(--ink-secondary); }
+
+/* Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--line) 25%, var(--sidebar) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-row td { padding: 10px 12px; }
+.skeleton-bar { height: 12px; }
+.skeleton-bar--sm { height: 8px; width: 60%; }
+.skeleton-bar--md { width: 80%; }
+.skeleton-bar--lg { width: 100%; }
+.skeleton-circle { width: 24px; height: 24px; border-radius: var(--r-sm); }
+
+.is-loading .table-view:not(.skeleton-active),
+.is-loading .pipeline-view:not(.skeleton-active) { visibility: hidden; height: 0; overflow: hidden; }
+.skeleton-table { display: none; }
+.is-loading .skeleton-table { display: block; }
+
+/* Empty state */
+.empty-state {
+  display: none; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 24px; text-align: center;
+}
+.empty-state.is-visible { display: flex; }
+.empty-icon {
+  width: 48px; height: 48px; border-radius: var(--r-lg);
+  background: var(--canvas); border: 1px solid var(--line);
+  display: grid; place-items: center; margin-bottom: 12px;
+  color: var(--ink-tertiary);
+}
+.empty-title { font: var(--w-medium) 14px/1.3 var(--font-sans); color: var(--ink); margin-bottom: 4px; }
+.empty-desc { font-size: 13px; color: var(--ink-tertiary); max-width: 280px; margin-bottom: 16px; }
+
+/* Command palette */
+.cmdk-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(21,24,28,0.4); z-index: 100;
+  align-items: flex-start; justify-content: center;
+  padding-top: min(20vh, 120px);
+}
+.cmdk-overlay.is-open { display: flex; }
+.cmdk {
+  width: min(520px, calc(100vw - 32px));
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-raised);
+  overflow: hidden;
+}
+.cmdk-input-wrap {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px; border-bottom: 1px solid var(--line);
+}
+.cmdk-input {
+  flex: 1; border: none; background: transparent;
+  font: var(--w-body) 14px/1.4 var(--font-sans); color: var(--ink);
+  outline: none;
+}
+.cmdk-input::placeholder { color: var(--ink-tertiary); }
+.cmdk-list { max-height: 320px; overflow-y: auto; padding: 8px; }
+.cmdk-group-label {
+  font: var(--w-medium) 11px/1 var(--font-sans);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-secondary); padding: 6px 8px;
+}
+.cmdk-item {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 8px 10px; border: none;
+  background: transparent; border-radius: var(--r-sm);
+  cursor: pointer; text-align: left;
+  font: var(--w-body) 13px/1.3 var(--font-sans); color: var(--ink);
+  transition: background-color var(--dur) var(--ease);
+}
+.cmdk-item:hover, .cmdk-item[aria-selected="true"] { background: var(--accent-tint); }
+.cmdk-item:focus-visible { outline: none; box-shadow: var(--ring); }
+.cmdk-item-desc { font-size: 11px; color: var(--ink-secondary); margin-left: auto; }
+.cmdk-kbd {
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 2px 5px; border-radius: 3px;
+  background: var(--canvas); border: 1px solid var(--line);
+  color: var(--ink-secondary);
+}
+.cmdk-empty { padding: 24px; text-align: center; color: var(--ink-secondary); font-size: 13px; }
+
+.sidebar-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(21,24,28,0.3); z-index: 15;
+}
+.sidebar-backdrop.is-visible { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .app, .app.detail-open { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; width: var(--sidebar-w);
+    transform: translateX(-100%); z-index: 40;
+  }
+  .sidebar.is-open { transform: translateX(0); box-shadow: var(--shadow-raised); }
+  .sidebar-toggle { display: flex; }
+  .detail-panel {
+    position: fixed; right: 0; top: 0; width: 100%; max-width: 100%;
+    transform: translateX(100%); transition: transform var(--dur) var(--ease);
+  }
+  .app.detail-open .detail-panel { transform: translateX(0); }
+  .header-actions .btn--ghost:not(.cmdk-trigger) { display: none; }
+  .breadcrumb { display: none; }
+}
+
+@media (max-width: 600px) {
+  .view-toggle-btn span { display: none; }
+  .pipeline-col { flex: 0 0 200px; min-width: 200px; }
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* === mobile touch targets (auto-injected; min 44px tap area on phones) === */
+@media (max-width: 760px) {
+  button, [role="button"], select,
+  .icon-btn, .tiny-btn, .transport-btn, .mute-btns, .workspace-tab, .small-tab,
+  .preset-tab, .sequence-tab, .tab, .sort-btn, .range-btn, .env-btn, .banner-dismiss, .banner-action, .act-btn {
+    min-height: 44px;
+  }
+  .icon-btn, .tiny-btn, .transport-btn, .mute-btns, .sort-btn, .act-btn { min-width: 44px; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea { min-height: 40px; box-sizing: border-box; }
+}
+
+</style>
+</head>
+<body>
+<div class="error-banner" id="errorBanner" role="alert">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <span>Sync failed — deal updates may be stale. Retrying in background.</span>
+  <button class="error-banner-dismiss" id="errorDismiss" aria-label="Dismiss error">×</button>
+</div>
+
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-top">
+      <button class="workspace-switcher" aria-haspopup="listbox" aria-expanded="false">
+        <span class="ws-mark" aria-hidden="true">R</span>
+        <span class="ws-name">Relay Sales</span>
+        <svg class="ws-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <nav class="nav">
+      <button class="nav-item" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>Inbox<span class="nav-count mono tnum">12</span></button>
+      <button class="nav-item" type="button" aria-current="page"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>My Deals<span class="nav-count mono tnum" id="navDealCount">0</span></button>
+      <button class="nav-item" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>Companies<span class="nav-count mono tnum">847</span></button>
+      <button class="nav-item" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>People<span class="nav-count mono tnum">2.1k</span></button>
+
+      <div class="nav-group">
+        <div class="nav-label">Views</div>
+        <button class="nav-item" type="button"><span class="view-dot dot-emerald" aria-hidden="true"></span>Enterprise Q2<span class="nav-count mono tnum">8</span></button>
+        <button class="nav-item" type="button"><span class="view-dot dot-cobalt" aria-hidden="true"></span>Mid-market<span class="nav-count mono tnum">14</span></button>
+        <button class="nav-item" type="button"><span class="view-dot dot-amber" aria-hidden="true"></span>Renewals<span class="nav-count mono tnum">6</span></button>
+        <button class="nav-item" type="button"><span class="view-dot dot-rose" aria-hidden="true"></span>At risk<span class="nav-count mono tnum">3</span></button>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">Pipelines</div>
+        <button class="nav-item" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2v20M2 12h20"/></svg>New business<span class="nav-count mono tnum">18</span></button>
+        <button class="nav-item" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 12l2 2 4-4"/></svg>Expansion<span class="nav-count mono tnum">5</span></button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar" aria-hidden="true">SW</div>
+        <div class="user-info">
+          <div class="user-name">Sarah Wu</div>
+          <div class="user-role">Account Executive</div>
+        </div>
+      </div>
+      <div class="usage-hint"><strong>18 of 25</strong> seats used · <a href="#">Upgrade</a></div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="main-header">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="#">Relay Sales</a>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="breadcrumb-current">My Deals</span>
+      </nav>
+      <div class="header-actions">
+        <div class="view-toggle" role="group" aria-label="View mode">
+          <button class="view-toggle-btn" id="viewTable" aria-pressed="true" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            <span>Table</span>
+          </button>
+          <button class="view-toggle-btn" id="viewPipeline" aria-pressed="false" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="4" height="8" rx="1"/></svg>
+            <span>Pipeline</span>
+          </button>
+        </div>
+        <button class="btn btn--ghost" type="button" disabled aria-disabled="true">Filter</button>
+        <button class="btn btn--ghost" type="button" id="sortBtn">Sort</button>
+        <button class="btn btn--ghost cmdk-trigger" type="button" id="searchBtn" aria-label="Search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search <kbd>⌘K</kbd></button>
+        <button class="btn btn--primary" type="button" id="newDealBtn">New deal</button>
+      </div>
+    </header>
+
+    <main id="main">
+      <h1 class="sr-only">Relay — My Deals</h1>
+      <div class="content" id="content">
+        <div class="skeleton-table" id="skeletonTable" aria-hidden="true">
+          <div class="table-wrap">
+            <table class="data-table"><tbody>
+              <tr class="skeleton-row"><td><div class="skeleton skeleton-circle"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--md"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--sm"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--sm"></div></td></tr>
+              <tr class="skeleton-row"><td><div class="skeleton skeleton-circle"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--lg"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--md"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--sm"></div></td></tr>
+              <tr class="skeleton-row"><td><div class="skeleton skeleton-circle"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--md"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--sm"></div></td><td><div class="skeleton skeleton-bar skeleton-bar--md"></div></td></tr>
+            </tbody></table>
+          </div>
+        </div>
+
+        <div class="table-view is-active" id="tableView">
+          <div class="table-wrap">
+            <table class="data-table" id="dealsTable">
+              <thead>
+                <tr>
+                  <th scope="col" data-sort="company">Company <svg class="sort-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg></th>
+                  <th scope="col" data-sort="stage">Stage</th>
+                  <th scope="col" data-sort="value" class="num">Value <svg class="sort-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg></th>
+                  <th scope="col">Owner</th>
+                  <th scope="col" data-sort="probability" class="num">Prob.</th>
+                  <th scope="col">Next step</th>
+                  <th scope="col" data-sort="activity">Last activity</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pipeline-view" id="pipelineView">
+          <div class="pipeline-board" id="pipelineBoard"></div>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+          <h2 class="empty-title" id="emptyTitle">No deals match</h2>
+          <p class="empty-desc" id="emptyDesc">Try adjusting your filters or create a new deal to get started.</p>
+          <button class="btn btn--primary" type="button" id="emptyAction">New deal</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <aside class="detail-panel" id="detailPanel" role="dialog" aria-modal="true" aria-labelledby="detailTitle" aria-hidden="true">
+    <div class="detail-header">
+      <div class="detail-title-block">
+        <h2 class="detail-company" id="detailTitle">—</h2>
+        <div class="detail-deal-id mono" id="detailId">—</div>
+      </div>
+      <button class="detail-close" id="detailClose" aria-label="Close detail panel" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </aside>
+</div>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+<div class="detail-backdrop" id="detailBackdrop" aria-hidden="true"></div>
+
+<div class="cmdk-overlay" id="cmdkOverlay" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk">
+    <div class="cmdk-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="cmdk-input" id="cmdkInput" type="search" placeholder="Search deals, companies, or run a command…" autocomplete="off" aria-controls="cmdkList" aria-activedescendant="" />
+    </div>
+    <div class="cmdk-list" id="cmdkList" role="listbox"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const STAGES = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'];
+  const STAGE_CLASS = {
+    Lead: 'stage-lead', Qualified: 'stage-qualified', Proposal: 'stage-proposal',
+    Negotiation: 'stage-negotiation', Won: 'stage-won', Lost: 'stage-lost'
+  };
+  const LOGO_COLORS = [
+    ['#E8F5EE', '#157A4E'], ['#EFF4FF', '#175CD3'], ['#FEF6E4', '#9A6700'],
+    ['#FEECEB', '#B42318'], ['#F3E8FF', '#7C3AED'], ['#E6F4F0', '#0B6E5A']
+  ];
+  const OWNERS = [
+    { name: 'Sarah Wu', initials: 'SW', color: '#E6F4F0' },
+    { name: 'Marcus Chen', initials: 'MC', color: '#EFF4FF' },
+    { name: 'Elena Park', initials: 'EP', color: '#FEF6E4' },
+    { name: 'James Okonkwo', initials: 'JO', color: '#F3E8FF' }
+  ];
+
+  const DEALS = [
+    { id: 'DL-2847', company: 'Northwind Analytics', monogram: 'NA', stage: 'Negotiation', value: 284000, owner: 0, probability: 75, nextStep: 'Legal review of MSA', lastActivity: 2, closeDate: '2026-07-15', source: 'Outbound', contacts: [{ name: 'Alex Rivera', role: 'VP Sales', initials: 'AR' }], activities: [{ type: 'Call', desc: 'Discussed pricing tiers', hours: 2 }, { type: 'Email', desc: 'Sent revised proposal', hours: 18 }] },
+    { id: 'DL-2841', company: 'Helios Robotics', monogram: 'HR', stage: 'Proposal', value: 156000, owner: 1, probability: 55, nextStep: 'Demo with engineering team', lastActivity: 5, closeDate: '2026-08-01', source: 'Referral', contacts: [{ name: 'Priya Shah', role: 'CTO', initials: 'PS' }], activities: [{ type: 'Meeting', desc: 'Product walkthrough', hours: 28 }] },
+    { id: 'DL-2835', company: 'Cascade Health', monogram: 'CH', stage: 'Qualified', value: 92000, owner: 0, probability: 35, nextStep: 'Discovery call scheduled', lastActivity: 1, closeDate: '2026-09-10', source: 'Inbound', contacts: [{ name: 'Dr. Kim Tan', role: 'COO', initials: 'KT' }], activities: [{ type: 'Note', desc: 'HIPAA compliance questions noted', hours: 6 }] },
+    { id: 'DL-2829', company: 'Vertex Payments', monogram: 'VP', stage: 'Lead', value: 48000, owner: 2, probability: 15, nextStep: 'Initial outreach email', lastActivity: 12, closeDate: '2026-10-05', source: 'Conference', contacts: [{ name: 'Tom Walsh', role: 'Head of Ops', initials: 'TW' }], activities: [{ type: 'Email', desc: 'Intro sent post-event', hours: 72 }] },
+    { id: 'DL-2822', company: 'Axiom Logistics', monogram: 'AL', stage: 'Negotiation', value: 412000, owner: 3, probability: 80, nextStep: 'Final pricing approval', lastActivity: 4, closeDate: '2026-07-08', source: 'Partner', contacts: [{ name: 'Lisa Morgan', role: 'CFO', initials: 'LM' }, { name: 'Dan Frost', role: 'Procurement', initials: 'DF' }], activities: [{ type: 'Call', desc: 'Budget confirmed for Q3', hours: 8 }] },
+    { id: 'DL-2818', company: 'Brightpath Education', monogram: 'BE', stage: 'Proposal', value: 67000, owner: 1, probability: 45, nextStep: 'Send case study PDF', lastActivity: 24, closeDate: '2026-08-20', source: 'Inbound', contacts: [{ name: 'Maria Santos', role: 'Director IT', initials: 'MS' }], activities: [{ type: 'Email', desc: 'Requested ROI calculator', hours: 48 }] },
+    { id: 'DL-2810', company: 'Forge Industries', monogram: 'FI', stage: 'Won', value: 198000, owner: 0, probability: 100, nextStep: 'Kickoff call', lastActivity: 3, closeDate: '2026-06-20', source: 'Outbound', contacts: [{ name: 'Chris Bell', role: 'CEO', initials: 'CB' }], activities: [{ type: 'Note', desc: 'Contract signed', hours: 12 }] },
+    { id: 'DL-2804', company: 'Meridian Cloud', monogram: 'MC', stage: 'Qualified', value: 124000, owner: 2, probability: 40, nextStep: 'Technical validation', lastActivity: 8, closeDate: '2026-08-15', source: 'Referral', contacts: [{ name: 'Nina Patel', role: 'Engineering Lead', initials: 'NP' }], activities: [{ type: 'Meeting', desc: 'Architecture review', hours: 36 }] },
+    { id: 'DL-2798', company: 'Summit Retail Group', monogram: 'SR', stage: 'Lead', value: 36000, owner: 3, probability: 10, nextStep: 'Qualify budget', lastActivity: 48, closeDate: '2026-11-01', source: 'Outbound', contacts: [{ name: 'Jordan Lee', role: 'Store Ops', initials: 'JL' }], activities: [{ type: 'Call', desc: 'Left voicemail', hours: 96 }] },
+    { id: 'DL-2791', company: 'Pinnacle Security', monogram: 'PS', stage: 'Lost', value: 85000, owner: 1, probability: 0, nextStep: 'Archive — chose competitor', lastActivity: 168, closeDate: '2026-05-30', source: 'Inbound', contacts: [{ name: 'Ray Ortiz', role: 'CISO', initials: 'RO' }], activities: [{ type: 'Email', desc: 'Declined — budget freeze', hours: 168 }] },
+    { id: 'DL-2785', company: 'Lumen BioTech', monogram: 'LB', stage: 'Proposal', value: 245000, owner: 0, probability: 60, nextStep: 'Pilot scope document', lastActivity: 6, closeDate: '2026-07-28', source: 'Partner', contacts: [{ name: 'Dr. Anna Weiss', role: 'Head of R&D', initials: 'AW' }], activities: [{ type: 'Meeting', desc: 'Pilot timeline agreed', hours: 20 }] },
+    { id: 'DL-2779', company: 'Atlas Manufacturing', monogram: 'AM', stage: 'Negotiation', value: 178000, owner: 2, probability: 70, nextStep: 'Redline contract', lastActivity: 10, closeDate: '2026-07-22', source: 'Outbound', contacts: [{ name: 'Mike Torres', role: 'VP Operations', initials: 'MT' }], activities: [{ type: 'Call', desc: 'Terms mostly agreed', hours: 14 }] },
+    { id: 'DL-2772', company: 'NovaStream Media', monogram: 'NS', stage: 'Lead', value: 52000, owner: 3, probability: 20, nextStep: 'Connect on LinkedIn', lastActivity: 36, closeDate: '2026-10-12', source: 'Conference', contacts: [{ name: 'Sam Green', role: 'Ad Ops', initials: 'SG' }], activities: [{ type: 'Note', desc: 'Met at SaaStr booth', hours: 120 }] },
+    { id: 'DL-2766', company: 'Clearwater Finance', monogram: 'CF', stage: 'Qualified', value: 310000, owner: 1, probability: 30, nextStep: 'Security questionnaire', lastActivity: 16, closeDate: '2026-09-05', source: 'Referral', contacts: [{ name: 'Helen Brooks', role: 'Compliance', initials: 'HB' }], activities: [{ type: 'Email', desc: 'SOC2 docs requested', hours: 40 }] },
+    { id: 'DL-2758', company: 'Redwood Energy', monogram: 'RE', stage: 'Proposal', value: 89000, owner: 0, probability: 50, nextStep: 'Executive sponsor meeting', lastActivity: 7, closeDate: '2026-08-08', source: 'Inbound', contacts: [{ name: 'Pat Nguyen', role: 'Director', initials: 'PN' }], activities: [{ type: 'Call', desc: 'Budget cycle Q3', hours: 22 }] }
+  ];
+
+  const state = {
+    view: 'table',
+    sortKey: 'value',
+    sortDir: 'desc',
+    selectedId: null,
+    loading: true,
+    cmdkOpen: false,
+    cmdkIndex: 0,
+    sidebarOpen: false,
+    filterStage: null
+  };
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  function formatValue(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return Math.round(n / 1000) + 'k';
+    return String(n);
+  }
+
+  function formatActivity(hours) {
+    if (hours < 1) return 'just now';
+    if (hours < 24) return hours + 'h ago';
+    const days = Math.round(hours / 24);
+    return days + 'd ago';
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function getSortedDeals() {
+    const list = state.filterStage
+      ? DEALS.filter((d) => d.stage === state.filterStage)
+      : [...DEALS];
+    list.sort((a, b) => {
+      let av = a[state.sortKey], bv = b[state.sortKey];
+      if (state.sortKey === 'company') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+      if (av < bv) return state.sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return state.sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }
+
+  function logoColor(idx) {
+    return LOGO_COLORS[idx % LOGO_COLORS.length];
+  }
+
+  function renderTable() {
+    const tbody = $('#tableBody');
+    const deals = getSortedDeals();
+    tbody.innerHTML = deals.map((d, i) => {
+      const [bg, fg] = logoColor(i);
+      const owner = OWNERS[d.owner];
+      const sel = state.selectedId === d.id ? ' is-selected' : '';
+      return `<tr data-id="${d.id}" tabindex="0" class="${sel}" aria-selected="${state.selectedId === d.id}">
+        <td><div class="company-cell"><span class="company-logo" style="background:${bg};color:${fg}">${d.monogram}</span><span class="company-name">${d.company}</span></div></td>
+        <td><span class="stage-pill ${STAGE_CLASS[d.stage]}">${d.stage}</span></td>
+        <td class="value-cell mono tnum"><span class="currency">$</span>${formatValue(d.value)}</td>
+        <td><div class="owner-cell"><span class="owner-avatar" style="background:${owner.color}">${owner.initials}</span>${owner.name.split(' ')[0]}</div></td>
+        <td class="prob-cell tnum">${d.probability}%</td>
+        <td class="next-cell">${d.nextStep}</td>
+        <td class="activity-cell tnum">${formatActivity(d.lastActivity)}</td>
+      </tr>`;
+    }).join('');
+
+    $$('#dealsTable th[data-sort]').forEach((th) => {
+      const key = th.dataset.sort;
+      th.setAttribute('aria-sort', key === state.sortKey ? (state.sortDir === 'asc' ? 'ascending' : 'descending') : 'none');
+    });
+
+    tbody.querySelectorAll('tr').forEach((row) => {
+      row.addEventListener('click', () => openDetail(row.dataset.id));
+      row.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(row.dataset.id); }
+      });
+    });
+
+    $('#emptyState').classList.toggle('is-visible', deals.length === 0);
+    $('#tableView').style.display = deals.length === 0 ? 'none' : '';
+  }
+
+  function renderPipeline() {
+    const board = $('#pipelineBoard');
+    board.innerHTML = STAGES.map((stage) => {
+      const deals = DEALS.filter((d) => d.stage === stage);
+      const sum = deals.reduce((a, d) => a + d.value, 0);
+      const cards = deals.length
+        ? deals.map((d, i) => {
+            const [bg, fg] = logoColor(DEALS.indexOf(d));
+            const owner = OWNERS[d.owner];
+            const sel = state.selectedId === d.id ? ' is-selected' : '';
+            return `<article class="deal-card${sel}" data-id="${d.id}" tabindex="0" aria-label="${d.company}, ${formatValue(d.value)} dollars">
+              <div class="deal-card-header">
+                <span class="company-logo" style="background:${bg};color:${fg}">${d.monogram}</span>
+                <span class="company-name">${d.company}</span>
+                <span class="deal-card-value mono tnum">$${formatValue(d.value)}</span>
+              </div>
+              <div class="prob-bar"><div class="prob-bar-fill" style="width:${d.probability}%"></div></div>
+              <div class="deal-card-footer">
+                <span class="owner-avatar" style="background:${owner.color}">${owner.initials}</span>
+                <span class="mono tnum" style="font-size:11px;color:var(--ink-secondary)">${d.probability}%</span>
+                <svg class="drag-hint" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+              </div>
+            </article>`;
+          }).join('')
+        : `<div class="pipeline-empty"><p>No deals in ${stage} yet</p><button class="btn btn--ghost" type="button" data-stage="${stage}">Add deal</button></div>`;
+      return `<div class="pipeline-col" data-stage="${stage}">
+        <div class="pipeline-col-header">
+          <div class="pipeline-col-title"><span class="stage-pill ${STAGE_CLASS[stage]}">${stage}</span></div>
+          <div class="pipeline-col-meta"><span class="mono tnum">${deals.length}</span><span class="sum mono tnum">$${formatValue(sum)}</span></div>
+        </div>
+        <div class="pipeline-cards">${cards}</div>
+      </div>`;
+    }).join('');
+
+    board.querySelectorAll('.deal-card').forEach((card) => {
+      card.addEventListener('click', () => openDetail(card.dataset.id));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(card.dataset.id); }
+      });
+    });
+  }
+
+  function renderDetail(id) {
+    const d = DEALS.find((x) => x.id === id);
+    if (!d) return;
+    const owner = OWNERS[d.owner];
+    $('#detailTitle').textContent = d.company;
+    $('#detailId').textContent = d.id;
+    $('#detailBody').innerHTML = `
+      <section class="detail-section" aria-labelledby="propsHeading">
+        <h3 class="detail-section-title" id="propsHeading">Properties</h3>
+        <div class="props-grid">
+          <div class="prop-row"><span class="prop-label">Stage</span><span class="prop-value is-editable" tabindex="0"><span class="stage-pill ${STAGE_CLASS[d.stage]}">${d.stage}</span></span></div>
+          <div class="prop-row"><span class="prop-label">Value</span><span class="prop-value is-editable mono tnum" tabindex="0">$${d.value.toLocaleString()}</span></div>
+          <div class="prop-row"><span class="prop-label">Owner</span><span class="prop-value is-editable" tabindex="0">${owner.name}</span></div>
+          <div class="prop-row"><span class="prop-label">Close date</span><span class="prop-value is-editable mono tnum" tabindex="0">${formatDate(d.closeDate)}</span></div>
+          <div class="prop-row"><span class="prop-label">Probability</span><span class="prop-value is-editable mono tnum" tabindex="0">${d.probability}%</span></div>
+          <div class="prop-row"><span class="prop-label">Source</span><span class="prop-value is-editable" tabindex="0">${d.source}</span></div>
+        </div>
+      </section>
+      <section class="detail-section" aria-labelledby="activityHeading">
+        <h3 class="detail-section-title" id="activityHeading">Activity</h3>
+        <div class="timeline">${d.activities.map((a) => `
+          <div class="timeline-item">
+            <div class="timeline-dot"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/></svg></div>
+            <div class="timeline-content">
+              <div class="timeline-type">${a.type}</div>
+              <div class="timeline-desc">${a.desc}</div>
+              <div class="timeline-time tnum">${formatActivity(a.hours)}</div>
+            </div>
+          </div>`).join('')}</div>
+      </section>
+      <section class="detail-section" aria-labelledby="contactsHeading">
+        <h3 class="detail-section-title" id="contactsHeading">Contacts</h3>
+        <div class="contacts-list">${d.contacts.map((c, i) => {
+          const [bg, fg] = logoColor(i + 2);
+          return `<div class="contact-row"><span class="contact-avatar" style="background:${bg};color:${fg}">${c.initials}</span><div><div class="contact-name">${c.name}</div><div class="contact-role">${c.role}</div></div></div>`;
+        }).join('')}</div>
+      </section>`;
+  }
+
+  function openDetail(id) {
+    state.selectedId = id;
+    $('#app').classList.add('detail-open');
+    const panel = $('#detailPanel');
+    panel.setAttribute('aria-hidden', 'false');
+    $('#detailBackdrop').classList.add('is-visible');
+    renderDetail(id);
+    renderTable();
+    renderPipeline();
+    $('#detailClose').focus();
+    trapFocus(panel);
+  }
+
+  function closeDetail() {
+    state.selectedId = null;
+    $('#app').classList.remove('detail-open');
+    $('#detailPanel').setAttribute('aria-hidden', 'true');
+    $('#detailBackdrop').classList.remove('is-visible');
+    releaseFocus();
+    renderTable();
+    renderPipeline();
+  }
+
+  let focusTrapEl = null;
+  let focusTrapHandler = null;
+
+  function trapFocus(el) {
+    focusTrapEl = el;
+    focusTrapHandler = (e) => {
+      if (e.key === 'Escape') { closeDetail(); return; }
+      if (e.key !== 'Tab') return;
+      const focusable = el.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])');
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', focusTrapHandler);
+  }
+
+  function releaseFocus() {
+    if (focusTrapHandler) document.removeEventListener('keydown', focusTrapHandler);
+    focusTrapEl = null;
+    focusTrapHandler = null;
+  }
+
+  function setView(view) {
+    state.view = view;
+    state.loading = true;
+    $('#content').classList.add('is-loading');
+    $('#skeletonTable').style.display = 'block';
+    $('#viewTable').setAttribute('aria-pressed', view === 'table');
+    $('#viewPipeline').setAttribute('aria-pressed', view === 'pipeline');
+
+    setTimeout(() => {
+      state.loading = false;
+      $('#content').classList.remove('is-loading');
+      $('#skeletonTable').style.display = 'none';
+      $('#tableView').classList.toggle('is-active', view === 'table');
+      $('#pipelineView').classList.toggle('is-active', view === 'pipeline');
+      if (view === 'table') renderTable();
+      else renderPipeline();
+    }, 480);
+  }
+
+  const COMMANDS = [
+    { id: 'new', label: 'New deal', desc: 'Create', action: () => alert('New deal flow would open here.') },
+    { id: 'table', label: 'Switch to table view', desc: 'View', action: () => { setView('table'); closeCmdk(); } },
+    { id: 'pipeline', label: 'Switch to pipeline view', desc: 'View', action: () => { setView('pipeline'); closeCmdk(); } },
+    { id: 'filter-won', label: 'Show won deals', desc: 'Filter', action: () => { state.filterStage = 'Won'; setView('table'); closeCmdk(); } },
+    { id: 'clear-filter', label: 'Clear filters', desc: 'Filter', action: () => { state.filterStage = null; renderTable(); closeCmdk(); } }
+  ];
+
+  function openCmdk() {
+    state.cmdkOpen = true;
+    state.cmdkIndex = 0;
+    $('#cmdkOverlay').classList.add('is-open');
+    $('#cmdkInput').value = '';
+    renderCmdk('');
+    $('#cmdkInput').focus();
+    document.addEventListener('keydown', cmdkKeyHandler);
+    document.addEventListener('keydown', cmdkFocusTrap);
+  }
+
+  function closeCmdk() {
+    state.cmdkOpen = false;
+    $('#cmdkOverlay').classList.remove('is-open');
+    document.removeEventListener('keydown', cmdkKeyHandler);
+    document.removeEventListener('keydown', cmdkFocusTrap);
+  }
+
+  function cmdkFocusTrap(e) {
+    if (!state.cmdkOpen || e.key !== 'Tab') return;
+    const el = $('#cmdkOverlay');
+    const focusable = el.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
+  function renderCmdk(query) {
+    const q = query.toLowerCase();
+    const dealResults = DEALS.filter((d) =>
+      d.company.toLowerCase().includes(q) || d.id.toLowerCase().includes(q)
+    ).slice(0, 5).map((d) => ({
+      id: d.id, label: d.company, desc: d.id + ' · ' + d.stage,
+      action: () => { openDetail(d.id); closeCmdk(); }
+    }));
+    const cmdResults = COMMANDS.filter((c) => c.label.toLowerCase().includes(q));
+    const items = [...dealResults, ...cmdResults];
+    const list = $('#cmdkList');
+
+    if (!items.length) {
+      list.innerHTML = '<div class="cmdk-empty">No results</div>';
+      return;
+    }
+
+    let html = '';
+    if (dealResults.length) {
+      html += '<div class="cmdk-group-label">Deals</div>';
+      dealResults.forEach((item, i) => {
+        html += `<button class="cmdk-item" role="option" data-idx="${i}" aria-selected="${i === state.cmdkIndex}">${item.label}<span class="cmdk-item-desc">${item.desc}</span></button>`;
+      });
+    }
+    if (cmdResults.length) {
+      html += '<div class="cmdk-group-label">Commands</div>';
+      cmdResults.forEach((item, i) => {
+        const idx = dealResults.length + i;
+        html += `<button class="cmdk-item" role="option" data-idx="${idx}" aria-selected="${idx === state.cmdkIndex}">${item.label}<span class="cmdk-item-desc">${item.desc}</span></button>`;
+      });
+    }
+    list.innerHTML = html;
+
+    list.querySelectorAll('.cmdk-item').forEach((btn) => {
+      btn.addEventListener('click', () => runCmdkItem(parseInt(btn.dataset.idx, 10), items));
+    });
+  }
+
+  function runCmdkItem(idx, items) {
+    const allItems = getCmdkItems($('#cmdkInput').value);
+    const item = allItems[idx];
+    if (item && item.action) item.action();
+  }
+
+  function getCmdkItems(query) {
+    const q = query.toLowerCase();
+    const dealResults = DEALS.filter((d) =>
+      d.company.toLowerCase().includes(q) || d.id.toLowerCase().includes(q)
+    ).slice(0, 5).map((d) => ({
+      action: () => { openDetail(d.id); closeCmdk(); }
+    }));
+    const cmdResults = COMMANDS.filter((c) => c.label.toLowerCase().includes(q));
+    return [...dealResults, ...cmdResults];
+  }
+
+  function cmdkKeyHandler(e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeCmdk(); return; }
+    const items = getCmdkItems($('#cmdkInput').value);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      state.cmdkIndex = Math.min(state.cmdkIndex + 1, items.length - 1);
+      renderCmdk($('#cmdkInput').value);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      state.cmdkIndex = Math.max(state.cmdkIndex - 1, 0);
+      renderCmdk($('#cmdkInput').value);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      runCmdkItem(state.cmdkIndex, items);
+    }
+  }
+
+  function toggleSidebar(open) {
+    state.sidebarOpen = open;
+    $('#sidebar').classList.toggle('is-open', open);
+    $('#sidebarBackdrop').classList.toggle('is-visible', open);
+    $('#sidebarToggle').setAttribute('aria-expanded', String(open));
+  }
+
+  // Init
+  $('#navDealCount').textContent = String(DEALS.length);
+
+  setTimeout(() => {
+    state.loading = false;
+    $('#content').classList.remove('is-loading');
+    $('#skeletonTable').style.display = 'none';
+    renderTable();
+    renderPipeline();
+    setTimeout(() => {
+      $('#errorBanner').classList.add('is-visible');
+    }, 3500);
+  }, 600);
+
+  $('#viewTable').addEventListener('click', () => setView('table'));
+  $('#viewPipeline').addEventListener('click', () => setView('pipeline'));
+  $('#detailClose').addEventListener('click', closeDetail);
+  $('#detailBackdrop').addEventListener('click', closeDetail);
+  $('#errorDismiss').addEventListener('click', () => $('#errorBanner').classList.remove('is-visible'));
+  $('#searchBtn').addEventListener('click', openCmdk);
+  $('#newDealBtn').addEventListener('click', () => openCmdk());
+  $('#emptyAction').addEventListener('click', () => openCmdk());
+  $('#cmdkOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeCmdk(); });
+  $('#cmdkInput').addEventListener('input', (e) => { state.cmdkIndex = 0; renderCmdk(e.target.value); });
+  $('#sidebarToggle').addEventListener('click', () => toggleSidebar(!state.sidebarOpen));
+  $('#sidebarBackdrop').addEventListener('click', () => toggleSidebar(false));
+
+  $$('#dealsTable th[data-sort]').forEach((th) => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.sort;
+      if (state.sortKey === key) state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+      else { state.sortKey = key; state.sortDir = key === 'company' ? 'asc' : 'desc'; }
+      renderTable();
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      state.cmdkOpen ? closeCmdk() : openCmdk();
+    }
+    if (e.key === 'Escape' && state.cmdkOpen) closeCmdk();
+  });
+})();
+</script>
+</body>
+</html>

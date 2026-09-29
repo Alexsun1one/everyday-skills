@@ -1,0 +1,140 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Luxury Maison theme: warm cream, muted gold, high-contrast serif, extreme negative space.",
+  "$extensions": {
+    "designPractice": {
+      "direction": "luxury",
+      "ownedAccent": "#B8924F",
+      "typePersonality": "thin Didone-ish serif display with tiny wide-tracked caps",
+      "signatureMove": "huge serif name, one bled product shot, chapter footer"
+    }
+  },
+  "color": {
+    "palette": {
+      "cream": {
+        "$type": "color",
+        "$value": "#F3EFE9"
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "#1A1A1A"
+      },
+      "warmSurface": {
+        "$type": "color",
+        "$value": "#FBF7F0"
+      },
+      "productDark": {
+        "$type": "color",
+        "$value": "#141210"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.palette.ink}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#46413B"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "#8A8177"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.palette.cream}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.palette.warmSurface}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "#E9E1D6"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{color.palette.productDark}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "#D8CDBF"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "#A99B88"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#B8924F"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "#1A1A1A"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "#EFE3C8"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Geist\", \"Inter var\", system-ui, sans-serif"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Didot\", \"Bodoni 72\", \"Domaine\", Georgia, serif"
+      }
+    },
+    "display": {
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.light}"
+      },
+      "lineHeight": {
+        "$type": "number",
+        "$value": "{font.lineHeight.display}"
+      }
+    },
+    "label": {
+      "letterSpacing": {
+        "$type": "dimension",
+        "$value": "{font.letterSpacing.wideCaps}"
+      }
+    }
+  },
+  "motion": {
+    "reveal": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.hero}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.outQuint}"
+      }
+    }
+  }
+}

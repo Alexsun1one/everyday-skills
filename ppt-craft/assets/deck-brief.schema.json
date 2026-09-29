@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PPT Craft Deck Brief",
+  "type": "object",
+  "required": ["audience", "deck_job", "route", "density", "page_count", "language", "style_direction", "assumptions"],
+  "additionalProperties": false,
+  "properties": {
+    "audience": { "type": "string", "minLength": 1 },
+    "deck_job": { "type": "string", "minLength": 1 },
+    "route": {
+      "type": "string",
+      "enum": ["html-first", "editable-pptx", "raster", "hybrid", "existing-deck-beautify"]
+    },
+    "density": {
+      "type": "string",
+      "enum": ["live-keynote", "async-readable", "board-report", "training", "social-share"]
+    },
+    "page_count": {
+      "type": "object",
+      "required": ["target", "min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "target": { "type": "integer", "minimum": 1 },
+        "min": { "type": "integer", "minimum": 1 },
+        "max": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "language": { "type": "string", "minLength": 1 },
+    "style_direction": { "type": "string", "minLength": 1 },
+    "style_anchors": { "type": "array", "items": { "type": "string" } },
+    "must_keep": { "type": "array", "items": { "type": "string" } },
+    "assets": { "type": "array", "items": { "type": "string" } },
+    "user_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "chosen", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "field": { "type": "string" },
+          "chosen": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "risks": { "type": "array", "items": { "type": "string" } }
+  }
+}

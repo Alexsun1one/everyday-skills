@@ -1,0 +1,598 @@
+{
+  "version": 1,
+  "stage": { "width": 1280, "height": 720 },
+  "required_roles": ["cover", "proof", "system", "closing"],
+  "role_contracts": {
+    "cover": "Show the visual thesis and the deck's promise in one memorable first viewport.",
+    "proof": "Show how this style handles evidence without losing hierarchy or readability.",
+    "system": "Show how this style explains a workflow, mechanism, path, or loop.",
+    "closing": "Show the final rule, decision, ask, or principle with a strong visual aftertaste."
+  },
+  "anchors": [
+    {
+      "anchor_id": "dark-technical-investor",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Reveal the hidden layer",
+          "support": "A serious control-room cover: one thesis, one signal field, no decorative neon.",
+          "visual": "Dark diagnostic pane with a gold thesis marker and cyan signal trace.",
+          "object_families": ["system chrome", "corner bracket", "signal sweep"],
+          "asset_direction": "Dark technical atmosphere, quiet left thesis rail, right-side layered interface, no tiny terminal text.",
+          "qa": ["headline has 4.5:1 contrast", "visual does not sit behind claim", "no random dashboard card wall"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Proof is a signal, not a screenshot pile",
+          "support": "Evidence pages use one table, one signal card, and a source footer.",
+          "visual": "Compact evidence table plus a glowing anomaly marker.",
+          "object_families": ["evidence table", "signal card", "source rail"],
+          "asset_direction": "Dark boardroom surface with reserved table zone and single cyan metric marker.",
+          "qa": ["table owns the proof region", "signal card states implication", "source rail is visible"]
+        },
+        {
+          "role": "system",
+          "archetype": "system-loop",
+          "headline": "Detect, interpret, decide, act",
+          "support": "A mechanism slide should make the operating loop legible in three seconds.",
+          "visual": "Four-node loop over a hidden-layer grid.",
+          "object_families": ["number badges", "loop connector", "status chips"],
+          "asset_direction": "Layered control-room loop with four empty node plaques, away from claim rail.",
+          "qa": ["loop direction is visible", "active node is distinguishable", "connectors avoid title zone"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Make the invisible operational",
+          "support": "The close returns to the thesis and leaves one action rule.",
+          "visual": "Gold decision seal over a dark evidence tray.",
+          "object_families": ["decision seal", "rule card", "status strip"],
+          "asset_direction": "Dark closing card with one gold seal and blank rule plaque.",
+          "qa": ["only one closing principle", "ask/rule is explicit", "no second visual message"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "studio-product-keynote",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "One promise, staged clearly",
+          "support": "A launch cover gives the product or product moment room to breathe.",
+          "visual": "Hero product plinth with a precise light pool.",
+          "object_families": ["hero stage", "single claim card", "feature glint"],
+          "asset_direction": "Cinematic product stage, large empty title zone, no feature matrix.",
+          "qa": ["product is first-viewport signal", "copy is sparse", "no decorative gradient-only hero"]
+        },
+        {
+          "role": "proof",
+          "archetype": "metric-wall",
+          "headline": "Momentum belongs in three numbers",
+          "support": "Launch proof uses large metrics and tiny labels, not dense bullets.",
+          "visual": "Three product momentum counters with one customer quote strip.",
+          "object_families": ["metric tile", "quote strip", "product halo"],
+          "asset_direction": "Minimal studio surface with three reserved metric slabs and one testimonial rail.",
+          "qa": ["3-4 metrics max", "numbers have labels", "quote does not overpower product"]
+        },
+        {
+          "role": "system",
+          "archetype": "product-demo-workbench",
+          "headline": "Show the click path, not the feature list",
+          "support": "A demo slide frames the product state, the action, and the outcome.",
+          "visual": "Product screen on a stage with three callout pins.",
+          "object_families": ["screen frame", "callout pins", "outcome strip"],
+          "asset_direction": "High-fidelity product demo workbench with blank UI frame and callout safe zones.",
+          "qa": ["pins point to real regions", "workflow before feature list", "no fake app details"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Leave them with the product moment",
+          "support": "A keynote close should feel inevitable, not busy.",
+          "visual": "Centered product silhouette with final action rail.",
+          "object_families": ["product silhouette", "action rail", "soft stage light"],
+          "asset_direction": "Cinematic closing frame, big quiet field, single call-to-action plaque.",
+          "qa": ["final CTA is visible", "motion note is calm", "no new feature introduced"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "swiss-consulting-brief",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "The answer comes first",
+          "support": "A consulting cover states the recommendation before the supporting structure.",
+          "visual": "Precise grid with one blue decision path.",
+          "object_families": ["answer headline", "decision path", "page chrome"],
+          "asset_direction": "Strict Swiss grid, white field, strong title rail, one blue decision line.",
+          "qa": ["headline is a conclusion", "grid is visible but quiet", "no vague topic title"]
+        },
+        {
+          "role": "proof",
+          "archetype": "board-report-grid",
+          "headline": "Every panel earns its place",
+          "support": "Dense executive pages need a grid with titles, states, and decisions.",
+          "visual": "Four-panel board grid with one highlighted risk.",
+          "object_families": ["grid panel", "risk tag", "decision footer"],
+          "asset_direction": "White executive grid, four evidence panels, one blue accent and one risk marker.",
+          "qa": ["panels align to one grid", "each panel has takeaway", "no decorative cards"]
+        },
+        {
+          "role": "system",
+          "archetype": "comparison-before-after",
+          "headline": "Name the bridge between current and target",
+          "support": "Strategy slides must show the mechanism that changes the state.",
+          "visual": "Before/after columns connected by an issue-tree bridge.",
+          "object_families": ["issue tree", "bridge arrow", "option chips"],
+          "asset_direction": "Clean before-after comparison with a structured bridge region.",
+          "qa": ["before and after are balanced", "bridge names mechanism", "labels are concise"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Decision required",
+          "support": "The final page names the call, owner, and next step.",
+          "visual": "Executive decision card with owner/date rail.",
+          "object_families": ["decision card", "owner rail", "next-step checklist"],
+          "asset_direction": "Minimal decision page, large white card, blue rule, clear next-step strip.",
+          "qa": ["decision is explicit", "owner/date visible", "no rhetorical close"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "data-desk-board-review",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "metric-wall",
+          "headline": "The board packet starts with the variance",
+          "support": "Data desk style opens with the decision metric and its movement.",
+          "visual": "Dark KPI strip with one dominant variance marker.",
+          "object_families": ["KPI strip", "variance marker", "decision log"],
+          "asset_direction": "Dark data desk, tabular metric tiles, reserved annotation rail.",
+          "qa": ["one decision metric dominates", "units are visible", "not a dashboard wall"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Explain the move before showing the chart",
+          "support": "A chart page needs a takeaway, source, and driver notes.",
+          "visual": "Line chart card with driver table and threshold marker.",
+          "object_families": ["trend chart", "driver table", "threshold marker"],
+          "asset_direction": "Board-review chart desk with one clear line chart and right-side driver notes.",
+          "qa": ["chart has takeaway", "axis/units readable", "driver table is not cramped"]
+        },
+        {
+          "role": "system",
+          "archetype": "system-loop",
+          "headline": "Metric, driver, action, owner",
+          "support": "The operating system turns reporting into an action loop.",
+          "visual": "Four-stage operating loop around a central metric.",
+          "object_families": ["metric node", "driver chips", "owner tag"],
+          "asset_direction": "Dark loop diagram with central metric tray and four action nodes.",
+          "qa": ["owner is visible", "loop is directional", "action is separated from metric"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Log the decision while it is still fresh",
+          "support": "The close converts the meeting into an accountable next action.",
+          "visual": "Decision log card with three rows.",
+          "object_families": ["decision log", "status chip", "owner badge"],
+          "asset_direction": "Dark closing log, one table card, clear action/owner/date columns.",
+          "qa": ["decision log is readable", "next action exists", "no decorative final slide"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "editorial-research-atlas",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Turn findings into an atlas",
+          "support": "Editorial research needs a strong finding, a human texture, and a map of evidence.",
+          "visual": "Magazine spread with annotated field map.",
+          "object_families": ["chapter label", "pull quote", "field map"],
+          "asset_direction": "Premium editorial spread, large quiet title margin, image crop with annotation room.",
+          "qa": ["finding is explicit", "citations have room", "no stock-photo filler"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Evidence reads like a feature spread",
+          "support": "Proof pages combine source, quote, and implication.",
+          "visual": "Quote card plus small source table and annotated image crop.",
+          "object_families": ["pull quote", "source note", "annotation pin"],
+          "asset_direction": "Editorial evidence page with quote zone, source rail, and image crop safe area.",
+          "qa": ["source is visible", "quote does not replace proof", "body text has magazine measure"]
+        },
+        {
+          "role": "system",
+          "archetype": "timeline",
+          "headline": "Show how the pattern emerged",
+          "support": "Research systems need sequence, not a random list of observations.",
+          "visual": "Horizontal field timeline with three annotated moments.",
+          "object_families": ["timeline bead", "marginal note", "chapter tab"],
+          "asset_direction": "High-end magazine timeline, soft paper field, three evidence moments.",
+          "qa": ["moments are selective", "annotations are legible", "sequence has a point"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "The implication is the memory",
+          "support": "Close with one implication and the evidence trail that supports it.",
+          "visual": "Large quote/rule card with small evidence trail.",
+          "object_families": ["rule card", "evidence trail", "chapter marker"],
+          "asset_direction": "Editorial close, generous margins, one rule card and small citation trail.",
+          "qa": ["one implication only", "evidence trail remains visible", "no academic wall of text"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "calm-clinical-trust",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Trust starts with restraint",
+          "support": "Clinical decks should feel careful, humane, and evidence-aware.",
+          "visual": "Soft protocol card with patient journey line.",
+          "object_families": ["protocol card", "journey line", "safety badge"],
+          "asset_direction": "Calm clinical surface, quiet title field, soft journey object, no hype imagery.",
+          "qa": ["tone is conservative", "claims are not sensational", "contrast remains strong"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Evidence needs a safety rail",
+          "support": "Clinical proof pages pair outcomes with risk and caveat notes.",
+          "visual": "Outcome table plus safety note card.",
+          "object_families": ["outcome table", "safety rail", "source note"],
+          "asset_direction": "Soft medical proof table, muted green accent, visible caveat/safety sidecard.",
+          "qa": ["source/caveat present", "danger/warning is not hidden", "no over-bright palette"]
+        },
+        {
+          "role": "system",
+          "archetype": "system-loop",
+          "headline": "Screen, guide, monitor, escalate",
+          "support": "A care mechanism must show protocol order and handoff points.",
+          "visual": "Four-step care loop with one escalation branch.",
+          "object_families": ["step badge", "escalation branch", "care card"],
+          "asset_direction": "Humane clinical loop with blank care cards and clear escalation marker.",
+          "qa": ["protocol order is obvious", "escalation path visible", "no playful motion"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Move carefully, then measure",
+          "support": "The close defines the safe next step and the success measure.",
+          "visual": "Next-step protocol card with measurement strip.",
+          "object_families": ["next-step card", "measure strip", "trust seal"],
+          "asset_direction": "Calm close with one next-step card and conservative measurement strip.",
+          "qa": ["next step is measurable", "risk is not erased", "tone stays humane"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "premium-minimal-luxury",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Restraint is the signal",
+          "support": "Luxury decks use fewer objects, better spacing, and material proof.",
+          "visual": "Single hero object on a quiet material plane.",
+          "object_families": ["hero object", "thin rule", "caption plate"],
+          "asset_direction": "Sparse premium material surface, one object, wide margins, no gold gradient.",
+          "qa": ["negative space is intentional", "object is inspectable", "no stock luxury cliche"]
+        },
+        {
+          "role": "proof",
+          "archetype": "metric-wall",
+          "headline": "Proof should whisper, not shout",
+          "support": "Use a small number of high-confidence figures with elegant captions.",
+          "visual": "Three sparse metric cards with a material swatch.",
+          "object_families": ["metric card", "material swatch", "caption rule"],
+          "asset_direction": "Premium minimal metric page, cream surface, small gold accent, generous spacing.",
+          "qa": ["3 metrics max", "captions explain value", "gold is an accent only"]
+        },
+        {
+          "role": "system",
+          "archetype": "timeline",
+          "headline": "Craft has a sequence",
+          "support": "Show process as a refined path from raw material to finished value.",
+          "visual": "Three-stage craft path with object detail crops.",
+          "object_families": ["detail crop", "stage plaque", "thin connector"],
+          "asset_direction": "Elegant craft timeline, detail crops, thin rules, no clutter.",
+          "qa": ["stages are selective", "detail crop supports claim", "spacing stays luxurious"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Leave one object in memory",
+          "support": "The close is a quiet decision card, not a fireworks page.",
+          "visual": "Hero object and final caption plaque.",
+          "object_families": ["object stage", "final plaque", "thin divider"],
+          "asset_direction": "Minimal closing scene with one object, final line card, and material shadow.",
+          "qa": ["one visual focus", "CTA/rule is legible", "no new decorative palette"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "paper-learning-workshop",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Learn by moving pieces",
+          "support": "Training decks need progress, examples, mistakes, and a clear learner path.",
+          "visual": "Paper worksheet stage with tabs and practice cards.",
+          "object_families": ["notebook tab", "practice card", "progress chips"],
+          "asset_direction": "Warm paper workshop, blank worksheet cards, title-safe left field.",
+          "qa": ["adult not childish", "path is visible", "stickers do not crowd content"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Examples beat abstractions",
+          "support": "A lesson proof slide should compare wrong, better, and why.",
+          "visual": "Worked-example table with a mistake sticker.",
+          "object_families": ["worked example", "mistake callout", "check card"],
+          "asset_direction": "Worksheet proof page, example table, red mistake note, green correction note.",
+          "qa": ["mistake and fix are both visible", "table text has room", "tone stays friendly"]
+        },
+        {
+          "role": "system",
+          "archetype": "demo-path",
+          "headline": "Watch, try, compare, repeat",
+          "support": "Learning systems need the next learner action on every page.",
+          "visual": "Four-step practice path with checkpoint cards.",
+          "object_families": ["step card", "checkpoint", "practice lane"],
+          "asset_direction": "Warm paper path with four blank checkpoint cards and progress lane.",
+          "qa": ["4 steps max", "next action visible", "no dense paragraph block"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "The recap is a checklist",
+          "support": "Close with what the learner can now do, not a generic thank-you.",
+          "visual": "Checklist card with three completed items.",
+          "object_families": ["checklist", "recap chip", "practice prompt"],
+          "asset_direction": "Friendly recap page with checklist card and small practice prompt.",
+          "qa": ["outcomes are concrete", "checklist is readable", "no motivational fluff only"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "bold-founder-manifesto",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Say the thing they remember",
+          "support": "A manifesto cover needs a sharp enemy and a new belief.",
+          "visual": "Poster crop with one symbolic object.",
+          "object_families": ["poster type", "enemy tag", "symbol crop"],
+          "asset_direction": "High-contrast poster stage, huge type-safe zone, one strong object, no cute icons.",
+          "qa": ["claim is memorable", "contrast is aggressive but readable", "not empty provocation"]
+        },
+        {
+          "role": "proof",
+          "archetype": "metric-wall",
+          "headline": "Interrupt the poster with proof",
+          "support": "Use proof like a hard cut: one fact that earns the belief.",
+          "visual": "Single giant number plus proof caption.",
+          "object_families": ["giant number", "proof stamp", "hard divider"],
+          "asset_direction": "Poster proof page with one giant metric and stamped source rail.",
+          "qa": ["one proof point only", "source/caption exists", "type does not crush labels"]
+        },
+        {
+          "role": "system",
+          "archetype": "comparison-before-after",
+          "headline": "Old belief, new behavior",
+          "support": "Manifesto systems should show the behavior shift, not a process manual.",
+          "visual": "Before/after poster split with a bold bridge word.",
+          "object_families": ["before-after split", "bridge word", "movement chips"],
+          "asset_direction": "High-contrast split poster, old/new zones, strong bridge label.",
+          "qa": ["behavior shift is clear", "bridge is named", "not a generic slogan wall"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Make the ask unavoidable",
+          "support": "The close turns belief into action.",
+          "visual": "Final pledge card with one action button-like strip.",
+          "object_families": ["pledge card", "action strip", "poster stamp"],
+          "asset_direction": "Manifesto close, huge type, one pledge strip, no extra body copy.",
+          "qa": ["ask is explicit", "few words", "proof has appeared before the close"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "product-demo-workbench",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "product-demo-workbench",
+          "headline": "Show the buyer's workbench",
+          "support": "Sales decks start from the workflow the buyer recognizes.",
+          "visual": "Workbench UI area with before-state tasks.",
+          "object_families": ["workflow lane", "UI frame", "pain tag"],
+          "asset_direction": "Clean SaaS workbench with blank product frame and recognizable task lane.",
+          "qa": ["buyer workflow is visible", "product is not fake-detailed", "pain is concrete"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Tie proof to a workflow outcome",
+          "support": "Do not show generic logos; show time saved, errors reduced, or handoff improved.",
+          "visual": "Outcome table plus before/after metric chip.",
+          "object_families": ["outcome table", "before-after chip", "buyer quote"],
+          "asset_direction": "Product proof page with outcome table and single metric callout.",
+          "qa": ["metric ties to workflow", "quote is secondary", "no logo wall as proof"]
+        },
+        {
+          "role": "system",
+          "archetype": "demo-path",
+          "headline": "Click path becomes value path",
+          "support": "A demo path maps action to outcome in 4-5 visible steps.",
+          "visual": "Horizontal click path with callout pins.",
+          "object_families": ["click pin", "workflow node", "outcome strip"],
+          "asset_direction": "SaaS demo path, blank screen cards, five visible action nodes.",
+          "qa": ["every step has outcome", "pins point to actual regions", "path is not overcrowded"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Next step: run the workflow live",
+          "support": "Close with a concrete demo or pilot ask.",
+          "visual": "Pilot checklist and calendar strip.",
+          "object_families": ["pilot checklist", "calendar strip", "CTA card"],
+          "asset_direction": "Clean product close with pilot checklist, date rail, and CTA card.",
+          "qa": ["pilot ask is concrete", "implementation note visible", "no vague sales slogan"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "civic-policy-brief",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "A public decision needs public evidence",
+          "support": "Policy covers should name the community problem and accountable choice.",
+          "visual": "Map tile with program route and evidence markers.",
+          "object_families": ["map tile", "policy lever", "source footer"],
+          "asset_direction": "Institutional policy cover, map-safe visual, clear title rail, visible source/footer room.",
+          "qa": ["community impact is concrete", "map labels have room", "not campaign fluff"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Put the tradeoff on the page",
+          "support": "Policy proof needs beneficiaries, cost, risk, and accountability.",
+          "visual": "Evidence table with stakeholder impact card.",
+          "object_families": ["policy table", "stakeholder card", "source rail"],
+          "asset_direction": "Civic evidence table, stakeholder sidecard, restrained public-sector palette.",
+          "qa": ["tradeoff visible", "source visible", "risk not hidden"]
+        },
+        {
+          "role": "system",
+          "archetype": "system-loop",
+          "headline": "Fund, implement, measure, report",
+          "support": "The system page names the accountability loop.",
+          "visual": "Four-stage policy loop around a public dashboard card.",
+          "object_families": ["policy loop", "accountability card", "stakeholder chips"],
+          "asset_direction": "Civic loop with public dashboard center and four accountable stages.",
+          "qa": ["accountability step exists", "stakeholders are labeled", "loop direction is legible"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Approve the next accountable step",
+          "support": "Close with the decision, reporting cadence, and owner.",
+          "visual": "Approval card with reporting cadence strip.",
+          "object_families": ["approval card", "cadence strip", "owner badge"],
+          "asset_direction": "Policy closing page, approval card, owner/reporting strip, no decorative seal.",
+          "qa": ["decision/owner/cadence visible", "public accountability remains", "no partisan visual trope"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "creative-brand-campaign",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Build the campaign world",
+          "support": "Brand decks should make the world feel real before listing channels.",
+          "visual": "Moodboard stage with one big idea placard.",
+          "object_families": ["moodboard crop", "idea placard", "channel chip"],
+          "asset_direction": "Campaign-world cover, expressive but controlled, big title-safe zone.",
+          "qa": ["strategy is visible", "visual world is coherent", "no random sticker pile"]
+        },
+        {
+          "role": "proof",
+          "archetype": "board-report-grid",
+          "headline": "Territories need criteria",
+          "support": "Creative proof compares audience fit, distinctiveness, and execution risk.",
+          "visual": "Three territory cards plus scoring strip.",
+          "object_families": ["territory card", "score chip", "sample execution"],
+          "asset_direction": "Brand territory grid with three distinct visual territories and scoring rail.",
+          "qa": ["criteria are visible", "territories are distinct", "style does not replace strategy"]
+        },
+        {
+          "role": "system",
+          "archetype": "demo-path",
+          "headline": "Idea to channel to proof",
+          "support": "Campaign systems show how the idea travels across formats.",
+          "visual": "Channel path with sample execution tiles.",
+          "object_families": ["channel card", "copy line", "execution tile"],
+          "asset_direction": "Campaign channel path, blank sample tiles, copy line strips.",
+          "qa": ["channels follow idea", "sample tiles have room", "copy is readable"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Choose the world, then produce it",
+          "support": "The close locks the direction and names the first deliverables.",
+          "visual": "Creative direction card with deliverable strip.",
+          "object_families": ["direction card", "deliverable chips", "moodboard sliver"],
+          "asset_direction": "Campaign close with chosen-world card and first-deliverables strip.",
+          "qa": ["direction is decisive", "deliverables are concrete", "visual tone stays on-brief"]
+        }
+      ]
+    },
+    {
+      "anchor_id": "spatial-experience-showcase",
+      "starters": [
+        {
+          "role": "cover",
+          "archetype": "split-thesis",
+          "headline": "Let the place explain itself",
+          "support": "Spatial decks need atmosphere, path, program, and proof.",
+          "visual": "Full-bleed place frame with a traced visitor route.",
+          "object_families": ["route trace", "program tag", "atmosphere plate"],
+          "asset_direction": "Immersive place image with protected title field and visible route trace.",
+          "qa": ["real place/object is inspectable", "route has room", "not generic atmosphere only"]
+        },
+        {
+          "role": "proof",
+          "archetype": "proof-table-plus-signal",
+          "headline": "Program must meet proof",
+          "support": "Experience proof pairs zones with audience value and operations.",
+          "visual": "Zone proof table plus hero detail crop.",
+          "object_families": ["zone table", "detail crop", "program badge"],
+          "asset_direction": "Spatial proof spread, zone table on quiet surface, detail crop at side.",
+          "qa": ["zones have purpose", "operations proof visible", "floorplan labels are readable"]
+        },
+        {
+          "role": "system",
+          "archetype": "demo-path",
+          "headline": "Arrival, reveal, dwell, return",
+          "support": "A spatial system is a visitor path with emotional beats.",
+          "visual": "Visitor path with four program moments.",
+          "object_families": ["path bead", "program moment", "wayfinding marker"],
+          "asset_direction": "Route-map experience path with four moments and blank labels.",
+          "qa": ["path direction visible", "moments have different roles", "labels do not overcrowd"]
+        },
+        {
+          "role": "closing",
+          "archetype": "quote-evidence",
+          "headline": "Make the next visit imaginable",
+          "support": "Close with the experience promise and the next production step.",
+          "visual": "Route card ending at a lit destination marker.",
+          "object_families": ["destination marker", "experience promise card", "next-step rail"],
+          "asset_direction": "Immersive closing scene, destination marker, quiet promise card.",
+          "qa": ["promise is concrete", "next step visible", "atmosphere supports path"]
+        }
+      ]
+    }
+  ]
+}

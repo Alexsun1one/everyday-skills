@@ -1,0 +1,246 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Editor/IDE domain theme: dark-first, mono identity, tight radii, syntax/diff/log semantic sets.",
+  "$extensions": {
+    "designPractice": {
+      "direction": "editor-ide",
+      "ownedAccent": "#4AE168",
+      "typePersonality": "bespoke grotesk plus mono as identity across labels, tabs, metrics and code",
+      "signatureMove": "dense code chrome with first-class syntax, diff and log semantics"
+    }
+  },
+  "color": {
+    "palette": {
+      "canvas": {
+        "$type": "color",
+        "$value": "#0B0E0C"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#0D1117"
+      },
+      "panel": {
+        "$type": "color",
+        "$value": "#11161C"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "#C9D1C9"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "#6B7268"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.palette.text}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#AAB3AA"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "{color.palette.muted}"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.palette.canvas}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.palette.surface}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "{color.palette.panel}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "#202833"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "#354052"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#4AE168"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "#061008"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "#0F1F14"
+      }
+    },
+    "syntax": {
+      "keyword": {
+        "$type": "color",
+        "$value": "#4AE168"
+      },
+      "function": {
+        "$type": "color",
+        "$value": "#38BDF8"
+      },
+      "string": {
+        "$type": "color",
+        "$value": "#26A69A"
+      },
+      "number": {
+        "$type": "color",
+        "$value": "#B8924F"
+      },
+      "comment": {
+        "$type": "color",
+        "$value": "#6B7268"
+      },
+      "punctuation": {
+        "$type": "color",
+        "$value": "#9BA39A"
+      }
+    },
+    "diff": {
+      "added": {
+        "$type": "color",
+        "$value": "#26A69A"
+      },
+      "addedBg": {
+        "$type": "color",
+        "$value": "#0E2624"
+      },
+      "removed": {
+        "$type": "color",
+        "$value": "#EF5350"
+      },
+      "removedBg": {
+        "$type": "color",
+        "$value": "#2A1113"
+      },
+      "modified": {
+        "$type": "color",
+        "$value": "#F59E0B"
+      },
+      "modifiedBg": {
+        "$type": "color",
+        "$value": "#291E0A"
+      }
+    },
+    "log": {
+      "error": {
+        "$type": "color",
+        "$value": "#EF5350"
+      },
+      "warn": {
+        "$type": "color",
+        "$value": "#F59E0B"
+      },
+      "info": {
+        "$type": "color",
+        "$value": "#38BDF8"
+      },
+      "debug": {
+        "$type": "color",
+        "$value": "#6B7268"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#26A69A"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Geist\", \"Mona Sans\", \"Inter var\", system-ui, sans-serif"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Geist\", \"Mona Sans\", \"Inter var\", system-ui, sans-serif"
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": "\"Berkeley Mono\", \"Geist Mono\", \"JetBrains Mono\", ui-monospace, monospace"
+      }
+    },
+    "body": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.14}"
+      }
+    },
+    "label": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.family.mono}"
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.12}"
+      }
+    }
+  },
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.4}"
+    },
+    "card": {
+      "$type": "dimension",
+      "$value": "{radius.8}"
+    },
+    "panel": {
+      "$type": "dimension",
+      "$value": "{radius.8}"
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{radius.8}"
+    }
+  },
+  "motion": {
+    "ui": {
+      "duration": {
+        "$type": "duration",
+        "$value": "180ms"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.standard}"
+      }
+    },
+    "fast": {
+      "duration": {
+        "$type": "duration",
+        "$value": "120ms"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.standard}"
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+# Codex skill invocation policy — 2026-09-13 舰队套件 R2-skills L3：退出隐式常驻，仍可 $skill 显式调用
+policy:
+  allow_implicit_invocation: false

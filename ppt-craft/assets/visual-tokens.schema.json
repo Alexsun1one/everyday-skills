@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/ppt-craft/visual-tokens.schema.json",
+  "title": "PPT Craft Visual Tokens",
+  "type": "object",
+  "required": ["version", "source_images", "palette", "tonal_bands", "layout_grammar", "qa_rules"],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "deck_id": { "type": "string" },
+    "source_images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "width", "height"],
+        "properties": {
+          "path": { "type": "string" },
+          "width": { "type": "integer" },
+          "height": { "type": "integer" },
+          "aspect_ratio": { "type": "number" },
+          "mean_luminance": { "type": "number" },
+          "edge_density": { "type": "number" }
+        }
+      }
+    },
+    "palette": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["hex", "share"],
+        "properties": {
+          "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "share": { "type": "number" },
+          "role_guess": { "type": "string" }
+        }
+      }
+    },
+    "tonal_bands": {
+      "type": "object",
+      "properties": {
+        "dark": { "type": "array", "items": { "type": "string" } },
+        "mid": { "type": "array", "items": { "type": "string" } },
+        "light": { "type": "array", "items": { "type": "string" } },
+        "accent": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "type_system": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "caption": { "type": "string" },
+        "numeric": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "layout_grammar": {
+      "type": "object",
+      "required": ["stage", "regions", "rhythm"],
+      "properties": {
+        "stage": { "type": "string" },
+        "regions": { "type": "array", "items": { "type": "string" } },
+        "rhythm": { "type": "string" },
+        "negative_space": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "text_backplates": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "object_grammar": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "image_policy": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "qa_rules": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "forbidden_drift": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": true
+}

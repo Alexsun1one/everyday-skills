@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PPT Craft Deck</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b0d10;
+      color: #f7f4ed;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button {
+      font: inherit;
+      color: inherit;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      min-width: 44px;
+      min-height: 44px;
+      cursor: pointer;
+    }
+    button:focus-visible { outline: 3px solid #78a6ff; outline-offset: 3px; }
+    .viewer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: #0b0d10;
+    }
+    .frame-wrap {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: 0 0;
+      background: #fff;
+      box-shadow: 0 24px 90px rgba(0,0,0,.42);
+    }
+    iframe {
+      width: 1920px;
+      height: 1080px;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 20;
+      padding: 8px;
+      border-radius: 999px;
+      background: rgba(8,10,14,.72);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(16px);
+    }
+    .count {
+      min-width: 92px;
+      text-align: center;
+      color: rgba(247,244,237,.82);
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+    .overview {
+      position: fixed;
+      inset: 0;
+      overflow: auto;
+      padding: 7vh 5vw 12vh;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(120,166,255,.18), transparent 32%),
+        radial-gradient(circle at 82% 16%, rgba(255,197,115,.14), transparent 30%),
+        #0b0d10;
+      z-index: 10;
+    }
+    .overview.hidden { display: none; }
+    .overview h1 {
+      margin: 0 0 26px;
+      font-size: clamp(28px, 4vw, 58px);
+      line-height: 1.02;
+      max-width: 880px;
+      letter-spacing: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    .thumb {
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .thumb:hover,
+    .thumb:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(255,255,255,.34);
+      background: rgba(255,255,255,.1);
+      outline: none;
+    }
+    .thumb iframe {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      pointer-events: none;
+      transform: none;
+      background: #fff;
+    }
+    .thumb-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px 12px;
+      font-size: 13px;
+      color: rgba(247,244,237,.74);
+      font-variant-numeric: tabular-nums;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    window.DECK_TITLE = "PPT Craft Deck";
+    window.DECK_MANIFEST = [
+      { file: "slides/01-cover.html", label: "01 Cover" }
+    ];
+  </script>
+
+  <main class="viewer" aria-label="Slide viewer">
+    <div class="frame-wrap" id="frameWrap">
+      <iframe id="slideFrame" title="Current slide"></iframe>
+    </div>
+  </main>
+
+  <section class="overview" id="overview" aria-label="Slide overview">
+    <h1 id="overviewTitle">PPT Craft Deck</h1>
+    <div class="grid" id="thumbGrid"></div>
+  </section>
+
+  <nav class="controls" aria-label="Presentation controls">
+    <button type="button" id="prevBtn" title="Previous slide">‹</button>
+    <button type="button" id="overviewBtn" title="Overview">▦</button>
+    <div class="count" id="count">1 / 1</div>
+    <button type="button" id="nextBtn" title="Next slide">›</button>
+  </nav>
+
+  <script>
+    const manifest = window.DECK_MANIFEST || [];
+    const frameWrap = document.getElementById("frameWrap");
+    const slideFrame = document.getElementById("slideFrame");
+    const overview = document.getElementById("overview");
+    const thumbGrid = document.getElementById("thumbGrid");
+    const count = document.getElementById("count");
+    let index = Math.max(0, Math.min(manifest.length - 1, Number(location.hash.slice(1)) - 1 || 0));
+
+    document.getElementById("overviewTitle").textContent = window.DECK_TITLE || document.title;
+
+    function fit() {
+      const scale = Math.min(innerWidth / 1920, innerHeight / 1080);
+      const x = (innerWidth - 1920 * scale) / 2;
+      const y = (innerHeight - 1080 * scale) / 2;
+      frameWrap.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+    }
+
+    function show(nextIndex, closeOverview = true) {
+      if (!manifest.length) return;
+      index = Math.max(0, Math.min(manifest.length - 1, nextIndex));
+      slideFrame.src = manifest[index].file;
+      count.textContent = `${index + 1} / ${manifest.length}`;
+      history.replaceState(null, "", `#${index + 1}`);
+      if (closeOverview) overview.classList.add("hidden");
+    }
+
+    function buildOverview() {
+      thumbGrid.innerHTML = "";
+      manifest.forEach((item, i) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "thumb";
+        card.innerHTML = `<iframe title="${item.label || `Slide ${i + 1}`}" src="${item.file}"></iframe><div class="thumb-label"><span>${item.label || `Slide ${i + 1}`}</span><span>${String(i + 1).padStart(2, "0")}</span></div>`;
+        card.addEventListener("click", () => show(i, true));
+        thumbGrid.appendChild(card);
+      });
+    }
+
+    addEventListener("resize", fit);
+    addEventListener("keydown", event => {
+      if (event.key === "ArrowRight" || event.key === " " || event.key === "PageDown") show(index + 1);
+      if (event.key === "ArrowLeft" || event.key === "PageUp") show(index - 1);
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(manifest.length - 1);
+      if (event.key === "Escape" || event.key.toLowerCase() === "o") overview.classList.toggle("hidden");
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => show(index - 1));
+    document.getElementById("nextBtn").addEventListener("click", () => show(index + 1));
+    document.getElementById("overviewBtn").addEventListener("click", () => overview.classList.toggle("hidden"));
+
+    fit();
+    buildOverview();
+    show(index, false);
+  </script>
+</body>
+</html>

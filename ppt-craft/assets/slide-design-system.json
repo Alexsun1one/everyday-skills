@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "name": "ppt-craft-slide-design-system",
+  "stage": {
+    "width": 1280,
+    "height": 720,
+    "safe": { "x": 64, "y": 56, "w": 1152, "h": 608 }
+  },
+  "font_stack": {
+    "zh_display": "\"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Aptos Display\", Arial, sans-serif",
+    "zh_body": "\"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Aptos\", Arial, sans-serif",
+    "mono": "\"JetBrains Mono\", \"SFMono-Regular\", Consolas, monospace"
+  },
+  "type_scale": {
+    "kicker": { "size": 18, "line_height": 1.15, "weight": 800, "max_lines": 1 },
+    "hero_line": { "size": 48, "line_height": 1.08, "weight": 850, "max_lines": 1 },
+    "title_line": { "size": 40, "line_height": 1.12, "weight": 850, "max_lines": 1 },
+    "subtitle": { "size": 24, "line_height": 1.35, "weight": 650, "max_lines": 2 },
+    "body": { "size": 21, "line_height": 1.45, "weight": 540, "max_lines": 3 },
+    "caption": { "size": 17, "line_height": 1.35, "weight": 700, "max_lines": 2 },
+    "label": { "size": 15, "line_height": 1.2, "weight": 800, "max_lines": 2 },
+    "table": { "size": 15, "line_height": 1.24, "weight": 500, "max_lines": 2 },
+    "micro": { "size": 12, "line_height": 1.2, "weight": 700, "max_lines": 1 }
+  },
+  "color_tokens": {
+    "paper": "#F7F1E7",
+    "paper_strong": "#FFFCF6",
+    "ink": "#17212B",
+    "muted": "#4B5863",
+    "line": "#D6C8B5",
+    "blue": "#287AA8",
+    "blue_soft": "#DBEEFA",
+    "amber": "#C88729",
+    "amber_soft": "#F5D78D",
+    "mint": "#63A77D",
+    "mint_soft": "#DCEEE1",
+    "risk": "#C65B4A",
+    "dark_plate": "#17212B"
+  },
+  "foreground_object_kit": {
+    "text_backplates": [
+      "paper-card",
+      "dark-strip",
+      "caption-band",
+      "ticket-label",
+      "sticky-note",
+      "receipt",
+      "floating-plaque"
+    ],
+    "structure": [
+      "number-badge",
+      "route-chip",
+      "callout-ticket",
+      "evidence-drawer",
+      "magnifier-window",
+      "stamp",
+      "tab",
+      "divider-rail"
+    ],
+    "lines": [
+      "single-arrow",
+      "dashed-handoff",
+      "loop-connector",
+      "bracket",
+      "leader-line"
+    ],
+    "icons": [
+      "check",
+      "dot",
+      "flag",
+      "lens",
+      "drawer",
+      "receipt",
+      "ladder",
+      "stamp"
+    ]
+  },
+  "composition_rules": {
+    "text_on_image": "No important text may sit directly on textured imagery. Use a backplate, strip, plaque, or move the text into a quiet field.",
+    "image_generation": "Generated images must reserve text-safe zones from the layout blueprint before objects are placed.",
+    "density": "Every slide should use one dominant idea plus 2-4 supporting foreground object families.",
+    "rhythm": "Do not use the same left-right split on more than two consecutive slides.",
+    "contrast": "Normal foreground text must sit on a high-contrast plate. Large titles require either a quiet field or a solid/semi-solid backplate.",
+    "editable_route": "All titles, labels, tables, charts, connectors, badges, and callouts stay as editable foreground objects unless the user chooses raster."
+  },
+  "image_prompt_contract": {
+    "camera": "16:9 high-angle tactile paper-stage or style-specific scene",
+    "no_text_policy": "If the route is editable-pptx or hybrid, generated images should contain no necessary text; use blank plaques only when they help foreground overlay.",
+    "reserved_zone_language": "Keep these zones visually quiet, low-detail, and high-contrast enough for later editable type/plates.",
+    "subject_language": "Place primary subject inside the visual region and keep it away from title/support/evidence/loop zones.",
+    "negative_prompt": "no fake text, no tiny labels, no logo, no busy texture inside reserved text zones, no central subject under title, no stock PPT infographic"
+  },
+  "skeleton_acceptance": [
+    "Every claim/support/evidence/loop box declares a type role.",
+    "Every image prompt lists reserved text-safe zones and no-go zones.",
+    "Every slide chooses at least two foreground object families unless deliberately minimal.",
+    "Contact sheet must not read as repeated left/right or top/bottom layouts only.",
+    "Skeleton already shows text backplates or quiet fields before final imagery."
+  ]
+}

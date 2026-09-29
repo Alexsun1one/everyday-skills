@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 960pt;
+      height: 540pt;
+      overflow: hidden;
+      background: #050b12;
+      color: #f8fbff;
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      position: relative;
+    }
+    .slide {
+      position: relative;
+      width: 960pt;
+      height: 540pt;
+      overflow: hidden;
+      background: #050b12;
+    }
+    .claim {
+      position: absolute;
+      left: 42pt;
+      top: 42pt;
+      width: 282pt;
+      height: 166pt;
+      padding: 21pt 23pt;
+      border: 1pt solid rgba(120, 194, 255, 0.28);
+      border-radius: 8pt;
+      background: rgba(8, 20, 34, 0.94);
+    }
+    h1 { font-size: 31pt; line-height: 1.04; font-weight: 760; color: #ffffff; }
+    p { margin-top: 11pt; font-size: 13pt; line-height: 1.36; color: #d9e8f7; }
+    .graph {
+      position: absolute;
+      left: 360pt;
+      top: 48pt;
+      width: 548pt;
+      height: 390pt;
+    }
+    .lane {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-left: 1pt solid rgba(120, 194, 255, 0.1);
+    }
+    .lane.input { left: 0; }
+    .lane.reasoning { left: 172pt; }
+    .lane.evidence { left: 330pt; }
+    .lane.decision { left: 454pt; }
+    .lane-label {
+      position: absolute;
+      top: 0;
+      font-size: 7.5pt;
+      line-height: 1;
+      color: #6e91a8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .lane-label.input { left: 0; }
+    .lane-label.reasoning { left: 172pt; }
+    .lane-label.evidence { left: 330pt; }
+    .lane-label.decision { left: 454pt; }
+    .node {
+      position: absolute;
+      width: 104pt;
+      height: 56pt;
+      padding: 10pt 11pt;
+      border: 1pt solid rgba(120, 194, 255, 0.44);
+      border-radius: 7pt;
+      background: rgba(9, 25, 42, 0.96);
+    }
+    .node strong { display: block; font-size: 12.5pt; line-height: 1.1; color: #ffffff; }
+    .node span { display: block; margin-top: 4pt; font-size: 7.7pt; line-height: 1.2; color: #8fb6cf; }
+    .node.source { left: 0; top: 62pt; }
+    .node.behavior { left: 0; top: 204pt; }
+    .node.model { left: 172pt; top: 32pt; border-color: rgba(237, 187, 102, 0.62); }
+    .node.rules { left: 172pt; top: 166pt; border-color: rgba(237, 187, 102, 0.62); }
+    .node.evidence { left: 320pt; top: 280pt; border-color: rgba(120, 194, 255, 0.62); }
+    .node.risk { left: 444pt; top: 102pt; border-color: rgba(244, 150, 111, 0.68); }
+    .node.action { left: 444pt; top: 230pt; border-color: rgba(120, 194, 255, 0.7); }
+    .edge {
+      position: absolute;
+      height: 0;
+      border-top: 2pt solid #63caff;
+      transform-origin: left center;
+    }
+    .edge.source-model { left: 104pt; top: 82pt; width: 76pt; transform: rotate(-20deg); }
+    .edge.behavior-model { left: 104pt; top: 222pt; width: 94pt; transform: rotate(-49deg); }
+    .edge.model-rules { left: 224pt; top: 88pt; width: 86pt; transform: rotate(88deg); border-top-color: #edbb66; }
+    .edge.rules-evidence { left: 276pt; top: 202pt; width: 92pt; transform: rotate(45deg); border-top-color: #edbb66; }
+    .edge.evidence-action { left: 416pt; top: 306pt; width: 66pt; transform: rotate(-47deg); border-top-width: 3pt; }
+    .edge.model-risk { left: 276pt; top: 60pt; width: 184pt; transform: rotate(18deg); border-top-color: #f4966f; }
+    .edge.rules-risk { left: 276pt; top: 182pt; width: 178pt; transform: rotate(-16deg); border-top-color: #f4966f; border-top-style: dashed; }
+    .edge.risk-action { left: 496pt; top: 158pt; width: 90pt; transform: rotate(89deg); border-top-color: #f4966f; }
+    .edge.action-feedback { left: 24pt; top: 335pt; width: 452pt; transform: rotate(-10deg); border-top-color: #63caff; border-top-style: dashed; }
+    .caption {
+      position: absolute;
+      left: 42pt;
+      top: 416pt;
+      width: 278pt;
+      min-height: 62pt;
+      padding: 14pt 16pt;
+      border: 1pt solid rgba(237, 187, 102, 0.36);
+      border-radius: 7pt;
+      background: rgba(18, 27, 38, 0.94);
+    }
+    .caption strong { display: block; font-size: 12pt; color: #edbb66; }
+    .caption span { display: block; margin-top: 7pt; color: #d9e8f7; font-size: 10pt; line-height: 1.35; }
+    .loop {
+      position: absolute;
+      left: 360pt;
+      top: 456pt;
+      width: 548pt;
+      height: 42pt;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9pt;
+    }
+    .chip {
+      display: grid;
+      place-items: center;
+      border-radius: 999pt;
+      border: 1pt solid rgba(120, 194, 255, 0.36);
+      background: rgba(8, 20, 34, 0.94);
+      color: #ffffff;
+      font-size: 11.5pt;
+      font-weight: 700;
+    }
+    .chip.active {
+      color: #edbb66;
+      border-color: rgba(237, 187, 102, 0.64);
+    }
+  </style>
+</head>
+<body>
+  <main class="slide">
+    <section class="claim">
+      <h1>多层关系图也要可编辑</h1>
+      <p>复杂关系可以存在，但每条线必须说明它表达什么，并保留为 PPT 原生连接线。</p>
+    </section>
+    <section class="graph" data-graph="multi-layer-decision-system">
+      <div class="lane input"></div><div class="lane reasoning"></div><div class="lane evidence"></div><div class="lane decision"></div>
+      <div class="lane-label input" data-pptx-text="true" data-graph-label="input-layer" data-visual-qa-zone="graph">INPUT</div><div class="lane-label reasoning" data-pptx-text="true" data-graph-label="reasoning-layer" data-visual-qa-zone="graph">REASONING</div><div class="lane-label evidence" data-pptx-text="true" data-graph-label="evidence-layer" data-visual-qa-zone="graph">EVIDENCE</div><div class="lane-label decision" data-pptx-text="true" data-graph-label="decision-layer" data-visual-qa-zone="graph">DECISION</div>
+      <div class="node source" data-graph-node="source" data-graph-layer="input" data-graph-role="input" data-graph-priority="4" data-graph-active="true">
+        <strong>外部信号</strong><span>市场 / 用户 / 风险</span>
+      </div>
+      <div class="node behavior" data-graph-node="behavior" data-graph-layer="input" data-graph-role="input" data-graph-priority="3">
+        <strong>行为证据</strong><span>日志 / 访谈 / 数据</span>
+      </div>
+      <div class="node model" data-graph-node="model" data-graph-layer="reasoning" data-graph-role="operation" data-graph-priority="5" data-graph-active="true">
+        <strong>判断模型</strong><span>归因与假设</span>
+      </div>
+      <div class="node rules" data-graph-node="rules" data-graph-layer="reasoning" data-graph-role="operation" data-graph-priority="4" data-graph-active="true">
+        <strong>约束规则</strong><span>边界 / 反例</span>
+      </div>
+      <div class="node evidence" data-graph-node="evidence" data-graph-layer="evidence" data-graph-role="evidence" data-graph-priority="5" data-graph-active="true">
+        <strong>证据包</strong><span>可复用证明</span>
+      </div>
+      <div class="node risk" data-graph-node="risk" data-graph-layer="risk" data-graph-role="risk" data-graph-priority="3">
+        <strong>风险阈值</strong><span>何时不做</span>
+      </div>
+      <div class="node action" data-graph-node="action" data-graph-layer="decision" data-graph-role="output" data-graph-priority="5" data-graph-active="true">
+        <strong>行动决策</strong><span>下一步 / 取舍</span>
+      </div>
+      <div class="edge source-model" data-graph-edge="source-model" data-graph-from="source" data-graph-to="model" data-graph-layer="input" data-graph-relation="feeds" data-graph-strength="critical" data-graph-active="true" data-pptx-connector data-pptx-from="0,100%" data-pptx-to="100%,0" data-pptx-arrow="end" data-pptx-color="#63CAFF" data-pptx-width="2"></div>
+      <div class="edge behavior-model" data-graph-edge="behavior-model" data-graph-from="behavior" data-graph-to="model" data-graph-layer="input" data-graph-relation="feeds" data-graph-strength="normal" data-pptx-connector data-pptx-from="0,100%" data-pptx-to="100%,0" data-pptx-arrow="end" data-pptx-color="#63CAFF" data-pptx-width="2"></div>
+      <div class="edge model-rules" data-graph-edge="model-rules" data-graph-from="model" data-graph-to="rules" data-graph-layer="reasoning" data-graph-relation="transforms" data-graph-strength="strong" data-graph-active="true" data-pptx-connector data-pptx-from="0,0" data-pptx-to="100%,100%" data-pptx-arrow="end" data-pptx-color="#EDBB66" data-pptx-width="2"></div>
+      <div class="edge rules-evidence" data-graph-edge="rules-evidence" data-graph-from="rules" data-graph-to="evidence" data-graph-layer="evidence" data-graph-relation="proves" data-graph-strength="strong" data-graph-active="true" data-pptx-connector data-pptx-from="0,0" data-pptx-to="100%,100%" data-pptx-arrow="end" data-pptx-color="#EDBB66" data-pptx-width="2"></div>
+      <div class="edge evidence-action" data-graph-edge="evidence-action" data-graph-from="evidence" data-graph-to="action" data-graph-layer="decision" data-graph-relation="triggers" data-graph-strength="critical" data-graph-active="true" data-pptx-connector data-pptx-from="0,100%" data-pptx-to="100%,0" data-pptx-arrow="end" data-pptx-color="#63CAFF" data-pptx-width="3"></div>
+      <div class="edge model-risk" data-graph-edge="model-risk" data-graph-from="model" data-graph-to="risk" data-graph-layer="risk" data-graph-relation="filters" data-graph-strength="normal" data-pptx-connector data-pptx-from="0,0" data-pptx-to="100%,100%" data-pptx-arrow="end" data-pptx-color="#F4966F" data-pptx-width="2"></div>
+      <div class="edge rules-risk" data-graph-edge="rules-risk" data-graph-from="rules" data-graph-to="risk" data-graph-layer="risk" data-graph-relation="blocks" data-graph-strength="normal" data-pptx-connector data-pptx-from="0,100%" data-pptx-to="100%,0" data-pptx-arrow="end" data-pptx-color="#F4966F" data-pptx-width="2" data-pptx-dash="dash"></div>
+      <div class="edge risk-action" data-graph-edge="risk-action" data-graph-from="risk" data-graph-to="action" data-graph-layer="decision" data-graph-relation="filters" data-graph-strength="normal" data-pptx-connector data-pptx-from="0,0" data-pptx-to="100%,100%" data-pptx-arrow="end" data-pptx-color="#F4966F" data-pptx-width="2"></div>
+      <div class="edge action-feedback" data-graph-edge="action-feedback" data-graph-from="action" data-graph-to="behavior" data-graph-layer="feedback" data-graph-relation="loops" data-graph-strength="weak" data-pptx-connector data-pptx-from="100%,50%" data-pptx-to="0,50%" data-pptx-arrow="end" data-pptx-color="#63CAFF" data-pptx-width="2" data-pptx-dash="dash"></div>
+    </section>
+    <section class="caption">
+      <strong>读图顺序</strong>
+      <span>信号进入模型，模型受规则约束，证据触发行动；风险线不是装饰，而是告诉观众什么情况下不该行动。</span>
+    </section>
+    <section class="loop">
+      <span class="chip active" data-graph-label="input">输入</span>
+      <span class="chip active" data-graph-label="reasoning">推理</span>
+      <span class="chip active" data-graph-label="evidence">证据</span>
+      <span class="chip active" data-graph-label="decision">行动</span>
+    </section>
+  </main>
+</body>
+</html>

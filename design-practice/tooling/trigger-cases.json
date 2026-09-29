@@ -1,0 +1,83 @@
+{
+  "_comment": "Trigger test cases for design-practice. should_trigger = real product-UI requests. should_not_trigger = clearly neighbor-skill territory. near_neighbor = the hardest boundary cases (Linear-styled X, dashboard-shaped requests that might be single images).",
+
+  "recommended_threshold": 0.48,
+
+  "should_trigger": [
+    { "family": "saas_core", "text": "用 design-practice 给我一个任务管理页" },
+    { "family": "saas_core", "text": "做一个 Linear 风格的 dashboard" },
+    { "family": "saas_core", "text": "帮我做个 CRM 后台,客户列表 + 详情 + 权限" },
+    { "family": "saas_core", "text": "做个 SaaS 管理台,要有 loading / empty / error 状态" },
+    { "family": "saas_core", "text": "做一个项目管理工具的看板界面" },
+
+    { "family": "form_flow", "text": "做一个登录页,要有错误、loading、disabled、2FA、空校验状态" },
+    { "family": "form_flow", "text": "帮我设计一个多步表单,onboarding 流程,带分支和草稿保存" },
+    { "family": "form_flow", "text": "做个设置页,左侧导航 + 右侧分组表单" },
+
+    { "family": "list_detail", "text": "做一个 list-detail 的订单管理页" },
+    { "family": "list_detail", "text": "做个 email inbox 界面,左列表右详情,带搜索和过滤" },
+    { "family": "list_detail", "text": "做一个评论管理后台" },
+
+    { "family": "editor", "text": "做一个 Notion 风格的文档编辑器" },
+    { "family": "editor", "text": "做个代码编辑器 IDE 界面" },
+
+    { "family": "anti_plastic_explicit", "text": "AI 生成的界面太塑料了,骨架不全,怎么破" },
+    { "family": "anti_plastic_explicit", "text": "我要一个有骨架的产品 UI,不是一张漂亮截图" },
+    { "family": "anti_plastic_explicit", "text": "做一个反 AI 味的 dashboard,不要 indigo 渐变" },
+    { "family": "anti_plastic_explicit", "text": "这个 UI 状态没补齐,按钮只有 default 没有 hover / focus / loading" },
+
+    { "family": "workflow_explicit", "text": "用设计的实践方法做一个产品页" },
+    { "family": "workflow_explicit", "text": "先出骨架图再 1:1 还原一个 SaaS 后台" },
+    { "family": "workflow_explicit", "text": "做一个网页,先线稿再高保真,跑 render 验收循环" },
+
+    { "family": "chinese_saas", "text": "做一个中文 SaaS 后台,飞书风格" },
+    { "family": "chinese_saas", "text": "做一个企业微信风格的工作台" },
+
+    { "family": "real_app_clone", "text": "做一个 Stripe 风格的支付设置页" },
+    { "family": "real_app_clone", "text": "做一个 Vercel 风格的 bento 部署面板" }
+  ],
+
+  "should_not_trigger": [
+    { "family": "cover_image", "text": "给我做一个小红书封面图" },
+    { "family": "cover_image", "text": "做一张公众号封面" },
+    { "family": "cover_image", "text": "做一个视频封面,要 thumb-stopping" },
+    { "family": "cover_image", "text": "做一张首图,吸引点击" },
+
+    { "family": "sticker", "text": "做一套表情包套图" },
+    { "family": "sticker", "text": "给我做个微信表情" },
+    { "family": "sticker", "text": "把我家猫做成表情包" },
+    { "family": "sticker", "text": "做一个 IP 形象的聊天表情" },
+
+    { "family": "quote_card", "text": "做一张金句卡" },
+    { "family": "quote_card", "text": "做一张知识卡,读书笔记" },
+    { "family": "quote_card", "text": "做一张语录卡,水墨风" },
+
+    { "family": "illustration", "text": "给我画一张插画" },
+    { "family": "illustration", "text": "画一张纸片人配图" },
+    { "family": "illustration", "text": "做一张文章配图,大师风格" },
+
+    { "family": "system_diagram", "text": "画一个乐高小镇,把团队分工画出来" },
+    { "family": "system_diagram", "text": "画一个忙碌小镇,把流程画出来" },
+    { "family": "system_diagram", "text": "画一个系统架构图" }
+  ],
+
+  "near_neighbor": [
+    { "family": "ambiguous_linear", "text": "做一个 Linear 风格的页面" },
+    { "family": "ambiguous_linear", "text": "给我一个 Linear 风格的截图" },
+    { "family": "ambiguous_linear", "text": "做个 Linear 风的 hero" },
+
+    { "family": "ambiguous_dashboard", "text": "给我一个 dashboard 截图" },
+    { "family": "ambiguous_dashboard", "text": "画一个 dashboard 看看效果" },
+    { "family": "ambiguous_dashboard", "text": "做一个漂亮的管理界面图" },
+
+    { "family": "ambiguous_webpage", "text": "做一个网页" },
+    { "family": "ambiguous_webpage", "text": "做一个页面" },
+    { "family": "ambiguous_webpage", "text": "给我一个 landing 页" },
+
+    { "family": "pretty_only", "text": "做一个漂亮的后台 UI,不用真功能" },
+    { "family": "pretty_only", "text": "给我一张产品截图" },
+    { "family": "pretty_only", "text": "做个 hero shot,产品演示用" }
+  ],
+
+  "_near_neighbor_design_note": "These cases are intentionally ambiguous — the trigger router CANNOT tell from one line whether the user wants a usable product UI (→ design-practice) or a pretty screenshot (→ master-styles). The correct behavior is NOT to silently route either way; design-practice's Intent Brief gate exists exactly to disambiguate. So we accept that near_neighbor cases may fire the trigger — the Intent Brief is the real filter, not the trigger router."
+}

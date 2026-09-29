@@ -1,0 +1,134 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Editorial Fintech theme: Stripe/Mercury caliber, warm white field, trust through numbers and restraint.",
+  "$extensions": {
+    "designPractice": {
+      "direction": "editorial-fintech",
+      "ownedAccent": "#2F5FE0",
+      "typePersonality": "clean grotesk with one serif-italic editorial accent",
+      "signatureMove": "asymmetric hero, real stat blocks, comparison table"
+    }
+  },
+  "color": {
+    "palette": {
+      "canvas": {
+        "$type": "color",
+        "$value": "#FAFAF8"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#FFFFFF"
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "#0A0A0A"
+      },
+      "card": {
+        "$type": "color",
+        "$value": "#F4F6FA"
+      },
+      "accentAlt": {
+        "$type": "color",
+        "$value": "#1D4ED8"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.palette.ink}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#3B3B3B"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "#70757D"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.palette.canvas}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.palette.surface}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "{color.palette.card}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "#E3E7EF"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "#B8C0D0"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#2F5FE0"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "#FFFFFF"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "#EAF0FF"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Sohne\", \"Geist\", \"Inter var\", system-ui, sans-serif"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Sohne\", \"Geist\", \"Inter var\", system-ui, sans-serif"
+      },
+      "accent": {
+        "$type": "fontFamily",
+        "$value": "\"Lyon Text\", \"Domaine\", Georgia, serif"
+      }
+    },
+    "display": {
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.light}"
+      }
+    }
+  },
+  "motion": {
+    "reveal": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.hero}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.outExpo}"
+      }
+    }
+  }
+}

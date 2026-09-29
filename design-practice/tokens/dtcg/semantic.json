@@ -1,0 +1,252 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Semantic layer consumed by components and generated pages. Defaults reference base primitives; direction themes override these semantic values rather than forcing components to know a palette.",
+  "color": {
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.neutral.950}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "{color.neutral.700}"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "{color.neutral.500}"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{color.neutral.0}"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.neutral.50}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.neutral.0}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "{color.neutral.100}"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{color.neutral.950}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "{color.neutral.200}"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "{color.neutral.700}"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "accent": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "{color.neutral.0}"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "{color.neutral.100}"
+      }
+    },
+    "status": {
+      "success": {
+        "$type": "color",
+        "$value": "{color.accent.dataPositive}"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "{color.accent.dataNegative}"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#F59E0B"
+      },
+      "info": {
+        "$type": "color",
+        "$value": "{color.accent.fintech}"
+      }
+    }
+  },
+  "font": {
+    "body": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.family.sans}"
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.15}"
+      },
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.body}"
+      },
+      "lineHeight": {
+        "$type": "number",
+        "$value": "{font.lineHeight.body}"
+      }
+    },
+    "label": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.family.mono}"
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.12}"
+      },
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.medium}"
+      },
+      "lineHeight": {
+        "$type": "number",
+        "$value": "{font.lineHeight.ui}"
+      },
+      "letterSpacing": {
+        "$type": "number",
+        "$value": "{font.letterSpacing.none}"
+      }
+    },
+    "display": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.family.display}"
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.64}"
+      },
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.linearMedium}"
+      },
+      "lineHeight": {
+        "$type": "number",
+        "$value": "{font.lineHeight.display}"
+      }
+    },
+    "mono": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.family.mono}"
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.13}"
+      },
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.medium}"
+      },
+      "lineHeight": {
+        "$type": "number",
+        "$value": "{font.lineHeight.ui}"
+      }
+    }
+  },
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.6}"
+    },
+    "card": {
+      "$type": "dimension",
+      "$value": "{radius.12}"
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{radius.16}"
+    },
+    "panel": {
+      "$type": "dimension",
+      "$value": "{radius.12}"
+    },
+    "pill": {
+      "$type": "dimension",
+      "$value": "9999px"
+    }
+  },
+  "motion": {
+    "ui": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.base}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.standard}"
+      }
+    },
+    "fast": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.fast}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.standard}"
+      }
+    },
+    "reveal": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.slow}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.outExpo}"
+      }
+    },
+    "drawer": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.slow}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.drawer}"
+      }
+    }
+  },
+  "layout": {
+    "gutter": {
+      "$type": "dimension",
+      "$value": "{space.6}"
+    },
+    "section": {
+      "$type": "dimension",
+      "$value": "{space.16}"
+    },
+    "controlHeight": {
+      "$type": "dimension",
+      "$value": "{space.10}"
+    },
+    "hairline": {
+      "$type": "dimension",
+      "$value": "{border.hairline}"
+    }
+  }
+}

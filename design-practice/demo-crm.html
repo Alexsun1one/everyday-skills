@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>客户管理 · Pipeline CRM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;590;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== Linear 风 DNA 完整冻结(套 style-linear.md)========== */
+:root {
+  /* canvas + surface ladder(luminance stacking)*/
+  --canvas: #08090A;
+  --surface-1: #0F1011;
+  --surface-2: #141516;
+  --surface-3: #18191A;
+  --surface-raised: #1F2023;
+
+  /* text */
+  --text-primary: #F7F8F8;
+  --text-secondary: #D0D6E0;
+  --text-tertiary: #8A8F98;
+  --text-disabled: #62666D;
+
+  /* 单 accent 制 — Linear violet */
+  --brand: #5E6AD2;
+  --brand-hover: #828FFF;
+  --brand-pressed: #4B57C8;
+
+  /* 语义色 */
+  --danger: #EB5757;
+  --warning: #F2C94C;
+  --success: #4CB782;
+
+  /* border */
+  --border-default: rgba(255,255,255,0.05);
+  --border-strong: rgba(255,255,255,0.08);
+  --border-hairline: #2A2E33;
+
+  /* focus ring — 双层 box-shadow */
+  --shadow-focus: 0 0 0 2px rgba(94,106,210,0.4), 0 0 0 4px rgba(94,106,210,0.2);
+
+  /* luminance stacking 阴影 */
+  --shadow-popover: rgba(0,0,0,0.15) 0px 4px 12px, rgba(0,0,0,0.2) 0px 8px 24px, inset 0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-drawer: rgba(0,0,0,0.2) 0px 0px 0px 100vmax, rgba(0,0,0,0.3) 0px 16px 48px;
+
+  /* 动效 token */
+  --ease-default: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-enter: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--canvas);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  /* ★ 关键 1:weight 510(Linear 签名)— 静态 Inter 退化到 500,效果接近 */
+  font-weight: 500;
+  /* ★ 关键 2:OpenType cv01 + ss03 几何变体 */
+  font-feature-settings: "cv01", "ss03", "tnum";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* progressive tracking — 大字紧 */
+.t-hero { font-size: 28px; font-weight: 590; letter-spacing: -0.5px; line-height: 1.15; }
+.t-h1 { font-size: 22px; font-weight: 590; letter-spacing: -0.22px; line-height: 1.2; }
+.t-h2 { font-size: 16px; font-weight: 590; letter-spacing: -0.1px; line-height: 1.3; }
+.t-body { font-size: 14px; font-weight: 400; line-height: 1.5; }
+.t-meta { font-size: 13px; font-weight: 400; color: var(--text-tertiary); }
+.t-micro { font-size: 12px; font-weight: 400; color: var(--text-tertiary); }
+
+/* ========== App 骨架 ========== */
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+}
+
+/* ========== 顶栏 — backdrop blur ========== */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex; align-items: center;
+  padding: 0 20px;
+  background: rgba(8,9,10,0.85);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid var(--border-default);
+  position: relative; z-index: 50;
+}
+.brand-mark {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 590; font-size: 14px;
+  letter-spacing: -0.1px;
+}
+.brand-dot {
+  width: 22px; height: 22px;
+  background: var(--brand);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: white; font-size: 13px;
+}
+
+/* ⌘K command palette 输入 */
+.cmdk {
+  margin-left: 24px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  padding: 6px 10px;
+  width: 320px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-default), border-color 150ms var(--ease-default);
+}
+.cmdk:hover { background: var(--surface-3); border-color: var(--border-strong); }
+.cmdk kbd {
+  font-family: inherit; font-size: 11px;
+  background: rgba(255,255,255,0.05);
+  padding: 2px 5px; border-radius: 4px;
+  border: 1px solid var(--border-default);
+}
+
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+/* ========== 侧栏 ========== */
+.sidebar {
+  background: var(--surface-1);
+  border-right: 1px solid var(--border-default);
+  padding: 16px 8px;
+  overflow-y: auto;
+}
+.sidebar-section { margin-bottom: 20px; }
+.sidebar-label {
+  padding: 6px 10px;
+  font-size: 11px; font-weight: 590;
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 13px; font-weight: 400;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-default), color 150ms var(--ease-default);
+}
+.sidebar-item:hover { background: var(--surface-2); color: var(--text-primary); }
+.sidebar-item.active {
+  background: rgba(94,106,210,0.1);
+  color: var(--text-primary);
+}
+.sidebar-item.active .sidebar-icon { color: var(--brand); }
+.sidebar-icon { width: 14px; height: 14px; flex-shrink: 0; }
+.sidebar-count {
+  margin-left: auto;
+  font-size: 11px; color: var(--text-tertiary);
+  font-feature-settings: "tnum";
+}
+
+/* ========== 主内容 ========== */
+.main { overflow: hidden; display: flex; flex-direction: column; }
+
+.content-header {
+  padding: 24px 32px 16px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  border-bottom: 1px solid var(--border-default);
+}
+.content-title-row { display: flex; align-items: baseline; gap: 12px; }
+.content-actions { display: flex; align-items: center; gap: 8px; }
+
+/* 视图切换 segmented */
+.view-switcher {
+  display: flex; background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 6px; padding: 2px;
+}
+.view-switcher-btn {
+  padding: 4px 10px; border-radius: 4px;
+  font-size: 12px; color: var(--text-tertiary);
+  cursor: pointer; background: transparent; border: none;
+  font-family: inherit; font-weight: 500;
+  transition: background-color 150ms var(--ease-default), color 150ms var(--ease-default);
+}
+.view-switcher-btn:hover { color: var(--text-primary); }
+.view-switcher-btn.active { background: var(--surface-raised); color: var(--text-primary); }
+
+/* ========== 按钮 8 状态(套 components/button.md)========== */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px;
+  border-radius: 6px;
+  font-size: 13px; font-weight: 500;
+  font-family: inherit;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-default),
+              transform 100ms var(--ease-default),
+              border-color 150ms var(--ease-default);
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--brand);
+  color: white;
+}
+.btn-primary:hover { background: var(--brand-hover); }
+.btn-primary:active { background: var(--brand-pressed); transform: scale(0.98); }
+.btn-primary:disabled {
+  background: var(--surface-2);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+.btn-primary.loading {
+  background: var(--brand-pressed);
+  cursor: progress;
+  pointer-events: none;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover { background: var(--surface-2); border-color: var(--border-hairline); }
+.btn-secondary:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-tertiary);
+}
+.btn-ghost:hover { background: var(--surface-2); color: var(--text-primary); }
+.btn-ghost:active { transform: scale(0.98); }
+
+.btn-icon {
+  width: 32px; padding: 0; justify-content: center;
+}
+
+/* ★ focus-visible 双层 box-shadow ring(不是 outline)*/
+.btn:focus-visible,
+.sidebar-item:focus-visible,
+.cmdk:focus-visible,
+.view-switcher-btn:focus-visible,
+.row:focus-visible,
+.input:focus-visible,
+.search-input:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: 6px;
+}
+
+/* ========== Filter 工具栏 ========== */
+.toolbar {
+  padding: 12px 32px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border-default);
+}
+.search-input {
+  height: 32px; padding: 0 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: inherit; font-size: 13px;
+  width: 280px;
+  transition: background-color 150ms var(--ease-default), border-color 150ms var(--ease-default);
+}
+.search-input::placeholder { color: var(--text-tertiary); }
+.search-input:hover { background: var(--surface-3); }
+.search-input:focus {
+  background: var(--surface-2);
+  border-color: var(--brand);
+  /* input focus 也是双层(box-shadow + border)*/
+  box-shadow: 0 0 0 2px rgba(94,106,210,0.4), 0 0 0 4px rgba(94,106,210,0.2);
+}
+
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 32px; padding: 0 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-secondary); font-size: 12px; font-weight: 500;
+  cursor: pointer; font-family: inherit;
+  transition: background-color 150ms var(--ease-default);
+}
+.chip:hover { background: var(--surface-3); }
+.chip.active { background: rgba(94,106,210,0.15); border-color: rgba(94,106,210,0.3); color: var(--text-primary); }
+
+/* ========== 表格(套 components/table-row.md,标准密度 40px)========== */
+.table-container { flex: 1; overflow: auto; padding: 0 32px 24px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+thead { position: sticky; top: 0; background: var(--canvas); z-index: 10; }
+th {
+  text-align: left; font-weight: 500;
+  padding: 10px 12px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-strong);
+  text-transform: uppercase; letter-spacing: 0.4px;
+}
+th.sortable { cursor: pointer; }
+th.sortable:hover { color: var(--text-secondary); }
+th .sort-ind { color: var(--brand); margin-left: 4px; }
+
+tbody tr.row { border-bottom: 1px solid var(--border-default); cursor: pointer; transition: background-color 100ms var(--ease-default); }
+tbody tr.row:hover { background: var(--surface-2); }
+tbody tr.row.selected { background: rgba(94,106,210,0.08); }
+tbody tr.row.selected td:first-child { box-shadow: inset 2px 0 var(--brand); }
+
+td { padding: 10px 12px; vertical-align: middle; color: var(--text-primary); }
+td .customer-name { font-weight: 500; color: var(--text-primary); }
+td .customer-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+/* ========== Avatar(套 components/avatar.md)========== */
+.avatar {
+  width: 28px; height: 28px;
+  border-radius: 9999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 11px; font-weight: 590;
+  flex-shrink: 0;
+}
+.avatar-stack { display: flex; }
+.avatar-stack .avatar:not(:first-child) { margin-left: -6px; border: 2px solid var(--canvas); }
+
+/* ========== Badge(套 components/badge.md)========== */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px; font-weight: 500;
+  font-family: inherit;
+  line-height: 1.4;
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 9999px; }
+
+.badge-lead { background: rgba(138,143,152,0.15); color: var(--text-secondary); }
+.badge-qualified { background: rgba(94,106,210,0.15); color: #A4ADFF; }
+.badge-proposal { background: rgba(242,201,76,0.15); color: #F2C94C; }
+.badge-won { background: rgba(76,183,130,0.15); color: var(--success); }
+.badge-lost { background: rgba(235,87,87,0.15); color: var(--danger); }
+
+/* ========== 空状态三分类(套 components/empty-state.md)========== */
+.empty-state {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 64px 32px;
+  text-align: center;
+}
+.empty-illustration {
+  width: 80px; height: 80px;
+  background: var(--surface-2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-tertiary);
+  margin-bottom: 20px;
+}
+.empty-title { font-size: 16px; font-weight: 590; color: var(--text-primary); margin-bottom: 6px; }
+.empty-desc { font-size: 13px; color: var(--text-tertiary); margin-bottom: 20px; max-width: 360px; line-height: 1.5; }
+
+/* ========== Drawer(套 components/drawer.md)========== */
+.drawer-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 60;
+  opacity: 0; pointer-events: none;
+  transition: opacity 200ms var(--ease-enter);
+}
+.drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+.drawer {
+  position: fixed; right: 0; top: 0; bottom: 0;
+  width: 480px; max-width: 90vw;
+  background: var(--surface-1);
+  border-left: 1px solid var(--border-strong);
+  z-index: 70;
+  transform: translateX(100%);
+  transition: transform 300ms var(--ease-enter);
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-drawer);
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border-default);
+}
+.drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+.drawer-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-default);
+  display: flex; justify-content: flex-end; gap: 8px;
+  background: var(--surface-1);
+}
+
+.field-group { margin-bottom: 16px; }
+.field-label {
+  display: block; font-size: 11px; font-weight: 590;
+  color: var(--text-tertiary); margin-bottom: 6px;
+  letter-spacing: 0.4px; text-transform: uppercase;
+}
+.field-label .required { color: var(--danger); margin-left: 2px; }
+.input, .textarea, .select {
+  width: 100%; padding: 8px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: inherit; font-size: 13px;
+  transition: background-color 150ms var(--ease-default), border-color 150ms var(--ease-default);
+}
+.input:hover, .textarea:hover, .select:hover { background: var(--surface-3); }
+.input:focus, .textarea:focus, .select:focus {
+  background: var(--surface-2);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(94,106,210,0.4), 0 0 0 4px rgba(94,106,210,0.2);
+  outline: none;
+}
+.input::placeholder, .textarea::placeholder { color: var(--text-tertiary); }
+.textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+
+.input-error { border-color: var(--danger); }
+.input-error:focus { box-shadow: 0 0 0 2px rgba(235,87,87,0.4), 0 0 0 4px rgba(235,87,87,0.2); }
+.field-error {
+  font-size: 12px; color: var(--danger);
+  margin-top: 4px; display: flex; align-items: center; gap: 4px;
+}
+
+/* ========== Toast(套 components/toast.md)========== */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 100;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 12px 14px;
+  min-width: 280px; max-width: 360px;
+  display: flex; align-items: flex-start; gap: 10px;
+  box-shadow: var(--shadow-popover);
+  animation: toast-in 200ms var(--ease-enter);
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.toast-icon { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
+.toast-success .toast-icon { color: var(--success); }
+.toast-error .toast-icon { color: var(--danger); }
+.toast-content { flex: 1; }
+.toast-title { font-size: 13px; font-weight: 590; color: var(--text-primary); margin-bottom: 2px; }
+.toast-desc { font-size: 12px; color: var(--text-tertiary); line-height: 1.4; }
+.toast-action {
+  font-size: 12px; color: var(--brand); cursor: pointer;
+  background: transparent; border: none; padding: 0;
+  font-family: inherit; font-weight: 500;
+  margin-left: 8px;
+}
+.toast-action:hover { color: var(--brand-hover); text-decoration: underline; }
+
+/* ========== a11y:屏幕阅读器 ========== */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ========== a11y:reduced-motion ========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong); border-radius: 6px;
+  border: 2px solid var(--canvas);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--border-hairline); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ========== 顶栏 ========== -->
+  <header class="topbar">
+    <div class="brand-mark">
+      <div class="brand-dot">P</div>
+      <span>Pipeline CRM</span>
+    </div>
+
+    <div class="cmdk" role="button" tabindex="0" aria-label="打开命令面板">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span style="flex:1">搜索客户、联系人、活动…</span>
+      <kbd>⌘K</kbd>
+    </div>
+
+    <div class="topbar-right">
+      <button class="btn btn-icon btn-ghost" aria-label="通知">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      </button>
+      <button class="btn btn-primary" id="newCustomerBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        新建客户
+      </button>
+      <div class="avatar" style="background:var(--brand);color:white">SW</div>
+    </div>
+  </header>
+
+  <!-- ========== 侧栏 ========== -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-item active" role="link" tabindex="0">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        全部客户
+        <span class="sidebar-count">128</span>
+      </div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        我的客户
+        <span class="sidebar-count">42</span>
+      </div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        本周到期
+        <span class="sidebar-count">7</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">销售阶段</div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <span class="badge-dot" style="background:var(--text-tertiary)"></span>
+        Lead
+        <span class="sidebar-count">38</span>
+      </div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <span class="badge-dot" style="background:#A4ADFF"></span>
+        Qualified
+        <span class="sidebar-count">24</span>
+      </div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <span class="badge-dot" style="background:var(--warning)"></span>
+        Proposal
+        <span class="sidebar-count">11</span>
+      </div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <span class="badge-dot" style="background:var(--success)"></span>
+        Won
+        <span class="sidebar-count">48</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">团队</div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        张磊
+        <span class="sidebar-count">31</span>
+      </div>
+      <div class="sidebar-item" role="link" tabindex="0">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        李雯
+        <span class="sidebar-count">28</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========== 主内容 ========== -->
+  <main class="main">
+    <div class="content-header">
+      <div>
+        <div class="content-title-row">
+          <h1 class="t-h1">全部客户</h1>
+          <span class="t-meta">128 个客户 · 总价值 ¥2,847,000</span>
+        </div>
+      </div>
+      <div class="content-actions">
+        <div class="view-switcher" role="tablist">
+          <button class="view-switcher-btn active" role="tab" aria-selected="true">列表</button>
+          <button class="view-switcher-btn" role="tab" aria-selected="false">看板</button>
+        </div>
+        <button class="btn btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          导出
+        </button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" class="search-input" placeholder="搜索客户名、联系人、邮箱…" aria-label="搜索客户">
+      <button class="chip active">全部阶段</button>
+      <button class="chip">负责人</button>
+      <button class="chip">价值</button>
+      <button class="chip">最近活动</button>
+      <div style="margin-left:auto" class="t-micro">显示 1–8 / 128</div>
+    </div>
+
+    <!-- 表格视图 -->
+    <div class="table-container" id="tableView">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:32px"><input type="checkbox" aria-label="全选"></th>
+            <th class="sortable">客户 <span class="sort-ind">↓</span></th>
+            <th>阶段</th>
+            <th class="sortable">价值</th>
+            <th>负责人</th>
+            <th>最近活动</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="customerTbody">
+          <!-- 由 JS 渲染 -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 空状态(默认隐藏,筛选无结果时显示)-->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-illustration">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+      <div class="empty-title">没有匹配的客户</div>
+      <div class="empty-desc">当前筛选条件下没有客户。试试清除筛选,或调整搜索关键词。</div>
+      <button class="btn btn-primary" onclick="clearFilters()">清除所有筛选</button>
+    </div>
+  </main>
+</div>
+
+<!-- ========== Drawer(详情 / 编辑)========== -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <div class="drawer-header">
+    <h2 class="t-h2" id="drawerTitle">编辑客户</h2>
+    <button class="btn btn-icon btn-ghost" onclick="closeDrawer()" aria-label="关闭">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div class="field-group">
+      <label class="field-label" for="f-name">客户名称 <span class="required">*</span></label>
+      <input class="input" id="f-name" type="text" value="字节智造科技">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-contact">主联系人 <span class="required">*</span></label>
+      <input class="input" id="f-contact" type="text" value="陈晓敏">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-email">邮箱</label>
+      <input class="input" id="f-email" type="email" value="chen@bytedance-zhizao.com">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-stage">销售阶段</label>
+      <select class="select" id="f-stage">
+        <option>Lead</option>
+        <option selected>Qualified</option>
+        <option>Proposal</option>
+        <option>Won</option>
+        <option>Lost</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label class="label field-label" for="f-value">价值 (¥) <span class="required">*</span></label>
+      <input class="input input-error" id="f-value" type="number" value="0">
+      <div class="field-error">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        价值不能为 0 — 输入预计成交金额
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-notes">备注</label>
+      <textarea class="textarea" id="f-notes" placeholder="会议纪要、痛点、下一步…">陈晓敏周一会议提到 Q3 预算紧张,需要在 6 月前给方案。重点解决他们的数据孤岛问题。</textarea>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn btn-ghost" onclick="closeDrawer()">取消</button>
+    <button class="btn btn-primary" id="saveBtn" onclick="saveCustomer()">保存</button>
+  </div>
+</aside>
+
+<!-- ========== Toast ========== -->
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+// ========== 数据 ==========
+const customers = [
+  { id:1, name:'字节智造科技', sub:'陈晓敏 · CEO', stage:'qualified', value:180000, owner:'SW', initials:'字', lastActivity:'2 小时前' },
+  { id:2, name:'云栈数据', sub:'王浩 · CTO', stage:'proposal', value:240000, owner:'ZL', initials:'云', lastActivity:'昨天' },
+  { id:3, name:'墨白设计', sub:'林雅 · 设计总监', stage:'lead', value:48000, owner:'LW', initials:'墨', lastActivity:'3 天前' },
+  { id:4, name:'青萍智能', sub:'赵明 · VP 工程', stage:'won', value:360000, owner:'SW', initials:'青', lastActivity:'上周' },
+  { id:5, name:'九度传媒', sub:'周婷 · 市场总监', stage:'qualified', value:95000, owner:'ZL', initials:'九', lastActivity:'2 小时前' },
+  { id:6, name:'栖野咖啡', sub:'吴郎 · 创始人', stage:'lost', value:28000, owner:'LW', initials:'栖', lastActivity:'上月' },
+  { id:7, name:'光筑建筑', sub:'孙莉 · 合伙人', stage:'proposal', value:520000, owner:'SW', initials:'光', lastActivity:'今天' },
+  { id:8, name:'半岛医疗', sub:'刘伟 · 采购总监', stage:'lead', value:120000, owner:'ZL', initials:'半', lastActivity:'4 天前' },
+];
+
+const stageLabels = { lead:'Lead', qualified:'Qualified', proposal:'Proposal', won:'Won', lost:'Lost' };
+
+function formatMoney(n) {
+  return '¥' + n.toLocaleString('zh-CN');
+}
+
+// ========== 渲染表格 ==========
+function renderTable(filter = '') {
+  const tbody = document.getElementById('customerTbody');
+  const filtered = customers.filter(c =>
+    !filter ||
+    c.name.toLowerCase().includes(filter.toLowerCase()) ||
+    c.sub.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  if (filtered.length === 0) {
+    document.getElementById('tableView').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'flex';
+    return;
+  }
+  document.getElementById('tableView').style.display = 'block';
+  document.getElementById('emptyState').style.display = 'none';
+
+  tbody.innerHTML = filtered.map(c => `
+    <tr class="row" data-id="${c.id}" tabindex="0">
+      <td><input type="checkbox" onclick="event.stopPropagation()" aria-label="选择 ${c.name}"></td>
+      <td>
+        <div class="customer-name">${c.name}</div>
+        <div class="customer-sub">${c.sub}</div>
+      </td>
+      <td><span class="badge badge-${c.stage}"><span class="badge-dot" style="background:currentColor"></span>${stageLabels[c.stage]}</span></td>
+      <td style="font-feature-settings:'tnum'">${formatMoney(c.value)}</td>
+      <td><div class="avatar" title="${c.owner === 'SW' ? '孙吴源' : c.owner === 'ZL' ? '张磊' : '李雯'}">${c.owner}</div></td>
+      <td class="t-meta">${c.lastActivity}</td>
+      <td>
+        <button class="btn btn-icon btn-ghost" onclick="event.stopPropagation(); openDrawer(${c.id})" aria-label="编辑">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  // 行点击 → 打开 drawer
+  document.querySelectorAll('.row').forEach(row => {
+    row.addEventListener('click', () => openDrawer(parseInt(row.dataset.id)));
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') openDrawer(parseInt(row.dataset.id));
+    });
+  });
+}
+
+// ========== Drawer ==========
+function openDrawer(id) {
+  const overlay = document.getElementById('drawerOverlay');
+  const drawer = document.getElementById('drawer');
+  overlay.classList.add('open');
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  // 焦点 trap 简化版:focus 第一个输入
+  setTimeout(() => document.getElementById('f-name').focus(), 200);
+}
+function closeDrawer() {
+  const overlay = document.getElementById('drawerOverlay');
+  const drawer = document.getElementById('drawer');
+  overlay.classList.remove('open');
+  drawer.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+}
+
+// ========== 保存(loading 态 + success toast)==========
+function saveCustomer() {
+  const btn = document.getElementById('saveBtn');
+  btn.classList.add('loading');
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> 保存中…`;
+
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    btn.innerHTML = '保存';
+    closeDrawer();
+    showToast('success', '客户已更新', '字节智造科技的信息已保存。', '查看');
+  }, 1200);
+}
+
+// ========== Toast ==========
+function showToast(type, title, desc, action) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+
+  const iconMap = {
+    success: '<polyline points="20 6 9 17 4 12"></polyline>',
+    error: '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'
+  };
+
+  toast.innerHTML = `
+    <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${iconMap[type]}</svg>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-desc">${desc}</div>
+    </div>
+    ${action ? `<button class="toast-action" onclick="this.parentElement.remove()">${action}</button>` : ''}
+  `;
+
+  container.appendChild(toast);
+
+  // success 自动消失(4s);error 不自动消失
+  if (type !== 'error') {
+    let timeout;
+    const dismiss = () => toast.remove();
+    toast.addEventListener('mouseenter', () => clearTimeout(timeout));
+    toast.addEventListener('mouseleave', () => timeout = setTimeout(dismiss, 4000));
+    timeout = setTimeout(dismiss, 4000);
+  }
+}
+
+// ========== 清筛选 ==========
+function clearFilters() {
+  document.querySelector('.search-input').value = '';
+  renderTable();
+}
+
+// ========== 新建客户 ==========
+document.getElementById('newCustomerBtn').addEventListener('click', () => {
+  openDrawer(null);
+});
+
+// ========== 搜索 ==========
+document.querySelector('.search-input').addEventListener('input', (e) => {
+  renderTable(e.target.value);
+});
+
+// ========== ESC 关 drawer ==========
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeDrawer();
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    document.querySelector('.search-input').focus();
+  }
+});
+
+// ========== 加载 spin keyframe ==========
+const style = document.createElement('style');
+style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+document.head.appendChild(style);
+
+// ========== 初始渲染 ==========
+renderTable();
+
+// ========== 演示:加载完 1s 后弹一个 welcome toast ==========
+setTimeout(() => {
+  showToast('success', '欢迎回来,吴源', '你有 7 个本周到期的客户需要跟进。', '查看');
+}, 800);
+</script>
+</body>
+</html>

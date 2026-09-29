@@ -1,0 +1,158 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Brutalist Geek theme: pure black, rules, mono-led type, terminal/diff hero.",
+  "$extensions": {
+    "designPractice": {
+      "direction": "brutalist",
+      "ownedAccent": "#C6F24E",
+      "typePersonality": "mono-led, all-caps labels, ASCII and box-drawing structure",
+      "signatureMove": "terminal/diff or live counter as hero"
+    }
+  },
+  "color": {
+    "palette": {
+      "black": {
+        "$type": "color",
+        "$value": "#000000"
+      },
+      "nearBlack": {
+        "$type": "color",
+        "$value": "#0A0A0A"
+      },
+      "white": {
+        "$type": "color",
+        "$value": "#FFFFFF"
+      },
+      "accentAlt": {
+        "$type": "color",
+        "$value": "#A3E635"
+      },
+      "terminalGreen": {
+        "$type": "color",
+        "$value": "#3FB950"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.palette.white}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#D4D4D4"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "#8A8A8A"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{color.palette.black}"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.palette.black}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.palette.nearBlack}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "#111111"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "#2A2A2A"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "#FFFFFF"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#C6F24E"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "#000000"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "#1C2608"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Geist Mono\", \"Berkeley Mono\", ui-monospace, monospace"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Geist Mono\", \"Berkeley Mono\", ui-monospace, monospace"
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": "\"Geist Mono\", \"Berkeley Mono\", ui-monospace, monospace"
+      }
+    },
+    "display": {
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.black}"
+      }
+    },
+    "label": {
+      "letterSpacing": {
+        "$type": "dimension",
+        "$value": "{font.letterSpacing.caps}"
+      }
+    }
+  },
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.2}"
+    },
+    "card": {
+      "$type": "dimension",
+      "$value": "{radius.4}"
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{radius.4}"
+    }
+  },
+  "motion": {
+    "ui": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.fast}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.standard}"
+      }
+    }
+  }
+}

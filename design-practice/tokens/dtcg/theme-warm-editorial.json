@@ -1,0 +1,138 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Warm Editorial Magazine theme: paper, serif, photography, drop cap and pull quote.",
+  "$extensions": {
+    "designPractice": {
+      "direction": "warm-editorial",
+      "ownedAccent": "#B5523A",
+      "typePersonality": "large high-contrast serif display plus humanist body",
+      "signatureMove": "drop cap, pull quote and photo bleed"
+    }
+  },
+  "color": {
+    "palette": {
+      "paper": {
+        "$type": "color",
+        "$value": "#F5F1E8"
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "#1C1B19"
+      },
+      "mutedNature": {
+        "$type": "color",
+        "$value": "#6F7568"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#FFFDF7"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.palette.ink}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#403D36"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "{color.palette.mutedNature}"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.palette.paper}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.palette.surface}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "#EEE7DA"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "#DED4C4"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "#8C8172"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#B5523A"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "#FFFDF7"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "#F2D8CF"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Inter var\", \"Geist\", system-ui, sans-serif"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Lyon Text\", \"Domaine\", Georgia, serif"
+      },
+      "bodySerif": {
+        "$type": "fontFamily",
+        "$value": "\"Lyon Text\", Georgia, serif"
+      }
+    },
+    "display": {
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.body}"
+      },
+      "lineHeight": {
+        "$type": "number",
+        "$value": "{font.lineHeight.tight}"
+      }
+    },
+    "label": {
+      "letterSpacing": {
+        "$type": "dimension",
+        "$value": "{font.letterSpacing.caps}"
+      }
+    }
+  },
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.4}"
+    },
+    "card": {
+      "$type": "dimension",
+      "$value": "{radius.8}"
+    }
+  }
+}

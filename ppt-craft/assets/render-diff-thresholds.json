@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "default_profile": "default",
+  "profiles": {
+    "default": {
+      "mean_warning": 0.08,
+      "mean_error": 0.16,
+      "changed_warning": 0.32,
+      "changed_error": 0.58,
+      "edge_warning": 0.12,
+      "edge_error": 0.22
+    },
+    "investor": {
+      "mean_warning": 0.075,
+      "mean_error": 0.16,
+      "changed_warning": 0.3,
+      "changed_error": 0.56,
+      "edge_warning": 0.12,
+      "edge_error": 0.22
+    },
+    "consulting": {
+      "mean_warning": 0.07,
+      "mean_error": 0.145,
+      "changed_warning": 0.28,
+      "changed_error": 0.52,
+      "edge_warning": 0.105,
+      "edge_error": 0.2
+    },
+    "product": {
+      "mean_warning": 0.09,
+      "mean_error": 0.18,
+      "changed_warning": 0.36,
+      "changed_error": 0.62,
+      "edge_warning": 0.13,
+      "edge_error": 0.24
+    },
+    "report": {
+      "mean_warning": 0.065,
+      "mean_error": 0.135,
+      "changed_warning": 0.25,
+      "changed_error": 0.48,
+      "edge_warning": 0.1,
+      "edge_error": 0.19
+    },
+    "training": {
+      "mean_warning": 0.08,
+      "mean_error": 0.16,
+      "changed_warning": 0.32,
+      "changed_error": 0.58,
+      "edge_warning": 0.12,
+      "edge_error": 0.22
+    },
+    "raster": {
+      "mean_warning": 0.11,
+      "mean_error": 0.22,
+      "changed_warning": 0.45,
+      "changed_error": 0.7,
+      "edge_warning": 0.16,
+      "edge_error": 0.3
+    }
+  },
+  "aliases": {
+    "pitch": "investor",
+    "investor_pitch": "investor",
+    "fundraising": "investor",
+    "consulting_deck": "consulting",
+    "strategy": "consulting",
+    "product_keynote": "product",
+    "keynote": "product",
+    "demo": "product",
+    "research": "report",
+    "board_report": "report",
+    "policy": "report",
+    "course": "training",
+    "lesson": "training",
+    "image_deck": "raster",
+    "social": "raster"
+  }
+}

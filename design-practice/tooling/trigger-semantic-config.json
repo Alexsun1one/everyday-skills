@@ -1,0 +1,142 @@
+{
+  "_comment": "Semantic concepts for design-practice trigger evaluation. Positive concepts = product-UI intent (should trigger). Negative concepts = neighbor-skill intent (should NOT trigger, routes to cover-pop / sticker-set / quote-cards / master-styles / lego-town). The phrase bags are deliberately broad — the test is whether a phrase appears in BOTH the description and the prompt, so the bag captures 'the description author anticipated this kind of phrasing'.",
+
+  "positive_concepts": {
+    "product_ui": {
+      "weight": 1.0,
+      "phrases": [
+        "product ui", "product interface", "usable ui", "usable product", "real product",
+        "saas", "dashboard", "admin console", "admin panel", "backoffice", "back office",
+        "crm", "task manager", "task management", "project manager", "project management",
+        "settings page", "preferences page", "settings",
+        "list detail", "list-detail", "list view", "detail view", "table view", "data table",
+        "form flow", "multi-step form", "wizard",
+        "login page", "signup page", "onboarding",
+        "inbox", "email client", "mail client",
+        "comment system", "comment management", "notification center",
+        "editor", "ide", "code editor", "document editor", "doc editor",
+        "web app", "app screen", "application ui", "application interface",
+        "product page", "settings ui",
+        "order management", "订单管理", "客户管理", "任务管理", "项目管理",
+        "产品界面", "产品页", "产品 ui", "后台", "管理台", "管理后台", "管理界面",
+        "工作台", "工作界面", "看板界面", "看板",
+        "表单", "多步表单", "登录页", "设置页", "列表页", "详情页", "评论管理",
+        "编辑器", "文档编辑器", "代码编辑器",
+        "界面", "网页", "做网页", "做个网页", "做一个网页", "页面", "做一个页面",
+        "工作流", "审批流", "部署面板", "部署", "支付设置"
+      ]
+    },
+    "skeleton_depth": {
+      "weight": 0.9,
+      "phrases": [
+        "loading state", "empty state", "error state", "permission state", "offline state",
+        "skeleton screen", "state matrix", "button states", "focus state", "focus ring",
+        "draft save", "branch flow",
+        "状态", "空状态", "加载状态", "错误状态", "权限", "权限角色",
+        "状态完整", "状态没补齐", "边界情况", "edge case",
+        "骨架", "骨架不全", "线稿", "高保真",
+        "draft", "active", "archived", "数据生命周期",
+        "对象状态权限", "object state permission",
+        "loading", "empty", "error", "hover", "focus"
+      ]
+    },
+    "style_dna": {
+      "weight": 0.7,
+      "phrases": [
+        "linear style", "stripe style", "notion style", "vercel style", "linear 风",
+        "chinese saas", "chinese product", "feishu", "wechat work", "企业微信",
+        "linear 风格", "stripe 风格", "notion 风格", "vercel 风格",
+        "飞书风格", "飞书", "国产 saas", "中文产品", "中文 saas",
+        "style dna", "视觉语言", "风格 dna", "风格"
+      ]
+    },
+    "anti_plastic": {
+      "weight": 0.8,
+      "phrases": [
+        "anti plastic", "anti ai", "not plastic", "plastic ui", "ai-generated ui",
+        "skin without skeleton", "skeleton before skin",
+        "real ui", "world-class ui", "world class ui", "vibe coding",
+        "反塑料", "反 ai", "ai 味", "去 ai 化", "塑料味", "塑料感", "塑料了",
+        "有皮无骨", "骨架",
+        "五层刀法", "意图读心", "render critique", "render-critique",
+        "render 循环", "渲染验收", "render 验收",
+        "太塑料", "生成界面", "骨架不全", "漂亮截图"
+      ]
+    },
+    "five_layer_workflow": {
+      "weight": 0.6,
+      "phrases": [
+        "five layer", "five-layer", "five layer blade",
+        "intent brief", "anti-plastic test",
+        "stage 0", "stage 1", "stage 2", "stage 3",
+        "judgment card", "task field", "complexity conservation",
+        "visual hierarchy", "task network",
+        "五层", "判断卡", "任务场", "复杂度守恒",
+        "视觉层级", "任务网络", "设计的实践", "design practice", "design-practice"
+      ]
+    }
+  },
+
+  "negative_concepts": {
+    "single_cover_image": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "cover image", "thumbnail", "hero image", "social cover", "hero shot",
+        "xiaohongshu cover", "wechat cover", "video thumbnail", "video cover",
+        "小红书封面", "公众号封面", "视频封面", "封面图", "封面",
+        "首图", "click-bait", "thumb-stopping", "一张图"
+      ]
+    },
+    "sticker_emoji": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "sticker", "sticker set", "sticker pack", "emoji", "emoji pack",
+        "wechat sticker", "chat sticker", "meme sticker",
+        "表情包", "表情包套图", "微信表情", "聊天表情",
+        "斗图", "沙雕表情", "ip 表情", "表情"
+      ]
+    },
+    "quote_card": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "quote card", "knowledge card", "tip card", "book takeaway card", "typography card",
+        "金句卡", "知识卡", "语录卡", "干货卡",
+        "收藏卡", "卡片图", "文字卡"
+      ]
+    },
+    "pure_illustration": {
+      "weight": 0.9,
+      "exclusive": true,
+      "phrases": [
+        "illustration", "art illustration", "ink-wash", "watercolor", "paper character",
+        "master style", "in a master's aesthetic",
+        "插画", "艺术插画", "水墨", "水彩",
+        "大师风格", "纸片人", "文章配图", "配图"
+      ]
+    },
+    "system_diagram": {
+      "weight": 0.85,
+      "exclusive": true,
+      "phrases": [
+        "lego town", "busy town", "busy-town", "lego-town",
+        "system diagram", "architecture diagram", "flow diagram", "org chart",
+        "organization chart", "process diagram", "structure diagram",
+        "乐高小镇", "忙碌小镇", "系统图", "架构图",
+        "流程图", "组织架构图", "工序图", "小镇"
+      ]
+    },
+    "single_pretty_screenshot": {
+      "weight": 0.5,
+      "exclusive": false,
+      "phrases": [
+        "pretty screenshot", "just a screenshot", "one hero shot",
+        "single image", "screenshot", "演示图", "效果看看", "看效果"
+      ]
+    }
+  },
+
+  "fallback_positive_concepts": ["product_ui"]
+}

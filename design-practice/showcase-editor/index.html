@@ -1,0 +1,1397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Glyph — code editor</title>
+<meta name="description" content="Glyph — a focused code editor for reading and editing fast." />
+<meta name="theme-color" content="#0A0C0F" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:,">
+<style>
+/* Glyph — editor/IDE domain · D1 precision tool
+   UI accent: refined rose (≤3 roles) · Syntax palette: separate semantic set
+   Mono identity everywhere · luminance stacking · tight radii */
+:root {
+  --canvas: #0A0C0F;
+  --surface-activity: #0C0E12;
+  --surface-sidebar: #0F1217;
+  --surface-editor: #13161C;
+  --surface-panel: #101318;
+  --surface-raised: #181C24;
+  --surface-hover: #1C2129;
+  --text-primary: #E4E6EB;
+  --text-secondary: #9BA3B0;
+  --text-faint: #909AA8;
+  --border: rgba(255,255,255,.07);
+  --border-strong: rgba(255,255,255,.11);
+  --accent: #D4687A;
+  --accent-dim: #B85466;
+  --accent-tint: rgba(212,104,122,.14);
+  --accent-focus: rgba(212,104,122,.45);
+  --git-modified: #C9A227;
+  --git-added: #3FAE6A;
+  --git-untracked: #6E9FD4;
+  --diff-added: #3FAE6A;
+  --diff-modified: #C9A227;
+  --diff-removed: #E05252;
+  --err: #E05252;
+  --warn: #C9A227;
+  --info: #6E9FD4;
+  --syn-keyword: #E06C75;
+  --syn-string: #98C379;
+  --syn-comment: #7A8794;
+  --syn-function: #82AAFF;
+  --syn-type: #E5C07B;
+  --syn-number: #D19A66;
+  --syn-operator: #56B6C2;
+  --syn-property: #C678DD;
+  --syn-variable: #ABB2BF;
+  --syn-punct: #ABB2BF;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --w-body: 400; --w-med: 500; --w-strong: 600;
+  --r-3: 3px; --r-4: 4px; --r-6: 6px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 120ms; --dur: 160ms;
+  --raised: inset 0 1px 0 rgba(255,255,255,.04);
+  --ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--accent-focus);
+  --activity-w: 48px;
+  --sidebar-w: 240px;
+  --status-h: 24px;
+  --panel-h: 168px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-mono);
+  font-weight: var(--w-body);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  min-height: 100vh;
+  height: 100vh;
+}
+::selection { background: var(--accent-tint); color: var(--text-primary); }
+* { scrollbar-width: thin; scrollbar-color: var(--surface-raised) transparent; }
+*::-webkit-scrollbar { width: 7px; height: 7px; }
+*::-webkit-scrollbar-thumb { background: var(--surface-raised); border-radius: 999px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; white-space: nowrap; }
+.tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
+/* Shell */
+.app {
+  display: grid;
+  grid-template-columns: var(--activity-w) var(--sidebar-w) 1fr;
+  grid-template-rows: 1fr var(--panel-h) var(--status-h);
+  grid-template-areas:
+    "activity sidebar main"
+    "activity sidebar panel"
+    "activity sidebar status";
+  height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+}
+.app.sidebar-collapsed {
+  grid-template-columns: var(--activity-w) 0 1fr;
+}
+.app.sidebar-collapsed .sidebar { opacity: 0; pointer-events: none; overflow: hidden; }
+
+/* Activity bar */
+.activity {
+  grid-area: activity;
+  background: var(--surface-activity);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+  gap: 4px;
+  z-index: 20;
+}
+.act-btn {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border: none; background: transparent;
+  border-radius: var(--r-4);
+  color: var(--text-faint);
+  cursor: pointer;
+  position: relative;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.act-btn svg { width: 20px; height: 20px; stroke-width: 1.5; }
+.act-btn:hover { color: var(--text-secondary); background: var(--surface-hover); }
+.act-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.act-btn:active { transform: scale(.96); }
+.act-btn[aria-current="page"] {
+  color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.act-btn[aria-current="page"]::before {
+  content: "";
+  position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 2px; background: var(--accent); border-radius: 0 2px 2px 0;
+}
+.act-spacer { flex: 1; }
+
+/* Sidebar */
+.sidebar {
+  grid-area: sidebar;
+  background: var(--surface-sidebar);
+  border-right: 1px solid var(--border);
+  box-shadow: var(--raised);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.sidebar-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  min-height: 36px;
+}
+.sidebar-header .repo {
+  flex: 1; min-width: 0;
+  font-size: 11px; font-weight: var(--w-strong);
+  color: var(--text-primary);
+  letter-spacing: -.01em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sidebar-actions { display: flex; gap: 2px; }
+.icon-btn {
+  width: 24px; height: 24px;
+  display: grid; place-items: center;
+  border: none; background: transparent;
+  border-radius: var(--r-3);
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.icon-btn svg { width: 14px; height: 14px; stroke-width: 1.5; }
+.icon-btn:hover { color: var(--text-secondary); background: var(--surface-hover); }
+.icon-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.icon-btn:active { transform: scale(.96); }
+
+.tree-wrap { flex: 1; overflow: auto; padding: 4px 0; }
+.tree { list-style: none; }
+.tree [role="treeitem"] {
+  display: flex; align-items: center; gap: 4px;
+  padding: 2px 8px 2px 4px;
+  min-height: 22px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--r-3);
+  margin: 0 4px;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.tree [role="treeitem"]:hover { background: var(--surface-hover); color: var(--text-primary); }
+.tree [role="treeitem"]:focus-visible { outline: none; box-shadow: var(--ring); }
+.tree [role="treeitem"][aria-selected="true"] {
+  background: var(--accent-tint);
+  color: var(--text-primary);
+}
+.tree [role="treeitem"][aria-selected="true"] .tree-label { color: var(--text-primary); }
+.tree-chevron {
+  width: 16px; height: 16px;
+  display: grid; place-items: center;
+  color: var(--text-faint);
+  flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease);
+}
+.tree-chevron svg { width: 10px; height: 10px; stroke-width: 1.5; }
+.tree-chevron--open { transform: rotate(90deg); }
+.tree-chevron--hidden { visibility: hidden; }
+.tree-glyph {
+  width: 14px; height: 14px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.tree-glyph svg { width: 12px; height: 12px; stroke-width: 1.5; }
+.file-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.file-dot--ts { background: #3178C6; }
+.file-dot--json { background: var(--warn); }
+.file-dot--md { background: var(--text-faint); }
+.tree-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.git-badge {
+  font-size: 10px; font-weight: var(--w-med);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.git-badge--M { color: var(--git-modified); }
+.git-badge--A { color: var(--git-added); }
+.git-badge--U { color: var(--git-untracked); }
+.tree-group { list-style: none; padding-left: 12px; }
+.tree-group[hidden] { display: none; }
+
+/* Main editor column */
+.main-col {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--surface-editor);
+  overflow: hidden;
+}
+
+/* Tab bar */
+.tabbar {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface-sidebar);
+  border-bottom: 1px solid var(--border);
+  min-height: 34px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.tabbar::-webkit-scrollbar { height: 0; }
+.tab {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 12px;
+  font-size: 12px;
+  color: var(--text-faint);
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.tab:hover { color: var(--text-secondary); background: var(--surface-hover); }
+.tab:focus-visible { outline: none; box-shadow: var(--ring); z-index: 2; }
+.tab[aria-selected="true"] {
+  color: var(--text-primary);
+  background: var(--surface-editor);
+  box-shadow: var(--raised);
+}
+.tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--accent);
+}
+.tab-dirty {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.tab-dirty[hidden] { display: none; }
+.tab-close {
+  width: 18px; height: 18px;
+  display: grid; place-items: center;
+  border-radius: var(--r-3);
+  opacity: 0;
+  color: var(--text-faint);
+  transition: opacity var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.tab:hover .tab-close, .tab:focus-within .tab-close { opacity: 1; }
+.tab-close:hover { background: var(--surface-raised); color: var(--text-primary); }
+.tab-close svg { width: 12px; height: 12px; stroke-width: 1.5; }
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-editor);
+  flex-shrink: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.breadcrumb span { color: var(--text-faint); }
+.breadcrumb strong { color: var(--text-secondary); font-weight: var(--w-med); }
+.breadcrumb .sep { color: var(--text-faint); opacity: .6; user-select: none; }
+
+/* Editor surface */
+.editor-wrap {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  position: relative;
+}
+.code-scroll {
+  flex: 1;
+  overflow: auto;
+  min-width: 0;
+}
+.code-scroll:focus-visible { outline: none; box-shadow: inset var(--ring); }
+.code-surface {
+  display: flex;
+  min-width: min-content;
+}
+.gutter-ln {
+  padding: 8px 0;
+  text-align: right;
+  user-select: none;
+  flex-shrink: 0;
+  background: var(--surface-editor);
+  border-right: 1px solid var(--border);
+}
+.gutter-ln span {
+  display: block;
+  padding: 0 12px 0 8px;
+  height: 20px;
+  line-height: 20px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+.gutter-ln span.current { color: var(--text-secondary); }
+.gutter-ln span.dim { opacity: .45; }
+
+.gutter-diff {
+  width: 4px;
+  flex-shrink: 0;
+  padding: 8px 0;
+}
+.gutter-diff span {
+  display: block;
+  height: 20px;
+  width: 3px;
+  margin: 0 auto;
+  border-radius: 1px;
+}
+.gutter-diff .diff-add { background: var(--diff-added); }
+.gutter-diff .diff-mod { background: var(--diff-modified); }
+
+.code-lines {
+  flex: 1;
+  padding: 8px 16px 8px 8px;
+  font-size: 13px;
+  line-height: 20px;
+  tab-size: 2;
+  position: relative;
+}
+.code-line {
+  display: block;
+  height: 20px;
+  white-space: pre;
+  position: relative;
+}
+.code-line.current {
+  background: rgba(255,255,255,.04);
+  margin: 0 -16px 0 -8px;
+  padding: 0 16px 0 8px;
+}
+.code-line.has-selection {
+  background: var(--accent-tint);
+  margin: 0 -16px 0 -8px;
+  padding: 0 16px 0 8px;
+}
+.code-line .sel { background: rgba(130,170,255,.22); border-radius: 2px; color: var(--text-primary); }
+.code-line .err-squiggle {
+  text-decoration: underline wavy var(--err);
+  text-underline-offset: 3px;
+}
+.gutter-err {
+  position: absolute;
+  left: -20px;
+  top: 6px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--err);
+  box-shadow: 0 0 0 2px rgba(224,82,82,.2);
+}
+
+/* Syntax */
+.kw { color: var(--syn-keyword); }
+.str { color: var(--syn-string); }
+.cmt { color: var(--syn-comment); font-style: italic; }
+.fn { color: var(--syn-function); }
+.ty { color: var(--syn-type); }
+.num { color: var(--syn-number); }
+.op { color: var(--syn-operator); }
+.prop { color: var(--syn-property); }
+.var { color: var(--syn-variable); }
+.punct { color: var(--syn-punct); }
+
+/* Cursor */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  margin-left: -1px;
+  animation: blink 1.1s step-end infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cursor { animation: none; opacity: 1; } }
+
+/* Minimap */
+.minimap {
+  width: 72px;
+  flex-shrink: 0;
+  background: var(--surface-sidebar);
+  border-left: 1px solid var(--border);
+  padding: 8px 4px;
+  overflow: hidden;
+  opacity: .85;
+}
+.minimap canvas { width: 100%; height: 100%; display: block; }
+.minimap-viewport {
+  position: absolute;
+  right: 4px;
+  width: 64px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.04);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Welcome / empty (secondary) */
+.welcome {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 48px;
+  gap: 16px;
+}
+.welcome.visible { display: flex; }
+.welcome h2 { font-size: 18px; font-weight: var(--w-strong); color: var(--text-primary); letter-spacing: -.02em; }
+.welcome p { font-size: 12px; color: var(--text-faint); max-width: 42ch; line-height: 1.6; }
+.welcome-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.welcome-list button {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: left;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.welcome-list button:hover { background: var(--surface-hover); color: var(--text-primary); border-color: var(--border-strong); }
+.welcome-list button:focus-visible { outline: none; box-shadow: var(--ring); }
+.welcome-list button:active { transform: scale(.98); }
+.btn-primary {
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: var(--w-med);
+  border: 1px solid rgba(212,104,122,.35);
+  border-radius: var(--r-4);
+  background: var(--accent-tint);
+  color: var(--accent);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.btn-primary:hover { background: rgba(212,104,122,.22); }
+.btn-primary:focus-visible { outline: none; box-shadow: var(--ring); }
+.btn-primary:active { transform: scale(.98); }
+
+/* Loading skeleton */
+.skeleton-bar {
+  height: 12px;
+  border-radius: var(--r-3);
+  background: linear-gradient(90deg, var(--surface-raised) 0%, var(--surface-hover) 50%, var(--surface-raised) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s var(--ease) infinite;
+}
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton-bar { animation: none; } }
+.loading-overlay {
+  display: none;
+  position: absolute; inset: 0;
+  background: rgba(10,12,15,.6);
+  padding: 24px;
+  z-index: 5;
+}
+.loading-overlay.visible { display: block; }
+
+/* Bottom panel */
+.panel {
+  grid-area: panel;
+  background: var(--surface-panel);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--raised);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+.panel-resize {
+  position: absolute;
+  top: -3px; left: 0; right: 0;
+  height: 6px;
+  cursor: ns-resize;
+  z-index: 3;
+}
+.panel-resize::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 50%;
+  transform: translateX(-50%);
+  width: 32px; height: 2px;
+  border-radius: 1px;
+  background: var(--border-strong);
+  opacity: .6;
+}
+.panel-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.panel-tab {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: var(--w-med);
+  color: var(--text-faint);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  letter-spacing: .02em;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.panel-tab:hover { color: var(--text-secondary); }
+.panel-tab:focus-visible { outline: none; box-shadow: var(--ring); }
+.panel-tab[aria-selected="true"] {
+  color: var(--text-primary);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.panel-body { flex: 1; overflow: auto; min-height: 0; }
+.panel-pane { display: none; padding: 8px 12px; height: 100%; }
+.panel-pane.active { display: block; }
+
+.terminal { font-size: 12px; line-height: 1.55; }
+.terminal .prompt { color: var(--accent); }
+.terminal .cmd { color: var(--text-primary); }
+.terminal .out { color: var(--text-secondary); }
+.terminal .ok { color: var(--git-added); }
+.terminal .fail { color: var(--err); }
+.terminal .dim { color: var(--text-faint); }
+
+.problems { list-style: none; }
+.problems li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 6px;
+  border-radius: var(--r-3);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.problems li:hover { background: var(--surface-hover); }
+.problems li:focus-visible { outline: none; box-shadow: var(--ring); }
+.sev {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sev--err { background: var(--err); }
+.sev--warn { background: var(--warn); }
+.problems .loc { color: var(--text-faint); min-width: 140px; }
+.problems .msg { color: var(--text-secondary); flex: 1; }
+
+.output { font-size: 12px; color: var(--text-faint); line-height: 1.6; }
+
+/* Status bar */
+.statusbar {
+  grid-area: status;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px;
+  font-size: 11px;
+  color: var(--text-faint);
+  background: var(--accent-tint);
+  border-top: 1px solid var(--border);
+  min-height: var(--status-h);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.statusbar::-webkit-scrollbar { height: 0; }
+.status-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 0 4px;
+  border-radius: var(--r-3);
+  cursor: default;
+}
+.status-item.clickable {
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.status-item.clickable:hover { color: var(--text-secondary); background: rgba(255,255,255,.04); }
+.status-item.clickable:focus-visible { outline: none; box-shadow: var(--ring); }
+.status-item svg { width: 12px; height: 12px; stroke-width: 1.5; flex-shrink: 0; }
+.status-item .dot { width: 6px; height: 6px; border-radius: 50%; }
+.status-item .dot--err { background: var(--err); }
+.status-item .dot--warn { background: var(--warn); }
+.status-spacer { flex: 1; }
+.status-item--indexing .pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.2s var(--ease) infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.85); } }
+@media (prefers-reduced-motion: reduce) { .status-item--indexing .pulse { animation: none; } }
+
+/* Command palette */
+.palette-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 100;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh 16px 16px;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.palette-backdrop.open {
+  display: flex;
+  opacity: 1;
+}
+.palette {
+  width: min(560px, 100%);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-6);
+  box-shadow: 0 16px 48px rgba(0,0,0,.45), var(--raised);
+  overflow: hidden;
+  transform: translateY(-8px) scale(.98);
+  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+.palette-backdrop.open .palette { transform: translateY(0) scale(1); }
+.palette-input-wrap {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.palette-input-wrap svg { width: 16px; height: 16px; stroke-width: 1.5; color: var(--text-faint); flex-shrink: 0; }
+.palette-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+}
+.palette-input::placeholder { color: var(--text-faint); }
+.palette-list { list-style: none; max-height: 320px; overflow: auto; padding: 4px; }
+.palette-list li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-4);
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.palette-list li:hover, .palette-list li[aria-selected="true"] {
+  background: var(--accent-tint);
+  color: var(--text-primary);
+}
+.palette-list li:focus-visible { outline: none; box-shadow: var(--ring); }
+.palette-list .kind {
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-left: auto;
+  letter-spacing: .04em;
+}
+.palette-hint {
+  padding: 8px 14px;
+  font-size: 10px;
+  color: var(--text-faint);
+  border-top: 1px solid var(--border);
+  letter-spacing: .02em;
+}
+.kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  font-size: 10px;
+  background: var(--surface-sidebar);
+  color: var(--text-faint);
+}
+
+/* Mobile toggle */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  bottom: calc(var(--status-h) + 12px);
+  left: 56px;
+  z-index: 30;
+  width: 36px; height: 36px;
+  border-radius: var(--r-6);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,.35), var(--raised);
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.sidebar-toggle svg { width: 18px; height: 18px; stroke-width: 1.5; }
+.sidebar-toggle:focus-visible { outline: none; box-shadow: var(--ring); }
+.sidebar-toggle:active { transform: scale(.96); }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: var(--activity-w) 0 1fr; }
+  .sidebar {
+    position: fixed;
+    top: 0; bottom: calc(var(--panel-h) + var(--status-h));
+    left: var(--activity-w);
+    width: var(--sidebar-w);
+    z-index: 25;
+    box-shadow: 4px 0 24px rgba(0,0,0,.4);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .app.sidebar-open .sidebar { opacity: 1; pointer-events: auto; }
+  .sidebar-toggle { display: grid; place-items: center; }
+  .minimap { display: none; }
+  --panel-h: 140px;
+}
+
+@media (max-width: 390px) {
+  .breadcrumb { font-size: 10px; padding: 4px 8px; }
+  .tab { padding: 0 8px; font-size: 11px; }
+  .statusbar { gap: 8px; font-size: 10px; padding: 0 6px; }
+  .status-item.hide-sm { display: none; }
+  .welcome { padding: 20px 16px; }
+}
+
+/* === mobile touch targets (auto-injected; min 44px tap area on phones) === */
+@media (max-width: 760px) {
+  button, [role="button"], select,
+  .icon-btn, .tiny-btn, .transport-btn, .mute-btns, .workspace-tab, .small-tab,
+  .preset-tab, .sequence-tab, .tab, .sort-btn, .range-btn, .env-btn, .banner-dismiss, .banner-action, .act-btn {
+    min-height: 44px;
+  }
+  .icon-btn, .tiny-btn, .transport-btn, .mute-btns, .sort-btn, .act-btn { min-width: 44px; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea { min-height: 40px; box-sizing: border-box; }
+}
+
+
+/* mobile polish 2 (auto) */
+@media (max-width:760px){ .repo,.tree-label,.tab,.breadcrumb,.panel-tab,.statusbar{font-size:12px} }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <nav class="activity" aria-label="Activity bar">
+    <button type="button" class="act-btn" aria-current="page" aria-label="Explorer" title="Explorer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg>
+    </button>
+    <button type="button" class="act-btn" aria-label="Search" title="Search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    </button>
+    <button type="button" class="act-btn" aria-label="Source Control" title="Source Control">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><path d="M6 8v8"/><path d="m9 6 6-3 3 3"/><circle cx="18" cy="6" r="2"/><path d="M18 8v10"/></svg>
+    </button>
+    <button type="button" class="act-btn" aria-label="Run and Debug" title="Run">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="8,5 19,12 8,19" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <button type="button" class="act-btn" aria-label="Extensions" title="Extensions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17h7"/></svg>
+    </button>
+    <div class="act-spacer"></div>
+    <button type="button" class="act-btn" aria-label="Settings" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </nav>
+
+  <aside class="sidebar" aria-label="Explorer">
+    <div class="sidebar-header">
+      <span class="repo">exo-gateway</span>
+      <div class="sidebar-actions">
+        <button type="button" class="icon-btn" aria-label="New file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+        <button type="button" class="icon-btn" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        <button type="button" class="icon-btn" aria-label="Collapse all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h10M4 18h6"/></svg></button>
+      </div>
+    </div>
+    <div class="tree-wrap">
+      <ul class="tree" role="tree" aria-label="Files">
+        <li role="none">
+          <div role="treeitem" aria-expanded="true" aria-level="1" tabindex="0" data-folder="src">
+            <span class="tree-chevron tree-chevron--open" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+            <span class="tree-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg></span>
+            <span class="tree-label">src</span>
+          </div>
+          <ul class="tree-group" role="group">
+            <li role="none">
+              <div role="treeitem" aria-expanded="true" aria-level="2" tabindex="-1" data-folder="api">
+                <span class="tree-chevron tree-chevron--open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+                <span class="tree-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg></span>
+                <span class="tree-label">api</span>
+              </div>
+              <ul class="tree-group" role="group">
+                <li role="none">
+                  <div role="treeitem" aria-selected="true" aria-level="3" tabindex="-1" data-file="client.ts">
+                    <span class="tree-chevron tree-chevron--hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+                    <span class="file-dot file-dot--ts" aria-hidden="true"></span>
+                    <span class="tree-label">client.ts</span>
+                    <span class="git-badge git-badge--M" aria-label="Modified">M</span>
+                  </div>
+                </li>
+                <li role="none">
+                  <div role="treeitem" aria-level="3" tabindex="-1">
+                    <span class="tree-chevron tree-chevron--hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+                    <span class="file-dot file-dot--ts"></span>
+                    <span class="tree-label">routes.ts</span>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li role="none">
+              <div role="treeitem" aria-expanded="false" aria-level="2" tabindex="-1" data-folder="lib">
+                <span class="tree-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+                <span class="tree-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg></span>
+                <span class="tree-label">lib</span>
+              </div>
+              <ul class="tree-group" role="group" hidden>
+                <li role="none">
+                  <div role="treeitem" aria-level="3" tabindex="-1">
+                    <span class="tree-chevron tree-chevron--hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+                    <span class="file-dot file-dot--ts"></span>
+                    <span class="tree-label">retry.ts</span>
+                    <span class="git-badge git-badge--A">A</span>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li role="none">
+              <div role="treeitem" aria-level="2" tabindex="-1">
+                <span class="tree-chevron tree-chevron--hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+                <span class="file-dot file-dot--ts"></span>
+                <span class="tree-label">index.ts</span>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li role="none">
+          <div role="treeitem" aria-expanded="true" aria-level="1" tabindex="-1">
+            <span class="tree-chevron tree-chevron--open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+            <span class="tree-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg></span>
+            <span class="tree-label">tests</span>
+          </div>
+          <ul class="tree-group" role="group">
+            <li role="none">
+              <div role="treeitem" aria-level="2" tabindex="-1">
+                <span class="tree-chevron tree-chevron--hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+                <span class="file-dot file-dot--ts"></span>
+                <span class="tree-label">client.test.ts</span>
+                <span class="git-badge git-badge--U">U</span>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li role="none">
+          <div role="treeitem" aria-level="1" tabindex="-1">
+            <span class="tree-chevron tree-chevron--hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+            <span class="file-dot file-dot--json"></span>
+            <span class="tree-label">package.json</span>
+          </div>
+        </li>
+        <li role="none">
+          <div role="treeitem" aria-level="1" tabindex="-1">
+            <span class="tree-chevron tree-chevron--hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg></span>
+            <span class="file-dot file-dot--md"></span>
+            <span class="tree-label">README.md</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-col" id="main">
+    <h1 class="sr-only">Glyph — code editor</h1>
+    <div class="tabbar" role="tablist" aria-label="Open editors">
+      <button type="button" class="tab" role="tab" aria-selected="true" id="tab-client">
+        <span>client.ts</span>
+        <span class="tab-dirty" aria-label="Unsaved changes"></span>
+        <span class="tab-close" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      </button>
+      <button type="button" class="tab" role="tab" aria-selected="false">
+        <span>routes.ts</span>
+        <span class="tab-dirty" hidden></span>
+        <span class="tab-close" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      </button>
+      <button type="button" class="tab" role="tab" aria-selected="false">
+        <span>retry.ts</span>
+        <span class="tab-dirty" hidden></span>
+        <span class="tab-close" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      </button>
+      <button type="button" class="tab" role="tab" aria-selected="false">
+        <span>client.test.ts</span>
+        <span class="tab-dirty" hidden></span>
+        <span class="tab-close" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      </button>
+    </div>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <span>src</span><span class="sep" aria-hidden="true"> › </span>
+      <span>api</span><span class="sep"> › </span>
+      <strong>client.ts</strong><span class="sep"> › </span>
+      <span>ExoClient</span><span class="sep"> › </span>
+      <span>request()</span>
+    </nav>
+
+    <div class="editor-wrap" id="editorView">
+      <div class="code-scroll" tabindex="0" aria-label="Source code editor">
+        <div class="code-surface" role="textbox" aria-label="client.ts — TypeScript source" aria-readonly="true" aria-multiline="true">
+          <div class="gutter-ln tnum" aria-hidden="true" id="lineGutter"></div>
+          <div class="gutter-diff" aria-hidden="true" id="diffGutter"></div>
+          <pre class="code-lines" id="codeLines"><code></code></pre>
+        </div>
+      </div>
+      <aside class="minimap" aria-hidden="true">
+        <canvas id="minimapCanvas" width="64" height="200"></canvas>
+      </aside>
+      <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+        <div class="skeleton-bar" style="width:60%;margin-bottom:8px"></div>
+        <div class="skeleton-bar" style="width:45%;margin-bottom:8px"></div>
+        <div class="skeleton-bar" style="width:72%"></div>
+      </div>
+    </div>
+
+    <section class="welcome" id="welcome" aria-label="Welcome">
+      <h2>Glyph</h2>
+      <p>Open a file to start editing. Recent work is listed below — or create a new file in exo-gateway.</p>
+      <button type="button" class="btn-primary">New file</button>
+      <ul class="welcome-list">
+        <li><button type="button">src/api/client.ts</button></li>
+        <li><button type="button">src/api/routes.ts</button></li>
+        <li><button type="button">tests/client.test.ts</button></li>
+      </ul>
+    </section>
+  </main>
+
+  <section class="panel" aria-label="Panel">
+    <div class="panel-resize" role="separator" aria-orientation="horizontal" aria-label="Resize panel"></div>
+    <div class="panel-tabs" role="tablist" aria-label="Panel views">
+      <button type="button" class="panel-tab" role="tab" aria-selected="true" data-panel="terminal">Terminal</button>
+      <button type="button" class="panel-tab" role="tab" aria-selected="false" data-panel="problems">Problems</button>
+      <button type="button" class="panel-tab" role="tab" aria-selected="false" data-panel="output">Output</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-pane active" id="pane-terminal" role="tabpanel">
+        <div class="terminal">
+          <div><span class="prompt">sunwuyuan@mac</span> <span class="dim">exo-gateway</span> <span class="cmd">$ pnpm test client</span></div>
+          <div class="out">&gt; vitest run tests/client.test.ts</div>
+          <div class="out dim"> RUN  v2.1.4 exo-gateway</div>
+          <div class="out"> <span class="fail">✗</span> tests/client.test.ts <span class="dim">(1 failed | 3 passed) 412ms</span></div>
+          <div class="out fail">   Type 'string | undefined' is not assignable to type 'string'</div>
+          <div class="out dim"> Test Files  1 failed (1) · Tests  1 failed | 3 passed (4)</div>
+          <div><span class="prompt">sunwuyuan@mac</span> <span class="dim">exo-gateway</span> <span class="cmd">$ </span><span class="cursor" aria-hidden="true"></span></div>
+        </div>
+      </div>
+      <div class="panel-pane" id="pane-problems" role="tabpanel">
+        <ul class="problems">
+          <li tabindex="0">
+            <span class="sev sev--err" aria-label="Error"></span>
+            <span class="loc tnum">client.ts:42</span>
+            <span class="msg">Type 'string | undefined' is not assignable to type 'string'</span>
+          </li>
+          <li tabindex="0">
+            <span class="sev sev--warn" aria-label="Warning"></span>
+            <span class="loc tnum">routes.ts:18</span>
+            <span class="msg">'req' is declared but its value is never read</span>
+          </li>
+          <li tabindex="0">
+            <span class="sev sev--warn" aria-label="Warning"></span>
+            <span class="loc tnum">retry.ts:7</span>
+            <span class="msg">Missing return type on function</span>
+          </li>
+        </ul>
+      </div>
+      <div class="panel-pane" id="pane-output" role="tabpanel">
+        <div class="output">
+          [12:04:18] Starting compilation in watch mode…<br>
+          [12:04:21] Found 1 error in src/api/client.ts:42<br>
+          [12:04:21] Watching for file changes.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="statusbar" aria-label="Status">
+    <button type="button" class="status-item clickable" aria-label="Git branch feature/retry-policy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+      <span>feature/retry-policy</span>
+    </button>
+    <span class="status-item tnum" aria-label="Sync status">↓1 ↑2</span>
+    <button type="button" class="status-item clickable" aria-label="1 error, 2 warnings">
+      <span class="dot dot--err"></span><span class="tnum">1</span>
+      <span class="dot dot--warn"></span><span class="tnum">2</span>
+    </button>
+    <span class="status-item status-item--indexing" id="indexStatus" aria-live="polite">
+      <span class="pulse" aria-hidden="true"></span>
+      <span>indexing…</span>
+    </span>
+    <span class="status-spacer"></span>
+    <span class="status-item tnum hide-sm">Ln 42, Col 8</span>
+    <span class="status-item hide-sm">Spaces: 2</span>
+    <span class="status-item hide-sm">UTF-8</span>
+    <span class="status-item hide-sm">LF</span>
+    <span class="status-item">TypeScript</span>
+    <button type="button" class="status-item clickable" style="margin-left:4px">Send feedback</button>
+  </footer>
+</div>
+
+<button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+</button>
+
+<div class="palette-backdrop" id="palette" role="dialog" aria-modal="true" aria-label="Command palette" hidden>
+  <div class="palette">
+    <div class="palette-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" class="palette-input" id="paletteInput" placeholder="Type a file name or command…" autocomplete="off" spellcheck="false" />
+    </div>
+    <ul class="palette-list" id="paletteList" role="listbox"></ul>
+    <div class="palette-hint"><span class="kbd">↑↓</span> navigate · <span class="kbd">↵</span> open · <span class="kbd">esc</span> close</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const CODE = [
+    { t: 'cmt', s: '// ExoClient — typed HTTP facade for the gateway API' },
+    { t: 'kw', s: 'import', r: [{ t: 'punct', s: ' {' }, { t: 'var', s: ' AxiosInstance' }, { t: 'punct', s: ', ' }, { t: 'var', s: 'AxiosRequestConfig' }, { t: 'punct', s: ' }' }, { t: 'kw', s: ' from ' }, { t: 'str', s: "'axios'" }, { t: 'punct', s: ';' }] },
+    { t: 'kw', s: 'import', r: [{ t: 'punct', s: ' {' }, { t: 'var', s: ' RetryPolicy' }, { t: 'punct', s: ', ' }, { t: 'var', s: 'withBackoff' }, { t: 'punct', s: ' }' }, { t: 'kw', s: ' from ' }, { t: 'str', s: "'../lib/retry'" }, { t: 'punct', s: ';' }] },
+    { t: 'empty' },
+    { t: 'kw', s: 'export', r: [{ t: 'kw', s: ' interface ' }, { t: 'ty', s: 'GatewayConfig' }, { t: 'punct', s: ' {' }] },
+    { t: 'prop', s: '  baseUrl', r: [{ t: 'punct', s: ': ' }, { t: 'ty', s: 'string' }, { t: 'punct', s: ';' }] },
+    { t: 'prop', s: '  timeoutMs', r: [{ t: 'punct', s: ': ' }, { t: 'ty', s: 'number' }, { t: 'punct', s: ';' }] },
+    { t: 'prop', s: '  retry', r: [{ t: 'punct', s: '?: ' }, { t: 'ty', s: 'RetryPolicy' }, { t: 'punct', s: ';' }] },
+    { t: 'punct', s: '}' },
+    { t: 'empty' },
+    { t: 'kw', s: 'export', r: [{ t: 'kw', s: ' class ' }, { t: 'ty', s: 'ExoClient' }, { t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '  private', r: [{ t: 'kw', s: ' readonly ' }, { t: 'var', s: 'http' }, { t: 'punct', s: ': ' }, { t: 'ty', s: 'AxiosInstance' }, { t: 'punct', s: ';' }] },
+    { t: 'kw', s: '  private', r: [{ t: 'kw', s: ' readonly ' }, { t: 'var', s: 'policy' }, { t: 'punct', s: ': ' }, { t: 'ty', s: 'RetryPolicy' }, { t: 'punct', s: ';' }] },
+    { t: 'empty' },
+    { t: 'fn', s: '  constructor', r: [{ t: 'punct', s: '(' }, { t: 'var', s: 'cfg' }, { t: 'punct', s: ': ' }, { t: 'ty', s: 'GatewayConfig' }, { t: 'punct', s: ') {' }] },
+    { t: 'var', s: '    this.http', r: [{ t: 'op', s: ' =' }, { t: 'fn', s: ' createHttp' }, { t: 'punct', s: '(' }, { t: 'var', s: 'cfg' }, { t: 'punct', s: ');' }] },
+    { t: 'var', s: '    this.policy', r: [{ t: 'op', s: ' =' }, { t: 'var', s: 'cfg.retry' }, { t: 'op', s: ' ??' }, { t: 'fn', s: ' defaultRetry' }, { t: 'punct', s: '();' }] },
+    { t: 'punct', s: '  }' },
+    { t: 'empty' },
+    { t: 'kw', s: '  async', r: [{ t: 'fn', s: ' request' }, { t: 'op', s: '<' }, { t: 'ty', s: 'T' }, { t: 'op', s: '>' }, { t: 'punct', s: '(' }, { t: 'var', s: 'path' }, { t: 'punct', s: ': ' }, { t: 'ty', s: 'string' }, { t: 'punct', s: ', ' }, { t: 'var', s: 'opts' }, { t: 'punct', s: '?: ' }, { t: 'ty', s: 'AxiosRequestConfig' }, { t: 'punct', s: '): ' }, { t: 'ty', s: 'Promise' }, { t: 'op', s: '<' }, { t: 'ty', s: 'T' }, { t: 'op', s: '>' }, { t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '    const', r: [{ t: 'var', s: ' url' }, { t: 'op', s: ' =' }, { t: 'str', s: '`${this.http.defaults.baseURL}${path}`' }, { t: 'punct', s: ';' }] },
+    { t: 'kw', s: '    return', r: [{ t: 'fn', s: ' withBackoff' }, { t: 'punct', s: '(' }, { t: 'kw', s: 'async' }, { t: 'punct', s: ' () ' }, { t: 'op', s: '=>' }, { t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '      const', r: [{ t: 'var', s: ' res' }, { t: 'op', s: ' =' }, { t: 'kw', s: ' await' }, { t: 'kw', s: ' this' }, { t: 'punct', s: '.' }, { t: 'var', s: 'http' }, { t: 'punct', s: '.' }, { t: 'fn', s: 'get' }, { t: 'op', s: '<' }, { t: 'ty', s: 'T' }, { t: 'op', s: '>' }, { t: 'punct', s: '(' }, { t: 'var', s: 'url' }, { t: 'punct', s: ', ' }, { t: 'var', s: 'opts' }, { t: 'punct', s: ');' }] },
+    { t: 'kw', s: '      return', r: [{ t: 'var', s: 'res.data' }, { t: 'punct', s: ';' }] },
+    { t: 'punct', s: '    }, this.policy);' },
+    { t: 'punct', s: '  }' },
+    { t: 'empty' },
+    { t: 'kw', s: '  async', r: [{ t: 'fn', s: ' health' }, { t: 'punct', s: '(): ' }, { t: 'ty', s: 'Promise' }, { t: 'op', s: '<' }, { t: 'ty', s: 'boolean' }, { t: 'op', s: '>' }, { t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '    try', r: [{ t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '      await', r: [{ t: 'kw', s: ' this' }, { t: 'punct', s: '.' }, { t: 'fn', s: 'request' }, { t: 'punct', s: '(' }, { t: 'str', s: "'/health'" }, { t: 'punct', s: ');' }] },
+    { t: 'kw', s: '      return', r: [{ t: 'kw', s: ' true' }, { t: 'punct', s: ';' }] },
+    { t: 'kw', s: '    }', r: [{ t: 'kw', s: ' catch' }, { t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '      return', r: [{ t: 'kw', s: ' false' }, { t: 'punct', s: ';' }] },
+    { t: 'punct', s: '    }' },
+    { t: 'punct', s: '  }' },
+    { t: 'punct', s: '}' },
+    { t: 'empty' },
+    { t: 'cmt', s: '// TODO: wire auth header from session store' },
+    { t: 'kw', s: 'function', r: [{ t: 'fn', s: ' createHttp' }, { t: 'punct', s: '(' }, { t: 'var', s: 'cfg' }, { t: 'punct', s: ': ' }, { t: 'ty', s: 'GatewayConfig' }, { t: 'punct', s: '): ' }, { t: 'ty', s: 'AxiosInstance' }, { t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '  return', r: [{ t: 'var', s: 'axios' }, { t: 'punct', s: '.' }, { t: 'fn', s: 'create' }, { t: 'punct', s: '({' }] },
+    { t: 'prop', s: '    baseURL', r: [{ t: 'punct', s: ': ' }, { t: 'var', s: 'cfg.baseUrl' }, { t: 'punct', s: ',' }] },
+    { t: 'prop', s: '    timeout', r: [{ t: 'punct', s: ': ' }, { t: 'var', s: 'cfg.timeoutMs' }, { t: 'punct', s: ',' }] },
+    { t: 'punct', s: '  });' },
+    { t: 'punct', s: '}' },
+    { t: 'empty' },
+    { t: 'kw', s: 'function', r: [{ t: 'fn', s: ' defaultRetry' }, { t: 'punct', s: '(): ' }, { t: 'ty', s: 'RetryPolicy' }, { t: 'punct', s: ' {' }] },
+    { t: 'kw', s: '  return', r: [{ t: 'punct', s: ' { ' }, { t: 'prop', s: 'attempts' }, { t: 'punct', s: ': ' }, { t: 'num', s: '3' }, { t: 'punct', s: ', ' }, { t: 'prop', s: 'baseMs' }, { t: 'punct', s: ': ' }, { t: 'num', s: '120' }, { t: 'punct', s: ' };' }] },
+    { t: 'punct', s: '}' },
+    { t: 'empty' },
+    { t: 'cmt', s: '// Error on line 42 — strict mode assignment' },
+    { t: 'kw', s: 'const', r: [{ t: 'var', s: 'token' }, { t: 'punct', s: ': ' }, { t: 'ty', s: 'string' }, { t: 'op', s: ' =' }, { t: 'fn', s: ' readSessionToken' }, { t: 'punct', s: '();' }], err: true, sel: ['readSessionToken'] },
+    { t: 'empty' },
+    { t: 'kw', s: 'export', r: [{ t: 'kw', s: ' default ' }, { t: 'ty', s: 'ExoClient' }, { t: 'punct', s: ';' }] },
+  ];
+
+  const DIFF = { 3: 'mod', 17: 'add', 18: 'add', 41: 'mod', 42: 'mod' };
+  const CURRENT = 42;
+  const TOTAL = CODE.length;
+
+  function span(cls, text) {
+    const el = document.createElement('span');
+    el.className = cls;
+    el.textContent = text;
+    return el;
+  }
+
+  function renderLine(line, idx) {
+    const row = document.createElement('span');
+    row.className = 'code-line';
+    if (idx + 1 === CURRENT) row.classList.add('current');
+    if (line.sel) row.classList.add('has-selection');
+
+    if (line.t === 'empty') {
+      row.appendChild(document.createTextNode('\u00a0'));
+      return row;
+    }
+
+    const parts = [];
+    if (line.s) parts.push({ t: line.t, s: line.s });
+    if (line.r) parts.push(...line.r);
+
+    let full = '';
+    parts.forEach(p => { full += p.s; });
+
+    if (line.sel) {
+      const [selWord] = line.sel;
+      const start = full.indexOf(selWord);
+      let pos = 0;
+      parts.forEach(p => {
+        const end = pos + p.s.length;
+        if (end <= start || pos >= start + selWord.length) {
+          row.appendChild(span(p.t, p.s));
+        } else {
+          const ls = Math.max(0, start - pos);
+          const le = Math.min(p.s.length, start + selWord.length - pos);
+          if (ls > 0) row.appendChild(span(p.t, p.s.slice(0, ls)));
+          const mid = document.createElement('span');
+          mid.className = 'sel ' + p.t;
+          mid.textContent = p.s.slice(ls, le);
+          row.appendChild(mid);
+          if (le < p.s.length) row.appendChild(span(p.t, p.s.slice(le)));
+        }
+        pos = end;
+      });
+    } else {
+      parts.forEach(p => row.appendChild(span(p.t, p.s)));
+    }
+
+    if (line.err) {
+      row.querySelectorAll('span').forEach(s => {
+        if (s.textContent.includes('readSessionToken')) s.classList.add('err-squiggle');
+      });
+      const dot = document.createElement('span');
+      dot.className = 'gutter-err';
+      dot.setAttribute('aria-hidden', 'true');
+      row.appendChild(dot);
+    }
+
+    if (idx + 1 === CURRENT) {
+      const cur = document.createElement('span');
+      cur.className = 'cursor';
+      cur.setAttribute('aria-hidden', 'true');
+      row.appendChild(cur);
+    }
+
+    return row;
+  }
+
+  const codeEl = document.querySelector('#codeLines code');
+  const lnGutter = document.getElementById('lineGutter');
+  const diffGutter = document.getElementById('diffGutter');
+
+  CODE.forEach((line, i) => {
+    const n = i + 1;
+    const ln = document.createElement('span');
+    ln.className = 'tnum' + (n === CURRENT ? ' current' : '');
+  ln.textContent = n;
+    lnGutter.appendChild(ln);
+
+    const d = document.createElement('span');
+    if (DIFF[n] === 'add') d.className = 'diff-add';
+    else if (DIFF[n] === 'mod') d.className = 'diff-mod';
+    diffGutter.appendChild(d);
+
+    codeEl.appendChild(renderLine(line, i));
+  });
+
+  /* Minimap */
+  const canvas = document.getElementById('minimapCanvas');
+  const ctx = canvas.getContext('2d');
+  const colors = { kw: '#E06C75', str: '#98C379', cmt: '#7A8794', fn: '#82AAFF', ty: '#E5C07B', num: '#D19A66', op: '#56B6C2', prop: '#C678DD', var: '#ABB2BF', punct: '#909AA8' };
+  const h = 200;
+  canvas.height = h;
+  const rowH = h / TOTAL;
+  CODE.forEach((line, i) => {
+    const y = i * rowH;
+    if (line.t === 'empty') return;
+    const c = colors[line.t] || '#6E7688';
+    ctx.fillStyle = c;
+    const w = line.t === 'cmt' ? 20 : line.t === 'kw' ? 36 : 28;
+    ctx.globalAlpha = line.t === 'cmt' ? 0.35 : 0.7;
+    ctx.fillRect(4, y + 1, w, Math.max(1, rowH - 1));
+  });
+  ctx.globalAlpha = 1;
+
+  /* Tree expand/collapse */
+  document.querySelectorAll('[data-folder]').forEach(item => {
+    item.addEventListener('click', () => {
+      const expanded = item.getAttribute('aria-expanded') === 'true';
+      item.setAttribute('aria-expanded', String(!expanded));
+      const chev = item.querySelector('.tree-chevron');
+      chev.classList.toggle('tree-chevron--open', !expanded);
+      const group = item.parentElement.querySelector(':scope > .tree-group');
+      if (group) group.hidden = expanded;
+    });
+    item.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
+    });
+  });
+
+  document.querySelectorAll('[role="treeitem"][data-file], .welcome-list button').forEach(el => {
+    el.addEventListener('click', () => {
+      document.getElementById('welcome').classList.remove('visible');
+      document.getElementById('editorView').style.display = '';
+    });
+  });
+
+  /* Tabs */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', e => {
+      if (e.target.closest('.tab-close')) return;
+      document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+      tab.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  /* Panel tabs */
+  document.querySelectorAll('.panel-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.panel-tab').forEach(b => b.setAttribute('aria-selected', 'false'));
+      btn.setAttribute('aria-selected', 'true');
+      document.querySelectorAll('.panel-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById('pane-' + btn.dataset.panel).classList.add('active');
+    });
+  });
+
+  /* Activity bar */
+  document.querySelectorAll('.act-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.act-btn').forEach(b => b.removeAttribute('aria-current'));
+      btn.setAttribute('aria-current', 'page');
+    });
+  });
+
+  /* Command palette */
+  const palette = document.getElementById('palette');
+  const paletteInput = document.getElementById('paletteInput');
+  const paletteList = document.getElementById('paletteList');
+  const items = [
+    { label: 'client.ts', kind: 'file', path: 'src/api/client.ts' },
+    { label: 'routes.ts', kind: 'file', path: 'src/api/routes.ts' },
+    { label: 'retry.ts', kind: 'file', path: 'src/lib/retry.ts' },
+    { label: 'Go to Symbol…', kind: 'command', path: '' },
+    { label: 'Format Document', kind: 'command', path: '' },
+    { label: 'Toggle Terminal', kind: 'command', path: '' },
+    { label: 'Preferences: Open Settings', kind: 'command', path: '' },
+  ];
+  let selectedIdx = 0;
+
+  function renderPalette(filter) {
+    paletteList.innerHTML = '';
+    const q = (filter || '').toLowerCase();
+    const filtered = items.filter(it => it.label.toLowerCase().includes(q) || it.path.toLowerCase().includes(q));
+    selectedIdx = 0;
+    filtered.forEach((it, i) => {
+      const li = document.createElement('li');
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      li.tabIndex = -1;
+      li.innerHTML = '<span>' + it.label + '</span><span class="kind">' + it.kind + '</span>';
+      li.addEventListener('click', () => closePalette());
+      paletteList.appendChild(li);
+    });
+    return filtered;
+  }
+
+  function openPalette() {
+    palette.hidden = false;
+    requestAnimationFrame(() => palette.classList.add('open'));
+    paletteInput.value = '';
+    renderPalette('');
+    paletteInput.focus();
+    trapFocus();
+  }
+
+  function closePalette() {
+    palette.classList.remove('open');
+    palette.hidden = true;
+    document.removeEventListener('keydown', paletteKey);
+  }
+
+  function trapFocus() {
+    document.addEventListener('keydown', paletteKey);
+  }
+
+  function paletteKey(e) {
+    const opts = paletteList.querySelectorAll('li');
+    if (e.key === 'Escape') { e.preventDefault(); closePalette(); return; }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIdx = Math.min(selectedIdx + 1, opts.length - 1);
+      opts.forEach((o, i) => o.setAttribute('aria-selected', i === selectedIdx ? 'true' : 'false'));
+      opts[selectedIdx]?.scrollIntoView({ block: 'nearest' });
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIdx = Math.max(selectedIdx - 1, 0);
+      opts.forEach((o, i) => o.setAttribute('aria-selected', i === selectedIdx ? 'true' : 'false'));
+      opts[selectedIdx]?.scrollIntoView({ block: 'nearest' });
+    }
+    if (e.key === 'Enter') { e.preventDefault(); closePalette(); }
+  }
+
+  paletteInput.addEventListener('input', () => renderPalette(paletteInput.value));
+  palette.addEventListener('click', e => { if (e.target === palette) closePalette(); });
+
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'p' || e.key === 'k')) {
+      e.preventDefault();
+      if (palette.hidden) openPalette(); else closePalette();
+    }
+  });
+
+  /* Sidebar toggle */
+  const app = document.getElementById('app');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  sidebarToggle.addEventListener('click', () => {
+    const open = app.classList.toggle('sidebar-open');
+    sidebarToggle.setAttribute('aria-expanded', String(open));
+  });
+
+  /* Panel resize (no CSS width animation) */
+  const panel = document.querySelector('.panel');
+  const resizeHandle = document.querySelector('.panel-resize');
+  let dragging = false;
+  resizeHandle.addEventListener('mousedown', e => {
+    dragging = true;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const h = window.innerHeight - e.clientY - 24;
+    const clamped = Math.max(100, Math.min(320, h));
+    document.documentElement.style.setProperty('--panel-h', clamped + 'px');
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+
+  /* Loading state — brief flash then hide indexing */
+  setTimeout(() => {
+    document.getElementById('indexStatus').style.display = 'none';
+  }, 2800);
+
+  /* Status bar problems click */
+  document.querySelector('.status-item.clickable[aria-label*="error"]')?.addEventListener('click', () => {
+    document.querySelector('.panel-tab[data-panel="problems"]').click();
+  });
+
+  /* Scroll current line into view */
+  const currentLine = document.querySelector('.code-line.current');
+  if (currentLine) currentLine.scrollIntoView({ block: 'center' });
+})();
+</script>
+</body>
+</html>

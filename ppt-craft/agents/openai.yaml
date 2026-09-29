@@ -1,0 +1,4 @@
+interface:
+  display_name: "PPT Craft"
+  short_description: "HTML-first world-class deck craft"
+  default_prompt: "Use $ppt-craft to digest my material, select local world-class style anchors, ask only the critical deck questions, show strong visual directions, and build a beautiful validated HTML-first presentation unless editable PPTX is required."

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 960pt;
+      height: 540pt;
+      overflow: hidden;
+      background: #050b12;
+      color: #f8fbff;
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      position: relative;
+    }
+    .slide {
+      position: relative;
+      width: 960pt;
+      height: 540pt;
+      overflow: hidden;
+      background: #050b12;
+    }
+    .claim {
+      position: absolute;
+      left: 44pt;
+      top: 44pt;
+      width: 300pt;
+      height: 150pt;
+      padding: 22pt 24pt;
+      border: 1pt solid rgba(120, 194, 255, 0.28);
+      border-radius: 8pt;
+      background: rgba(8, 20, 34, 0.92);
+    }
+    h1 { font-size: 34pt; line-height: 1.05; font-weight: 760; color: #ffffff; }
+    p { margin-top: 12pt; font-size: 14pt; line-height: 1.35; color: #d9e8f7; }
+    .graph {
+      position: absolute;
+      left: 396pt;
+      top: 72pt;
+      width: 500pt;
+      height: 336pt;
+    }
+    .node {
+      position: absolute;
+      width: 116pt;
+      height: 68pt;
+      padding: 12pt;
+      border: 1pt solid rgba(120, 194, 255, 0.42);
+      border-radius: 8pt;
+      background: rgba(10, 27, 45, 0.94);
+    }
+    .node strong { display: block; font-size: 15pt; line-height: 1.1; color: #ffffff; }
+    .node span { display: block; margin-top: 5pt; font-size: 9pt; line-height: 1.2; color: #8fb6cf; }
+    .node.signal { left: 0; top: 128pt; }
+    .node.model { left: 192pt; top: 40pt; border-color: rgba(237, 187, 102, 0.64); }
+    .node.proof { left: 192pt; top: 214pt; }
+    .node.action { left: 382pt; top: 128pt; }
+    .edge {
+      position: absolute;
+      height: 0;
+      border-top: 2pt solid #63caff;
+      transform-origin: left center;
+    }
+    .edge.a { left: 116pt; top: 162pt; width: 104pt; transform: rotate(-28deg); }
+    .edge.b { left: 116pt; top: 172pt; width: 112pt; transform: rotate(30deg); border-top-color: #edbb66; }
+    .edge.c { left: 308pt; top: 74pt; width: 112pt; transform: rotate(32deg); border-top-color: #edbb66; }
+    .edge.d { left: 308pt; top: 248pt; width: 112pt; transform: rotate(-32deg); }
+    .loop {
+      position: absolute;
+      left: 404pt;
+      top: 438pt;
+      width: 420pt;
+      height: 44pt;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10pt;
+    }
+    .chip {
+      display: grid;
+      place-items: center;
+      border-radius: 999pt;
+      border: 1pt solid rgba(120, 194, 255, 0.36);
+      background: rgba(8, 20, 34, 0.92);
+      color: #ffffff;
+      font-size: 13pt;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main class="slide">
+    <section class="claim">
+      <h1>复杂关系先成图</h1>
+      <p>节点、线条、标签先在网页里精确排布，再按语义还原到 PPT。</p>
+    </section>
+    <section class="graph" data-graph="evidence-loop">
+      <div class="node signal" data-graph-node="signal" data-graph-layer="input" data-graph-role="input" data-graph-active="true">
+        <strong>信号</strong><span>收集异常与线索</span>
+      </div>
+      <div class="node model" data-graph-node="model" data-graph-layer="reasoning" data-graph-role="operation" data-graph-active="true">
+        <strong>模型</strong><span>生成判断路径</span>
+      </div>
+      <div class="node proof" data-graph-node="proof" data-graph-layer="evidence" data-graph-role="evidence" data-graph-active="true">
+        <strong>证据</strong><span>沉淀可复用证明</span>
+      </div>
+      <div class="node action" data-graph-node="action" data-graph-layer="decision" data-graph-role="output" data-graph-active="true">
+        <strong>行动</strong><span>转成下一步决策</span>
+      </div>
+      <div class="edge a" data-graph-edge="signal-model" data-graph-from="signal" data-graph-to="model" data-graph-layer="input" data-graph-relation="feeds" data-graph-active="true" data-pptx-connector data-pptx-from="0,100%" data-pptx-to="100%,0" data-pptx-arrow="end" data-pptx-color="#63CAFF" data-pptx-width="2"></div>
+      <div class="edge b" data-graph-edge="signal-proof" data-graph-from="signal" data-graph-to="proof" data-graph-layer="evidence" data-graph-relation="proves" data-pptx-connector data-pptx-from="0,0" data-pptx-to="100%,100%" data-pptx-arrow="end" data-pptx-color="#EDBB66" data-pptx-width="2"></div>
+      <div class="edge c" data-graph-edge="model-action" data-graph-from="model" data-graph-to="action" data-graph-layer="decision" data-graph-relation="triggers" data-graph-active="true" data-pptx-connector data-pptx-from="0,0" data-pptx-to="100%,100%" data-pptx-arrow="end" data-pptx-color="#EDBB66" data-pptx-width="2"></div>
+      <div class="edge d" data-graph-edge="proof-action" data-graph-from="proof" data-graph-to="action" data-graph-layer="decision" data-graph-relation="proves" data-graph-active="true" data-pptx-connector data-pptx-from="0,100%" data-pptx-to="100%,0" data-pptx-arrow="end" data-pptx-color="#63CAFF" data-pptx-width="2"></div>
+    </section>
+    <section class="loop">
+      <span class="chip" data-graph-label="signal">信号</span>
+      <span class="chip" data-graph-label="proof">证据</span>
+      <span class="chip" data-graph-label="action">行动</span>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>客户管理 · Pipeline CRM</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* ════ Token contract — single owned accent (warm amber, NOT indigo) ════ */
+  :root{
+    --bg:#0A0D0F; --surface:#12161A; --surface-2:#181D22; --surface-hi:#1F252B;
+    --border:#222A30; --border-hi:#2E373E;
+    --text:#E8ECEF; --text-dim:#9BA5AD; --text-faint:#879099;
+    --accent:#E0A458; --accent-hi:#ECBA78; --accent-ink:#17100A;
+    --lead:#9BA7B2; --qualified:#5AA8EC; --proposal:#E0A458; --won:#52C266; --lost:#EC6A60;
+    --radius-control:6px; --radius-card:10px; --radius-pill:9999px;
+    --w-body:400; --w-med:510; --w-strong:590;
+    /* real easing curves pulled from shipped products */
+    --ease:cubic-bezier(.25,.46,.45,.94); --ease-out:cubic-bezier(.16,1,.3,1); --dur:150ms;
+    --hl:inset 0 1px 0 rgba(255,255,255,.05);     /* top-edge highlight = "crafted dark surface" */
+    --font:"Inter","Inter var",ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);font-weight:var(--w-body);
+    font-size:14px;line-height:1.5;letter-spacing:-.006em;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-optical-sizing:auto}
+  .tnum{font-variant-numeric:tabular-nums}                 /* digits align in columns */
+  ::selection{background:color-mix(in srgb,var(--accent) 32%,transparent)}
+  *::-webkit-scrollbar{width:10px;height:10px}
+  *::-webkit-scrollbar-thumb{background:var(--surface-hi);border-radius:9999px;border:3px solid transparent;background-clip:content-box}
+  *::-webkit-scrollbar-thumb:hover{background:var(--border-hi);background-clip:content-box}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  input{font:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  .ic{width:16px;height:16px;flex:none;color:var(--text-faint)}   /* icons: ONE 1.5 stroke, 16-grid */
+
+  .app{display:grid;grid-template-columns:240px 1fr;height:100vh}
+
+  /* ════ Sidebar ════ */
+  .side{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
+  .brand{display:flex;align-items:center;gap:8px;padding:16px 16px 12px;font-weight:var(--w-strong);letter-spacing:-.02em}
+  .brand .mark{width:24px;height:24px;border-radius:7px;background:linear-gradient(150deg,var(--accent-hi),#C9853B);
+    display:grid;place-items:center;color:var(--accent-ink);font-weight:700;font-size:13px;box-shadow:var(--hl)}
+  .search{display:flex;align-items:center;gap:8px;height:32px;margin:0 12px 12px;padding:0 10px;width:auto;
+    background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-control);
+    color:var(--text-faint);font-size:13px;letter-spacing:-.006em;transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+  .search::placeholder{color:var(--text-faint)}
+  .search:hover{border-color:var(--border-hi)}
+  .searchwrap{position:relative;margin:0 12px 12px}
+  .searchwrap .ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none}
+  .searchwrap input{padding-left:32px;margin:0}
+  .searchwrap kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:11px;
+    color:var(--text-faint);border:1px solid var(--border-hi);border-radius:4px;padding:1px 5px;pointer-events:none}
+  .nav{padding:0 8px;display:flex;flex-direction:column;gap:2px}
+  .nav a{position:relative;display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:var(--radius-control);
+    color:var(--text-dim);font-weight:var(--w-med);transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+  .nav a .ct{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--text-faint)}
+  .nav a:hover{background:var(--surface-2);color:var(--text)}
+  .nav a[aria-current="page"]{background:var(--surface-hi);color:var(--text);box-shadow:inset 2px 0 0 var(--accent)}
+  .nav a[aria-current="page"] .ic{color:var(--accent)}
+  .group{padding:20px 18px 8px;font-size:11px;font-weight:var(--w-med);letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+  .stage{display:flex;align-items:center;gap:9px;height:30px;padding:0 18px;color:var(--text-dim);cursor:pointer;transition:color var(--dur) var(--ease)}
+  .stage .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .stage .ct{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--text-faint);font-variant-numeric:tabular-nums}
+  .stage:hover{color:var(--text)}
+  .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--border)}
+
+  /* ════ Main ════ */
+  .main{display:flex;flex-direction:column;min-width:0;min-height:0}
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--border)}
+  .topbar h1{font-size:15px;font-weight:var(--w-strong);letter-spacing:-.01em}
+  .topbar .crumb{color:var(--text-faint)}
+  .topbar .sp{flex:1}
+  .btn{height:32px;padding:0 12px;border-radius:var(--radius-control);font-weight:var(--w-med);font-size:13px;letter-spacing:-.006em;
+    display:inline-flex;align-items:center;gap:7px;transition:background var(--dur) var(--ease),color var(--dur) var(--ease),transform var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+  .btn:active{transform:scale(.985)}
+  .btn-ghost{color:var(--text-dim);border:1px solid var(--border)}
+  .btn-ghost:hover{background:var(--surface-2);color:var(--text);border-color:var(--border-hi)}
+  .btn-ghost .ic{width:15px;height:15px}
+  .btn-primary{background:var(--accent);color:var(--accent-ink);font-weight:var(--w-strong);box-shadow:var(--hl),inset 0 0 0 1px rgba(255,255,255,.08)}
+  .btn-primary .ic{color:var(--accent-ink)}
+  .btn-primary:hover{background:var(--accent-hi)}
+  .btn-primary:active{transform:translateY(.5px) scale(.99)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn:disabled:hover{background:none;color:var(--text-dim);border-color:var(--border)}
+  .menu-btn{display:none}
+
+  .scroll{overflow:auto;flex:1;min-height:0}
+
+  /* ── ERROR banner ── */
+  .banner{display:flex;align-items:center;gap:10px;margin:16px 24px 0;padding:10px 12px;font-size:13px;color:var(--text);
+    border:1px solid color-mix(in srgb,var(--lost) 38%,var(--border));border-radius:var(--radius-control);
+    background:color-mix(in srgb,var(--lost) 11%,transparent);box-shadow:var(--hl)}
+  .banner .ic{color:var(--lost)}
+  .banner b{font-weight:var(--w-med)}
+  .banner .banner-act{margin-left:auto;color:var(--lost);font-weight:var(--w-med);padding:2px 6px;border-radius:5px;transition:background var(--dur) var(--ease)}
+  .banner .banner-act:hover{background:color-mix(in srgb,var(--lost) 16%,transparent)}
+  .banner .banner-x{color:var(--text-faint);width:24px;height:24px;border-radius:6px;display:grid;place-items:center;transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+  .banner .banner-x:hover{background:color-mix(in srgb,var(--lost) 14%,transparent);color:var(--text)}
+
+  /* ── HERO: focal point + signature pipeline bar (with entrance) ── */
+  .hero{padding:24px;border-bottom:1px solid var(--border)}
+  .hero-top{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  .total{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:42px;line-height:1;
+    font-weight:var(--w-strong);letter-spacing:-.038em}
+  .total .cur{color:var(--text-dim);font-size:24px;font-weight:var(--w-med);margin-right:4px;letter-spacing:0}
+  .total-meta{display:flex;flex-direction:column;gap:4px;padding-bottom:4px}
+  .total-meta .lbl{color:var(--text-dim)}
+  .trend{display:inline-flex;align-items:center;gap:5px;color:var(--won);font-weight:var(--w-med);font-family:var(--mono);
+    font-variant-numeric:tabular-nums;font-size:13px}
+  .pipe{margin-top:20px;max-width:880px}
+  .pipe-bar{display:flex;height:10px;border-radius:var(--radius-pill);overflow:hidden;gap:2px}
+  .pipe-bar span{display:block;transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);transform-origin:center;cursor:pointer}
+  .pipe-bar span:first-child{border-radius:9999px 0 0 9999px}
+  .pipe-bar span:last-child{border-radius:0 9999px 9999px 0}
+  .pipe-bar span:hover{opacity:.85;transform:scaleY(1.35)}
+  .pipe-legend{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap}
+  .pipe-legend .it{display:flex;align-items:center;gap:7px;color:var(--text-dim);font-size:13px}
+  .pipe-legend .it .dot{width:8px;height:8px;border-radius:50%}
+  .pipe-legend .it b{color:var(--text);font-weight:var(--w-med)}
+  .pipe-legend .it .v{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--text-faint)}
+  @media (prefers-reduced-motion:no-preference){
+    .banner,.hero-top,.pipe{animation:rise .5s var(--ease-out) both}
+    .hero-top{animation-delay:.04s}.pipe{animation-delay:.1s}
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+  /* ── Filters ── */
+  .filters{display:flex;align-items:center;gap:8px;padding:14px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .chip{height:30px;padding:0 11px;border-radius:var(--radius-control);border:1px solid var(--border);color:var(--text-dim);
+    font-size:13px;font-weight:var(--w-med);display:inline-flex;align-items:center;gap:6px;
+    transition:background var(--dur) var(--ease),color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+  .chip:hover{background:var(--surface-2);color:var(--text);border-color:var(--border-hi)}
+  .chip[aria-pressed="true"]{background:var(--surface-hi);color:var(--text);border-color:var(--border-hi)}
+  .filters .count{margin-left:auto;color:var(--text-faint);font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px}
+
+  /* ── Table ── */
+  .tablewrap{padding:0 12px 8px}
+  table{width:100%;border-collapse:collapse;min-width:720px}
+  thead th{position:sticky;top:0;z-index:1;background:var(--bg);text-align:left;font-weight:var(--w-med);font-size:12px;
+    color:var(--text-faint);letter-spacing:.01em;padding:10px 12px;border-bottom:1px solid var(--border)}
+  th.num,td.num{text-align:right}
+  tbody tr{border-bottom:1px solid var(--border);transition:background var(--dur) var(--ease)}
+  tbody tr:last-child{border-bottom:0}
+  tbody tr:hover{background:var(--surface)}
+  tbody td{padding:0 12px;height:56px;vertical-align:middle}
+  .co{display:flex;align-items:center;gap:11px;min-width:0}
+  .co .nm{font-weight:var(--w-med);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .co .sub{color:var(--text-faint);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:var(--radius-pill);
+    font-size:12px;font-weight:var(--w-med);box-shadow:var(--hl)}
+  .badge .dot{width:6px;height:6px;border-radius:50%}
+  .val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:var(--w-med)}
+  .av{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:var(--w-strong);
+    color:var(--accent-ink);flex:none;box-shadow:var(--hl)}
+  .owner{display:flex;align-items:center;gap:8px;color:var(--text-dim)}
+  .ago{color:var(--text-faint);font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px}
+  .rowact{display:flex;justify-content:flex-end;opacity:0;transition:opacity var(--dur) var(--ease)}
+  tbody tr:hover .rowact{opacity:1}
+  .iconbtn{width:28px;height:28px;border-radius:var(--radius-control);display:grid;place-items:center;color:var(--text-faint);
+    transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+  .iconbtn:hover{background:var(--surface-hi);color:var(--text)}
+
+  /* ── Pagination (disabled state) ── */
+  .pager{display:flex;align-items:center;gap:14px;justify-content:center;padding:18px;color:var(--text-dim)}
+  .pager .pageinfo{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px;color:var(--text-faint)}
+
+  /* loading skeleton — opacity only (composited, motion-safe) */
+  .skeleton{background:var(--surface-2);border-radius:4px;color:transparent;animation:pulse 1.6s var(--ease) infinite}
+  @keyframes pulse{50%{opacity:.55}}
+
+  /* ── Responsive ── */
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr}.side{display:none}
+    .menu-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:var(--radius-control);border:1px solid var(--border);color:var(--text-dim)}
+    .tablewrap{overflow-x:auto}
+  }
+  @media (max-width:520px){
+    .topbar{padding:12px 16px}.hero{padding:16px}.filters{padding:12px 16px}.banner{margin:12px 16px 0}
+    .total{font-size:32px}.total .cur{font-size:20px}.btn-ghost .t{display:none}.pipe-legend{gap:12px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="side">
+    <div class="brand"><span class="mark">P</span> Pipeline CRM</div>
+    <div class="searchwrap">
+      <svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input class="search" type="search" placeholder="搜索客户…" aria-label="搜索客户">
+      <kbd>⌘K</kbd>
+    </div>
+    <nav class="nav" aria-label="主导航">
+      <a href="#" aria-current="page"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2.25" y="2.25" width="11.5" height="11.5" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M2.25 6h11.5" stroke="currentColor" stroke-width="1.5"/></svg>全部客户<span class="ct">128</span></a>
+      <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.4l1.7 3.5 3.8.55-2.75 2.68.65 3.8L8 11.13 4.6 12.93l.65-3.8L2.5 6.45l3.8-.55z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>我的客户<span class="ct">42</span></a>
+      <a href="#"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.75" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.75V8l2.25 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>本周到期<span class="ct">7</span></a>
+    </nav>
+    <div class="group">销售阶段</div>
+    <div class="stage"><span class="dot" style="background:var(--lead)"></span>Lead<span class="ct">38</span></div>
+    <div class="stage"><span class="dot" style="background:var(--qualified)"></span>Qualified<span class="ct">24</span></div>
+    <div class="stage"><span class="dot" style="background:var(--proposal)"></span>Proposal<span class="ct">18</span></div>
+    <div class="stage"><span class="dot" style="background:var(--won)"></span>Won<span class="ct">48</span></div>
+    <div class="me"><span class="av" style="background:linear-gradient(150deg,var(--accent-hi),#C9853B)">孙</span><div style="font-size:13px;min-width:0"><div style="font-weight:var(--w-med)">孙吴源</div><div style="color:var(--text-faint);font-size:12px">销售负责人</div></div></div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-btn" aria-label="打开菜单"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <h1>全部客户</h1><span class="crumb">· 销售管线</span>
+      <span class="sp"></span>
+      <button class="btn btn-ghost"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.5v7.5m0 0L5.25 7.25M8 10l2.75-2.75M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="t">导出</span></button>
+      <button class="btn btn-primary"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3.25v9.5M3.25 8h9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>新建客户</button>
+    </header>
+
+    <div class="scroll">
+      <div class="banner" role="alert">
+        <svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.75l6.25 11H1.75z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6.5v3M8 11.25v.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span><b>2 个客户同步失败</b> · 数据可能不是最新</span>
+        <button class="banner-act">重试</button>
+        <button class="banner-x" aria-label="关闭提醒"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      </div>
+
+      <section class="hero" aria-label="管线概览">
+        <div class="hero-top">
+          <div class="total"><span class="cur">¥</span>2,847,000</div>
+          <div class="total-meta">
+            <span class="lbl">管线总价值 · 128 个客户</span>
+            <span class="trend"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 9.5V2.5M6 2.5L2.75 5.75M6 2.5l3.25 3.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>12.4% <span style="color:var(--text-faint)">较上月</span></span>
+          </div>
+        </div>
+        <div class="pipe">
+          <div class="pipe-bar" role="img" aria-label="管线阶段分布：Lead 18%、Qualified 24%、Proposal 31%、Won 27%">
+            <span style="width:18%;background:var(--lead)" title="Lead ¥512K"></span>
+            <span style="width:24%;background:var(--qualified)" title="Qualified ¥683K"></span>
+            <span style="width:31%;background:var(--proposal)" title="Proposal ¥882K"></span>
+            <span style="width:27%;background:var(--won)" title="Won ¥770K"></span>
+          </div>
+          <div class="pipe-legend">
+            <span class="it"><span class="dot" style="background:var(--lead)"></span><b>Lead</b><span class="v">¥512K</span></span>
+            <span class="it"><span class="dot" style="background:var(--qualified)"></span><b>Qualified</b><span class="v">¥683K</span></span>
+            <span class="it"><span class="dot" style="background:var(--proposal)"></span><b>Proposal</b><span class="v">¥882K</span></span>
+            <span class="it"><span class="dot" style="background:var(--won)"></span><b>Won</b><span class="v">¥770K</span></span>
+          </div>
+        </div>
+      </section>
+
+      <div class="filters">
+        <button class="chip" aria-pressed="true">全部阶段</button>
+        <button class="chip">负责人</button>
+        <button class="chip">价值</button>
+        <button class="chip">最近活动</button>
+        <span class="count">显示 1–8 / 128</span>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>客户</th><th>阶段</th><th class="num">价值</th><th>负责人</th><th>最近活动</th><th><span class="sr">操作</span></th></tr></thead>
+          <tbody>
+            <tr><td><div class="co"><div><div class="nm">字节智造科技</div><div class="sub">陈晓敏 · CEO</div></div></div></td>
+              <td><span class="badge" style="color:var(--qualified);background:color-mix(in srgb,var(--qualified) 15%,transparent)"><span class="dot" style="background:var(--qualified)"></span>Qualified</span></td>
+              <td class="num val">¥360,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#6FB4F0,#3F86D8);color:#08121E">孙</span>孙吴源</span></td><td><span class="ago">2 小时前</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 字节智造科技"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+            <tr><td><div class="co"><div><div class="nm">云栈数据</div><div class="sub">王浩 · CTO</div></div></div></td>
+              <td><span class="badge" style="color:var(--proposal);background:color-mix(in srgb,var(--proposal) 15%,transparent)"><span class="dot" style="background:var(--proposal)"></span>Proposal</span></td>
+              <td class="num val">¥240,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#A98CF0,#7E5FD8);color:#0F0820">张</span>张磊</span></td><td><span class="ago">昨天</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 云栈数据"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+            <tr><td><div class="co"><div><div class="nm">墨白设计</div><div class="sub">林雅 · 设计总监</div></div></div></td>
+              <td><span class="badge" style="color:var(--lead);background:color-mix(in srgb,var(--lead) 17%,transparent)"><span class="dot" style="background:var(--lead)"></span>Lead</span></td>
+              <td class="num val">¥48,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#5DD06E,#37A84C);color:#04150A">李</span>李雯</span></td><td><span class="ago">3 天前</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 墨白设计"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+            <tr><td><div class="co"><div><div class="nm">青萍智能</div><div class="sub">赵明 · VP 工程</div></div></div></td>
+              <td><span class="badge" style="color:var(--won);background:color-mix(in srgb,var(--won) 15%,transparent)"><span class="dot" style="background:var(--won)"></span>Won</span></td>
+              <td class="num val">¥520,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#6FB4F0,#3F86D8);color:#08121E">孙</span>孙吴源</span></td><td><span class="ago">上周</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 青萍智能"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+            <tr><td><div class="co"><div><div class="nm">九度传媒</div><div class="sub">周婷 · 市场总监</div></div></div></td>
+              <td><span class="badge" style="color:var(--qualified);background:color-mix(in srgb,var(--qualified) 15%,transparent)"><span class="dot" style="background:var(--qualified)"></span>Qualified</span></td>
+              <td class="num val">¥95,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#A98CF0,#7E5FD8);color:#0F0820">张</span>张磊</span></td><td><span class="ago">2 小时前</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 九度传媒"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+            <tr><td><div class="co"><div><div class="nm">栖野咖啡</div><div class="sub">吴郎 · 创始人</div></div></div></td>
+              <td><span class="badge" style="color:var(--lost);background:color-mix(in srgb,var(--lost) 15%,transparent)"><span class="dot" style="background:var(--lost)"></span>Lost</span></td>
+              <td class="num val">¥28,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#5DD06E,#37A84C);color:#04150A">李</span>李雯</span></td><td><span class="ago">上月</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 栖野咖啡"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+            <tr><td><div class="co"><div><div class="nm">光筑建筑</div><div class="sub">孙莉 · 合伙人</div></div></div></td>
+              <td><span class="badge" style="color:var(--proposal);background:color-mix(in srgb,var(--proposal) 15%,transparent)"><span class="dot" style="background:var(--proposal)"></span>Proposal</span></td>
+              <td class="num val">¥520,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#6FB4F0,#3F86D8);color:#08121E">孙</span>孙吴源</span></td><td><span class="ago">今天</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 光筑建筑"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+            <tr><td><div class="co"><div><div class="nm">半岛医疗</div><div class="sub">刘伟 · 采购总监</div></div></div></td>
+              <td><span class="badge" style="color:var(--lead);background:color-mix(in srgb,var(--lead) 17%,transparent)"><span class="dot" style="background:var(--lead)"></span>Lead</span></td>
+              <td class="num val">¥120,000</td><td><span class="owner"><span class="av" style="background:linear-gradient(150deg,#A98CF0,#7E5FD8);color:#0F0820">张</span>张磊</span></td><td><span class="ago">4 天前</span></td>
+              <td><div class="rowact"><button class="iconbtn" aria-label="编辑 半岛医疗"><svg class="ic" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div></td></tr>
+          </tbody>
+        </table>
+        <nav class="pager" aria-label="分页">
+          <button class="btn btn-ghost" disabled aria-disabled="true">上一页</button>
+          <span class="pageinfo">第 1 页 · 共 16 页</span>
+          <button class="btn btn-ghost">下一页</button>
+        </nav>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

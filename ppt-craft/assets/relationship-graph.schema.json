@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/ppt-craft/relationship-graph.schema.json",
+  "title": "PPT Craft Relationship Graph Contract",
+  "type": "object",
+  "required": ["version", "graph_id", "purpose", "layers", "nodes", "edges", "export_policy"],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "graph_id": { "type": "string", "minLength": 1 },
+    "purpose": {
+      "type": "string",
+      "description": "The exact idea the graph must explain. If this is vague, the slide will be visually complex but semantically weak."
+    },
+    "reading_order": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Node or edge ids in the intended viewer reading order."
+    },
+    "views": {
+      "type": "array",
+      "description": "Optional multi-slide graph views. Each view filters the full relationship graph into one rendered slide.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "purpose": { "type": "string" },
+          "message": { "type": "string" },
+          "include_nodes": { "type": "array", "items": { "type": "string" } },
+          "include_edges": { "type": "array", "items": { "type": "string" } },
+          "focus_nodes": { "type": "array", "items": { "type": "string" } },
+          "focus_edges": { "type": "array", "items": { "type": "string" } },
+          "active_edges": { "type": "array", "items": { "type": "string" } },
+          "active_path_edges": { "type": "array", "items": { "type": "string" } },
+          "collapse_subgraphs": { "type": "array", "items": { "type": "string" } },
+          "visual_slots": {
+            "type": "array",
+            "description": "Planned image/crop/icon slots for this graph view. These must be reserved before image generation or cropping.",
+            "items": {
+              "type": "object",
+              "required": ["id", "box"],
+              "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "role": { "type": "string" },
+                "box": { "$ref": "#/$defs/box" },
+                "src": { "type": "string" },
+                "source": { "type": "string" },
+                "source_image": { "type": "string" },
+                "out": { "type": "string" },
+                "asset_out": { "type": "string" },
+                "crop_box": { "$ref": "#/$defs/box" },
+                "source_crop": { "$ref": "#/$defs/box" },
+                "output_size": { "$ref": "#/$defs/size" },
+                "asset_size": { "$ref": "#/$defs/size" },
+                "prompt": { "type": "string" },
+                "fit": { "type": "string", "enum": ["cover", "contain", "fill", "scale-down"] },
+                "crop": { "type": "string" },
+                "transparent": { "type": "boolean" },
+                "blend_mode": { "type": "string", "enum": ["normal", "multiply", "screen", "overlay", "soft-light", "lighten"] },
+                "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+                "transparent_threshold": { "type": "number", "minimum": 0, "maximum": 255 },
+                "transparent_chroma": { "type": "number", "minimum": 0, "maximum": 255 },
+                "transparent_softness": { "type": "number", "minimum": 0, "maximum": 255 }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "swimlanes": {
+      "type": "array",
+      "description": "Optional horizontal business lanes used by the auto-layout renderer.",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "order": { "type": "integer" },
+          "color": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "subgraphs": {
+      "type": "array",
+      "description": "Optional repeated/detail subgraphs. Collapsed subgraphs are rendered as aggregate nodes.",
+      "items": {
+        "type": "object",
+        "required": ["id", "members"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string" },
+          "members": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "collapsed": { "type": "boolean" },
+          "layer": { "type": "string" },
+          "role": { "type": "string" },
+          "swimlane": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "role", "visual_treatment"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "role": {
+            "type": "string",
+            "enum": ["context", "input", "actor", "operation", "evidence", "risk", "decision", "output", "feedback", "loop", "support"]
+          },
+          "visual_treatment": { "type": "string" },
+          "z_index": { "type": "integer" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "layer", "role", "box"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "layer": { "type": "string", "minLength": 1 },
+          "role": {
+            "type": "string",
+            "enum": ["input", "actor", "operation", "evidence", "risk", "decision", "output", "feedback", "loop", "support"]
+          },
+          "box": { "$ref": "#/$defs/box" },
+          "priority": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "active": { "type": "boolean" },
+          "cluster": { "type": "string" },
+          "group": { "type": "string" },
+          "swimlane": { "type": "string" },
+          "collapsed": { "type": "boolean" },
+          "collapsed_members": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "from", "to", "layer", "relation", "export"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": "string", "minLength": 1 },
+          "layer": { "type": "string", "minLength": 1 },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "feeds",
+              "filters",
+              "transforms",
+              "proves",
+              "blocks",
+              "triggers",
+              "compares",
+              "depends-on",
+              "amplifies",
+              "loops",
+              "contradicts",
+              "annotates"
+            ]
+          },
+          "strength": { "type": "string", "enum": ["weak", "normal", "strong", "critical"] },
+          "active": { "type": "boolean" },
+          "export": { "type": "string", "enum": ["pptx-native", "intentional-raster", "html-only"] },
+          "route": {
+            "type": "string",
+            "enum": ["straight", "orthogonal", "elbow", "dogleg", "avoid", "curve", "bezier", "cubic"]
+          },
+          "route_bend": { "type": "number", "minimum": 0, "maximum": 1 },
+          "loop_side": { "type": "string", "enum": ["top", "bottom"] },
+          "anchor_from": { "type": "string", "enum": ["auto", "left", "right", "top", "bottom", "center"] },
+          "anchor_to": { "type": "string", "enum": ["auto", "left", "right", "top", "bottom", "center"] },
+          "label": { "type": "string" },
+          "label_position": { "type": "number", "minimum": 0, "maximum": 1 },
+          "label_priority": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "bundle": { "type": ["string", "boolean"] },
+          "avoid": { "type": "array", "items": { "type": "string" } },
+          "style": {
+            "type": "object",
+            "properties": {
+              "color": { "type": "string" },
+              "width": { "type": "number" },
+              "dash": { "type": "string" },
+              "arrow": { "type": "string", "enum": ["begin", "end", "both", "none"] }
+            },
+            "additionalProperties": true
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["from", "to"],
+              "properties": {
+                "from": { "$ref": "#/$defs/point" },
+                "to": { "$ref": "#/$defs/point" }
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "active_paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "edges", "message"],
+        "properties": {
+          "id": { "type": "string" },
+          "edges": { "type": "array", "items": { "type": "string" } },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "export_policy": {
+      "type": "object",
+      "required": ["default_edge_export", "raster_allowed_for"],
+      "properties": {
+        "default_edge_export": { "type": "string", "enum": ["pptx-native", "intentional-raster", "html-only"] },
+        "raster_allowed_for": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["atmosphere", "glow", "texture", "decorative-mesh", "background-map", "none"] }
+        },
+        "native_required_for": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["core-edges", "active-path", "labels", "nodes", "charts", "tables"] }
+        }
+      },
+      "additionalProperties": true
+    },
+    "layout_policy": {
+      "type": "object",
+      "properties": {
+        "crossing_minimization": { "type": "boolean" },
+        "edge_bundling": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "min_edges": { "type": "integer", "minimum": 2 },
+            "lane_gap": { "type": "number", "exclusiveMinimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "label_placement": {
+          "type": "object",
+          "properties": {
+            "scoring": { "type": "boolean" },
+            "max_overlaps": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "node_crowding": {
+          "type": "object",
+          "properties": {
+            "scoring": { "type": "boolean" },
+            "max_score": { "type": "number", "minimum": 0 },
+            "min_gap": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "edge_density": {
+          "type": "object",
+          "properties": {
+            "scoring": { "type": "boolean" },
+            "max_peak": { "type": "integer", "minimum": 0 },
+            "grid": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "subgraph_collapse": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "min_members": { "type": "integer", "minimum": 2 }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "qa_rules": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "box": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number", "exclusiveMinimum": 0 },
+        "h": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "point": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" }
+      }
+    },
+    "size": {
+      "type": "object",
+      "required": ["w", "h"],
+      "properties": {
+        "w": { "type": "number", "exclusiveMinimum": 0 },
+        "h": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    }
+  },
+  "additionalProperties": true
+}

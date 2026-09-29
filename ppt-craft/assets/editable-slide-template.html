@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 960pt;
+      height: 540pt;
+      overflow: hidden;
+      background: #fbfaf7;
+      color: #171717;
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      position: relative;
+    }
+    .eyebrow {
+      position: absolute;
+      left: 48pt;
+      top: 36pt;
+      width: 240pt;
+    }
+    .title {
+      position: absolute;
+      left: 48pt;
+      top: 82pt;
+      width: 600pt;
+    }
+    .card {
+      position: absolute;
+      left: 48pt;
+      top: 230pt;
+      width: 250pt;
+      height: 180pt;
+      padding: 18pt;
+      background: #123d5a;
+      border-radius: 8pt;
+    }
+    .image-box {
+      position: absolute;
+      right: 48pt;
+      top: 86pt;
+      width: 300pt;
+      height: 330pt;
+      background: #e9e5dc;
+      border-radius: 10pt;
+    }
+    h1 { font-size: 38pt; line-height: 1.04; font-weight: 760; color: #171717; }
+    h2 { font-size: 20pt; line-height: 1.1; font-weight: 700; color: #ffffff; }
+    p { font-size: 13pt; line-height: 1.38; color: #4d4d4d; }
+    .title p { margin-top: 18pt; }
+    .card p { margin-top: 10pt; color: #dcecf4; }
+  </style>
+</head>
+<body>
+  <div class="eyebrow"><p>Section Label</p></div>
+  <div class="title">
+    <h1>Editable slide title as a claim</h1>
+    <p>Subtitle text goes in a paragraph so it can become a PowerPoint text box.</p>
+  </div>
+  <div class="card" data-pptx-merge="true">
+    <h2>Key point</h2>
+    <p>Keep real text inside paragraph or heading tags. Put backgrounds on wrapper divs.</p>
+  </div>
+  <div class="image-box">
+    <p style="position:absolute; left:18pt; bottom:18pt;">Replace this wrapper with an img element for actual pictures.</p>
+  </div>
+</body>
+</html>

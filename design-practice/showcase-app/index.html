@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Orbit — issue tracker</title>
+<meta name="theme-color" content="#0A0D0F" />
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* Orbit — precision-tool dark (D1 × editor-IDE domain)
+   Accent: refined cyan-teal (NOT indigo). Mono: JetBrains Mono as identity. */
+:root {
+  --canvas: #0A0D0F;
+  --sidebar-bg: #0E1114;
+  --panel-bg: #12161A;
+  --card-bg: #181C21;
+  --popover-bg: #1E2329;
+  --ink: #E8EAED;
+  --ink-2: #B4B9C0;
+  --muted: #9AA3AD;
+  --faint: #8B939D;
+  --line: rgba(255,255,255,.06);
+  --line-strong: rgba(255,255,255,.10);
+  --accent: #22C4B8;
+  --accent-dim: #1A9E94;
+  --accent-tint: rgba(34,196,184,.12);
+  --accent-focus: rgba(34,196,184,.35);
+  --status-backlog: #6B7280;
+  --status-todo: #60A5FA;
+  --status-progress: #FBBF24;
+  --status-review: #A78BFA;
+  --status-done: #34D399;
+  --priority-urgent: #F87171;
+  --priority-high: #FB923C;
+  --priority-medium: #FBBF24;
+  --priority-low: #6B7280;
+  --danger: #F87171;
+  --danger-bg: rgba(248,113,113,.12);
+  --warn: #FBBF24;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --w-body: 400; --w-med: 500; --w-strong: 600;
+  --r-2: 2px; --r-4: 4px; --r-6: 6px; --r-8: 8px; --r-pill: 9999px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur: 160ms;
+  --sidebar-w: 240px;
+  --header-h: 48px;
+  --drawer-w: 420px;
+  --shadow-raised: inset 0 1px 0 rgba(255,255,255,.04), 0 1px 2px rgba(0,0,0,.25);
+  --ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--accent-focus);
+  --row-h: 36px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; height: 100%; }
+body {
+  font-family: var(--font-sans);
+  font-weight: var(--w-body);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  background: var(--canvas);
+  height: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: var(--font-mono); font-feature-settings: "tnum" 1; }
+.tnum { font-variant-numeric: tabular-nums; }
+::selection { background: var(--accent-tint); color: var(--ink); }
+* { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.12) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+:focus { outline: none; }
+:focus-visible { box-shadow: var(--ring); }
+
+/* App shell */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+.app.drawer-open { grid-template-columns: var(--sidebar-w) 1fr var(--drawer-w); }
+
+/* Sidebar */
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow-raised);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 20;
+}
+.sidebar-header {
+  padding: 12px 12px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.workspace-btn {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 6px 8px;
+  background: transparent; border: 1px solid transparent;
+  border-radius: var(--r-4); color: var(--ink);
+  font-size: 13px; font-weight: var(--w-med);
+  cursor: pointer; text-align: left;
+  transition: background var(--dur) var(--ease);
+}
+.workspace-btn:hover { background: rgba(255,255,255,.04); }
+.workspace-btn:active { transform: scale(0.98); }
+.workspace-icon {
+  width: 20px; height: 20px; border-radius: var(--r-4);
+  background: var(--accent-tint); color: var(--accent);
+  display: grid; place-items: center; font-size: 10px; font-weight: var(--w-strong);
+}
+.workspace-chevron { margin-left: auto; opacity: .5; }
+
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px; }
+.nav-section { margin-bottom: 16px; }
+.nav-label {
+  font-size: 11px; font-weight: var(--w-med); color: var(--faint);
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 4px 8px 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 6px 8px 6px 10px;
+  border: none; border-radius: var(--r-4);
+  background: transparent; color: var(--ink-2);
+  font-size: 13px; cursor: pointer; text-align: left;
+  position: relative;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.nav-item:hover { background: rgba(255,255,255,.04); color: var(--ink); }
+.nav-item[aria-current="page"] {
+  background: var(--accent-tint); color: var(--ink);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.nav-item .count {
+  margin-left: auto; font-size: 11px; color: var(--muted);
+}
+.nav-item[aria-current="page"] .count { color: var(--accent); }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.project-item { padding-left: 22px; }
+
+.sidebar-footer {
+  padding: 8px 12px; border-top: 1px solid var(--line);
+  font-size: 11px; color: var(--faint);
+}
+.readonly-hint {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 8px; margin-top: 4px;
+  background: rgba(251,191,36,.08); border-radius: var(--r-4);
+  color: var(--warn); font-size: 11px;
+}
+
+/* Main */
+.main {
+  display: flex; flex-direction: column;
+  min-width: 0; background: var(--panel-bg);
+  overflow: hidden;
+}
+
+/* Error banner */
+.sync-banner {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px;
+  background: var(--danger-bg);
+  border-bottom: 1px solid rgba(248,113,113,.2);
+  color: #FCA5A5; font-size: 12px;
+}
+.sync-banner[hidden] { display: none; }
+.sync-banner button {
+  margin-left: auto; background: transparent; border: none;
+  color: inherit; cursor: pointer; padding: 4px;
+  border-radius: var(--r-4);
+}
+.sync-banner button:hover { background: rgba(255,255,255,.06); }
+
+/* Toolbar */
+.toolbar {
+  display: flex; align-items: center; gap: 8px;
+  height: var(--header-h); padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-bg);
+  box-shadow: var(--shadow-raised);
+  flex-shrink: 0;
+  min-width: 0;
+}
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--muted); min-width: 0;
+}
+.breadcrumb strong { color: var(--ink); font-weight: var(--w-med); }
+.breadcrumb-sep { opacity: .4; }
+.toolbar-spacer { flex: 1; }
+
+.view-toggle {
+  display: flex; background: var(--card-bg);
+  border: 1px solid var(--line); border-radius: var(--r-4);
+  padding: 2px;
+}
+.view-toggle button {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border: none; border-radius: var(--r-2);
+  background: transparent; color: var(--muted);
+  font-size: 12px; cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.view-toggle button[aria-selected="true"] {
+  background: var(--accent-tint); color: var(--accent);
+}
+.view-toggle button:hover:not([aria-selected="true"]) { color: var(--ink-2); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: var(--r-4);
+  font-size: 12px; font-weight: var(--w-med);
+  border: 1px solid var(--line); background: var(--card-bg);
+  color: var(--ink-2); cursor: pointer;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  white-space: nowrap;
+}
+.btn:hover { background: rgba(255,255,255,.06); color: var(--ink); border-color: var(--line-strong); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-primary {
+  background: var(--accent); border-color: var(--accent-dim);
+  color: #042F2B; font-weight: var(--w-strong);
+}
+.btn-primary:hover { background: #28D4C8; color: #042F2B; }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: rgba(255,255,255,.04); }
+
+.search-wrap {
+  position: relative; display: flex; align-items: center;
+}
+.search-wrap input {
+  width: 180px; padding: 5px 28px 5px 28px;
+  background: var(--card-bg); border: 1px solid var(--line);
+  border-radius: var(--r-4); color: var(--ink);
+  font-size: 12px; font-family: inherit;
+  transition: border-color var(--dur) var(--ease), width var(--dur) var(--ease);
+}
+.search-wrap input::placeholder { color: var(--faint); }
+.search-wrap input:focus { border-color: var(--accent-dim); width: 220px; }
+.search-wrap .search-icon { position: absolute; left: 8px; color: var(--muted); pointer-events: none; }
+.search-kbd {
+  position: absolute; right: 6px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--faint); padding: 1px 4px;
+  border: 1px solid var(--line); border-radius: var(--r-2);
+  pointer-events: none;
+}
+
+/* Content area */
+.content {
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column;
+  min-width: 0;
+}
+
+/* List view */
+.list-view { flex: 1; overflow-y: auto; padding: 0 0 24px; }
+.list-view[hidden], .board-view[hidden] { display: none; }
+
+.status-group { margin-top: 8px; }
+.group-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; cursor: pointer;
+  user-select: none; color: var(--muted);
+  font-size: 12px; font-weight: var(--w-med);
+  position: sticky; top: 0; background: var(--panel-bg);
+  z-index: 2; border-bottom: 1px solid var(--line);
+}
+.group-header:hover { color: var(--ink-2); }
+.group-chevron { transition: transform var(--dur) var(--ease); }
+.group-header[aria-expanded="false"] .group-chevron { transform: rotate(-90deg); }
+.group-count { font-family: var(--font-mono); font-size: 11px; color: var(--faint); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.issue-row {
+  display: grid;
+  grid-template-columns: 20px 16px 72px 1fr auto auto 72px 80px 56px;
+  align-items: center; gap: 8px;
+  height: var(--row-h); padding: 0 16px 0 12px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.issue-row:hover { background: rgba(255,255,255,.03); }
+.issue-row[aria-selected="true"] {
+  background: var(--accent-tint);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.issue-row:focus-visible { background: rgba(255,255,255,.04); }
+.issue-id { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.issue-title { font-size: 13px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.issue-labels { display: flex; gap: 4px; flex-shrink: 0; }
+.label-pill {
+  font-size: 10px; padding: 2px 6px; border-radius: var(--r-2);
+  background: rgba(255,255,255,.08); color: var(--ink-2);
+  white-space: nowrap;
+}
+.avatar {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--card-bg); border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-size: 9px; font-weight: var(--w-strong); color: var(--ink-2);
+}
+.issue-due, .issue-updated {
+  font-family: var(--font-mono); font-size: 11px; color: var(--faint);
+  text-align: right;
+}
+.row-actions {
+  display: flex; gap: 2px; opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.issue-row:hover .row-actions { opacity: 1; }
+.row-actions .row-action {
+  width: 24px; height: 24px; padding: 0;
+  border-radius: var(--r-4);
+  background: transparent; color: var(--muted);
+  cursor: pointer; display: grid; place-items: center;
+  pointer-events: auto;
+}
+.row-actions .row-action:hover { background: rgba(255,255,255,.08); color: var(--ink); }
+
+/* Board view */
+.board-view {
+  flex: 1; display: flex; gap: 8px;
+  padding: 12px 12px 16px;
+  overflow-x: auto; overflow-y: hidden;
+  min-width: 0;
+}
+.board-col {
+  flex: 0 0 280px; min-width: 260px; max-width: 320px;
+  display: flex; flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-6);
+  box-shadow: var(--shadow-raised);
+  max-height: 100%;
+}
+.board-col-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px; font-weight: var(--w-med); color: var(--ink-2);
+  flex-shrink: 0;
+}
+.board-col-body {
+  flex: 1; overflow-y: auto; padding: 8px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.board-card {
+  padding: 10px; border-radius: var(--r-4);
+  background: var(--panel-bg); border: 1px solid var(--line);
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.board-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--line-strong);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 4px 12px rgba(0,0,0,.2);
+}
+.board-card[aria-selected="true"] { border-color: var(--accent-dim); background: var(--accent-tint); }
+.board-card-id { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.board-card-title { font-size: 13px; color: var(--ink); line-height: 1.35; margin-bottom: 8px; }
+.board-card-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.board-card-labels { display: flex; gap: 4px; flex-wrap: wrap; }
+.board-card .drag-hint {
+  opacity: 0; color: var(--faint);
+  transition: opacity var(--dur) var(--ease);
+}
+.board-card:hover .drag-hint { opacity: .6; }
+
+/* Empty state */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48px 24px; text-align: center;
+  color: var(--muted);
+}
+.empty-state h3 { font-size: 14px; font-weight: var(--w-med); color: var(--ink-2); margin-bottom: 6px; }
+.empty-state p { font-size: 12px; max-width: 280px; margin-bottom: 16px; line-height: 1.5; }
+
+/* Skeleton */
+@keyframes pulse {
+  0%, 100% { opacity: .4; }
+  50% { opacity: .7; }
+}
+.skeleton { animation: pulse 1.4s var(--ease) infinite; }
+.skel-row {
+  height: var(--row-h); margin: 0 16px;
+  background: linear-gradient(90deg, var(--card-bg) 0%, rgba(255,255,255,.04) 50%, var(--card-bg) 100%);
+  background-size: 200% 100%;
+  border-radius: var(--r-4);
+  margin-bottom: 4px;
+}
+.skel-card {
+  height: 72px; border-radius: var(--r-4);
+  background: var(--panel-bg);
+  margin-bottom: 6px;
+}
+
+/* Drawer */
+.drawer-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  z-index: 40; opacity: 0; pointer-events: none;
+  transition: opacity 200ms var(--ease);
+}
+.drawer-backdrop.visible { opacity: 1; pointer-events: auto; }
+
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: var(--drawer-w); max-width: 100vw;
+  background: var(--sidebar-bg);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.04);
+  z-index: 50;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 220ms var(--ease-drawer);
+  overflow: hidden;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-header {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 16px; border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.drawer-close {
+  margin-left: auto; flex-shrink: 0;
+  width: 28px; height: 28px; padding: 0;
+  border: none; border-radius: var(--r-4);
+  background: transparent; color: var(--muted);
+  cursor: pointer;
+}
+.drawer-close:hover { background: rgba(255,255,255,.06); color: var(--ink); }
+.drawer-id { font-family: var(--font-mono); font-size: 12px; color: var(--accent); margin-bottom: 4px; }
+.drawer-title {
+  font-size: 16px; font-weight: var(--w-med); color: var(--ink);
+  line-height: 1.35; border: 1px solid transparent;
+  border-radius: var(--r-4); padding: 2px 4px; margin: -2px -4px;
+  width: 100%;
+}
+.drawer-title:hover { border-color: var(--line); }
+.drawer-body { flex: 1; overflow-y: auto; padding: 16px; }
+
+.props-grid {
+  display: grid; grid-template-columns: 100px 1fr;
+  gap: 8px 12px; margin-bottom: 20px;
+  font-size: 12px;
+}
+.prop-label { color: var(--faint); padding-top: 6px; }
+.prop-control {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 8px; border-radius: var(--r-4);
+  background: var(--card-bg); border: 1px solid var(--line);
+  cursor: pointer; color: var(--ink-2);
+  transition: border-color var(--dur) var(--ease);
+}
+.prop-control:hover { border-color: var(--line-strong); }
+
+.desc-block {
+  margin-bottom: 20px; font-size: 13px; line-height: 1.55; color: var(--ink-2);
+}
+.desc-block h4 { font-size: 11px; font-weight: var(--w-med); color: var(--faint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.desc-block p { margin-bottom: 8px; }
+.desc-block code, .code-block {
+  font-family: var(--font-mono); font-size: 12px;
+  background: var(--card-bg); border: 1px solid var(--line);
+  border-radius: var(--r-4); padding: 12px;
+  display: block; overflow-x: auto; color: var(--ink);
+  margin: 8px 0;
+}
+.desc-block ul { padding-left: 18px; margin: 8px 0; }
+.desc-block li { margin-bottom: 4px; }
+
+.timeline { margin-bottom: 20px; }
+.timeline h4 { font-size: 11px; font-weight: var(--w-med); color: var(--faint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
+.timeline-item {
+  display: flex; gap: 10px; padding-bottom: 12px;
+  border-left: 1px solid var(--line); margin-left: 6px; padding-left: 14px;
+  position: relative;
+}
+.timeline-item::before {
+  content: ""; position: absolute; left: -4px; top: 4px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--card-bg); border: 1px solid var(--line-strong);
+}
+.timeline-time { font-family: var(--font-mono); font-size: 10px; color: var(--faint); flex-shrink: 0; width: 72px; }
+.timeline-text { font-size: 12px; color: var(--ink-2); }
+.timeline-text strong { color: var(--ink); font-weight: var(--w-med); }
+
+.subissues h4 { font-size: 11px; font-weight: var(--w-med); color: var(--faint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.subissue-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; border-radius: var(--r-4);
+  font-size: 12px; cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.subissue-row:hover { background: rgba(255,255,255,.04); }
+.subissue-row .mono { color: var(--muted); font-size: 11px; }
+
+/* Command palette */
+.palette-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  z-index: 100; display: flex; align-items: flex-start; justify-content: center;
+  padding-top: min(20vh, 120px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 160ms var(--ease);
+}
+.palette-backdrop.open { opacity: 1; pointer-events: auto; }
+.palette {
+  width: min(560px, calc(100vw - 32px));
+  background: var(--popover-bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-8);
+  box-shadow: 0 24px 64px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+  overflow: hidden;
+  transform: translateY(-8px) scale(0.98);
+  transition: transform 200ms var(--ease-drawer);
+}
+.palette-backdrop.open .palette { transform: translateY(0) scale(1); }
+.palette-input-wrap {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border-bottom: 1px solid var(--line);
+}
+.palette-input {
+  flex: 1; border: none; background: transparent;
+  font-size: 14px; color: var(--ink); font-family: inherit;
+}
+.palette-input::placeholder { color: var(--faint); }
+.palette-results { max-height: 320px; overflow-y: auto; padding: 6px; }
+.palette-group-label {
+  font-size: 10px; font-weight: var(--w-med); color: var(--faint);
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 6px 8px 4px;
+}
+.palette-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--r-4);
+  cursor: pointer; font-size: 13px; color: var(--ink-2);
+  transition: background var(--dur) var(--ease);
+}
+.palette-item:hover, .palette-item[aria-selected="true"] {
+  background: var(--accent-tint); color: var(--ink);
+}
+.palette-item .mono { font-size: 11px; color: var(--muted); margin-left: auto; }
+.palette-kbd {
+  font-family: var(--font-mono); font-size: 10px;
+  padding: 2px 5px; border: 1px solid var(--line);
+  border-radius: var(--r-2); color: var(--faint);
+}
+
+/* Mobile sidebar toggle */
+.mobile-menu-btn {
+  display: none; width: 32px; height: 32px;
+  border: none; border-radius: var(--r-4);
+  background: transparent; color: var(--ink-2);
+  cursor: pointer;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,.06); }
+
+/* Icons inline SVG */
+.icon { width: 16px; height: 16px; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .app.drawer-open { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-w); transform: translateX(-100%);
+    transition: transform 220ms var(--ease-drawer);
+    z-index: 30;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .mobile-menu-btn { display: grid; place-items: center; }
+  .search-wrap { flex: 1 1 0; min-width: 0; }
+  .search-wrap input { width: 100%; min-width: 0; box-sizing: border-box; }
+  .search-wrap input:focus { width: 100%; }
+  .search-kbd { display: none; }
+  .issue-row {
+    grid-template-columns: 16px 14px 64px 1fr 48px;
+  }
+  .issue-labels, .issue-due, .row-actions { display: none; }
+  .issue-updated { display: none; }
+  .drawer { width: 100vw; }
+  .toolbar .btn span.label { display: none; }
+}
+
+@media (max-width: 390px) {
+  .toolbar { padding: 0 8px; gap: 4px; }
+  .breadcrumb { display: none; }
+  .btn-ghost span { display: none; }
+}
+
+/* === mobile touch targets (auto-injected; min 44px tap area on phones) === */
+@media (max-width: 760px) {
+  button, [role="button"], select,
+  .icon-btn, .tiny-btn, .transport-btn, .mute-btns, .workspace-tab, .small-tab,
+  .preset-tab, .sequence-tab, .tab, .sort-btn, .range-btn, .env-btn, .banner-dismiss, .banner-action, .act-btn {
+    min-height: 44px;
+  }
+  .icon-btn, .tiny-btn, .transport-btn, .mute-btns, .sort-btn, .act-btn { min-width: 44px; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea { min-height: 40px; box-sizing: border-box; }
+}
+
+
+/* mobile polish 3 (auto) */
+@media (max-width:760px){ .toolbar{flex-wrap:wrap; row-gap:6px} .view-toggle [role="tab"], .view-toggle button, .toolbar .button{min-width:44px} }
+
+/* mobile polish 4 (auto) */
+@media (max-width:560px){ .search-wrap{flex:1 1 100%; min-width:100%; order:9} .search-wrap input{width:100%} .toolbar [role="tab"], .toolbar > button{min-width:44px} }
+
+/* mobile polish 5 (auto) */
+@media (max-width:760px){ .mobile-menu-btn, .drawer-close, .workspace-btn, button.icon, .filter-btn{min-width:44px; min-height:44px} }
+
+/* mobile polish 6 (auto) */
+@media (max-width:760px){ .banner button, button[aria-label*="Close"], button[aria-label*="Dismiss"]{min-width:44px; min-height:44px} }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <button class="workspace-btn" type="button" aria-haspopup="listbox">
+        <span class="workspace-icon">O</span>
+        <span>Orbit Engineering</span>
+        <svg class="workspace-chevron icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+    </div>
+    <nav class="sidebar-nav" aria-label="Issues">
+      <div class="nav-section">
+        <div class="nav-label">Views</div>
+        <button class="nav-item" type="button" data-nav="inbox"><svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12v8H2z"/><path d="M2 4l6 4 6-4"/></svg> Inbox <span class="count mono tnum" data-count="inbox">3</span></button>
+        <button class="nav-item" type="button" data-nav="my" aria-current="page"><svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.5"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg> My Issues <span class="count mono tnum" data-count="my">7</span></button>
+        <button class="nav-item" type="button" data-nav="active"><svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg> Active <span class="count mono tnum" data-count="active">12</span></button>
+        <button class="nav-item" type="button" data-nav="backlog"><svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h10M3 12h6"/></svg> Backlog <span class="count mono tnum" data-count="backlog">24</span></button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Teams</div>
+        <button class="nav-item" type="button"><span class="nav-dot" style="background:#60A5FA"></span> Platform <span class="count mono tnum">8</span></button>
+        <button class="nav-item" type="button"><span class="nav-dot" style="background:#34D399"></span> Frontend <span class="count mono tnum">5</span></button>
+        <button class="nav-item" type="button"><span class="nav-dot" style="background:#FBBF24"></span> Infra <span class="count mono tnum">4</span></button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Projects</div>
+        <button class="nav-item project-item" type="button"><span class="nav-dot" style="background:var(--status-progress)"></span> Orbit Core</button>
+        <button class="nav-item project-item" type="button"><span class="nav-dot" style="background:var(--status-todo)"></span> Auth Revamp</button>
+        <button class="nav-item project-item" type="button"><span class="nav-dot" style="background:var(--status-done)"></span> API v2</button>
+        <button class="nav-item project-item" type="button"><span class="nav-dot" style="background:var(--status-review)"></span> Mobile SDK</button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="readonly-hint" role="status">
+        <svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg>
+        View-only on billing settings
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="sync-banner" id="syncBanner" role="alert">
+      <svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11h.01"/></svg>
+      <span>Sync failed — changes from 2 min ago may not be saved.</span>
+      <button type="button" id="dismissBanner" aria-label="Dismiss">Retry</button>
+      <button type="button" id="closeBanner" aria-label="Close banner"><svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+    </div>
+
+    <header class="toolbar">
+      <button class="mobile-menu-btn" type="button" id="menuToggle" aria-label="Toggle sidebar" aria-expanded="false">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+      </button>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <span>Orbit Engineering</span>
+        <span class="breadcrumb-sep">/</span>
+        <strong>My Issues</strong>
+      </nav>
+      <div class="toolbar-spacer"></div>
+      <div class="view-toggle" role="tablist" aria-label="View mode">
+        <button type="button" role="tab" id="tabList" aria-selected="true" aria-controls="listView">
+          <svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
+          List
+        </button>
+        <button type="button" role="tab" id="tabBoard" aria-selected="false" aria-controls="boardView">
+          <svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="4" height="12" rx="1"/><rect x="7" y="2" width="4" height="8" rx="1"/><rect x="12" y="2" width="2" height="10" rx="1"/></svg>
+          Board
+        </button>
+      </div>
+      <button class="btn btn-ghost" type="button"><svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M4 8h8M6 12h4"/></svg><span class="label">Filter</span></button>
+      <button class="btn btn-ghost" type="button"><svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h10M5 8h6M7 11h2"/></svg><span class="label">Sort</span></button>
+      <div class="search-wrap">
+        <svg class="search-icon icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M10 10l3 3"/></svg>
+        <input type="search" placeholder="Search issues…" aria-label="Search issues" id="searchInput" />
+        <span class="search-kbd mono">⌘K</span>
+      </div>
+      <button class="btn btn-primary" type="button" id="newIssueBtn">
+        <svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg>
+        New issue
+      </button>
+    </header>
+
+    <main class="content" id="mainContent">
+      <div class="list-view" id="listView" role="region" aria-label="Issue list">
+        <div id="listSkeleton" class="skeleton" hidden>
+          <div class="skel-row" style="margin-top:12px"></div>
+          <div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div>
+          <div class="skel-row" style="margin-top:16px"></div>
+          <div class="skel-row"></div><div class="skel-row"></div>
+        </div>
+        <div id="listContent"></div>
+      </div>
+      <div class="board-view" id="boardView" role="region" aria-label="Issue board" hidden>
+        <div id="boardSkeleton" class="skeleton" style="display:flex;gap:8px;padding:12px" hidden>
+          <div style="flex:0 0 280px"><div class="skel-card"></div><div class="skel-card"></div></div>
+          <div style="flex:0 0 280px"><div class="skel-card"></div><div class="skel-card"></div></div>
+          <div style="flex:0 0 280px"><div class="skel-card"></div></div>
+        </div>
+        <div id="boardContent" style="display:contents"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden>
+  <div class="drawer-header">
+    <div style="flex:1;min-width:0">
+      <div class="drawer-id mono tnum" id="drawerId">ORB-142</div>
+      <h2 class="drawer-title" id="drawerTitle" contenteditable="true" spellcheck="false">Issue title</h2>
+    </div>
+    <button class="drawer-close" type="button" id="drawerClose" aria-label="Close issue detail">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<div class="palette-backdrop" id="paletteBackdrop" role="dialog" aria-modal="true" aria-label="Command palette" hidden>
+  <div class="palette">
+    <div class="palette-input-wrap">
+      <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M10 10l3 3"/></svg>
+      <input class="palette-input" type="text" id="paletteInput" placeholder="Search commands and issues…" autocomplete="off" />
+      <span class="palette-kbd mono">esc</span>
+    </div>
+    <div class="palette-results" id="paletteResults" role="listbox" aria-label="Commands and issues"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const STATUSES = [
+    { key: 'backlog', label: 'Backlog', color: 'var(--status-backlog)' },
+    { key: 'todo', label: 'Todo', color: 'var(--status-todo)' },
+    { key: 'in_progress', label: 'In Progress', color: 'var(--status-progress)' },
+    { key: 'in_review', label: 'In Review', color: 'var(--status-review)' },
+    { key: 'done', label: 'Done', color: 'var(--status-done)' }
+  ];
+
+  const PRIORITIES = {
+    urgent: { label: 'Urgent', color: 'var(--priority-urgent)' },
+    high: { label: 'High', color: 'var(--priority-high)' },
+    medium: { label: 'Medium', color: 'var(--priority-medium)' },
+    low: { label: 'Low', color: 'var(--priority-low)' }
+  };
+
+  const ISSUES = [
+    { id: 'ORB-142', title: 'Migrate session store to Redis cluster', status: 'in_progress', priority: 'urgent', labels: ['infra', 'auth'], assignee: 'MK', due: 'Jun 28', updated: '2h ago', project: 'Orbit Core', desc: 'Move the in-memory session cache to a Redis cluster for horizontal scaling.\n\n- [ ] Provision ElastiCache\n- [ ] Dual-write phase\n- [ ] Cutover with feature flag', activity: [{ t: '14:32', who: 'Maya K.', text: 'Started dual-write in staging' }, { t: '11:05', who: 'Alex R.', text: 'Approved infra budget' }], subs: [{ id: 'ORB-143', title: 'Add connection pooling' }, { id: 'ORB-144', title: 'Write failover runbook' }] },
+    { id: 'ORB-138', title: 'Fix race condition in webhook retry queue', status: 'in_review', priority: 'high', labels: ['backend', 'bug'], assignee: 'JR', due: 'Jun 27', updated: '4h ago', project: 'Orbit Core', desc: 'Under high load, duplicate webhook deliveries occur when workers restart mid-batch.', activity: [{ t: '09:18', who: 'Jordan R.', text: 'Opened PR #891' }], subs: [] },
+    { id: 'ORB-131', title: 'Add keyboard shortcuts to issue list', status: 'todo', priority: 'medium', labels: ['ux', 'a11y'], assignee: 'SL', due: 'Jul 02', updated: '1d ago', project: 'Orbit Core', desc: 'Implement ↑/↓ navigation, Enter to open, and j/k vim-style bindings.', activity: [], subs: [{ id: 'ORB-132', title: 'Document shortcuts in help modal' }] },
+    { id: 'ORB-127', title: 'Deprecate legacy REST v1 endpoints', status: 'backlog', priority: 'low', labels: ['api'], assignee: 'TC', due: 'Jul 15', updated: '3d ago', project: 'API v2', desc: 'Sunset v1 by Q3. Send deprecation headers starting next sprint.', activity: [], subs: [] },
+    { id: 'ORB-125', title: 'OAuth PKCE flow for mobile clients', status: 'in_progress', priority: 'high', labels: ['auth', 'mobile'], assignee: 'AP', due: 'Jun 30', updated: '6h ago', project: 'Auth Revamp', desc: 'Implement authorization code + PKCE for iOS and Android SDKs.', activity: [{ t: '16:44', who: 'Ava P.', text: 'iOS prototype passing conformance tests' }], subs: [] },
+    { id: 'ORB-119', title: 'Board view column virtualization', status: 'todo', priority: 'medium', labels: ['perf', 'frontend'], assignee: 'SL', due: 'Jul 08', updated: '2d ago', project: 'Orbit Core', desc: 'Virtualize kanban columns when issue count exceeds 50 per column.', activity: [], subs: [] },
+    { id: 'ORB-115', title: 'Audit log export for enterprise tier', status: 'done', priority: 'medium', labels: ['enterprise', 'compliance'], assignee: 'MK', due: 'Jun 20', updated: '5d ago', project: 'Orbit Core', desc: 'CSV and JSON export of audit events with 90-day retention.', activity: [{ t: 'Jun 20', who: 'Maya K.', text: 'Shipped to production' }], subs: [] },
+    { id: 'ORB-108', title: 'GraphQL subscription for live issue updates', status: 'in_review', priority: 'high', labels: ['api', 'realtime'], assignee: 'JR', due: 'Jun 29', updated: '8h ago', project: 'API v2', desc: 'WebSocket-backed subscriptions for issue status changes.', activity: [], subs: [] },
+    { id: 'ORB-102', title: 'Dark mode contrast fixes in settings panel', status: 'backlog', priority: 'low', labels: ['design', 'a11y'], assignee: 'SL', due: null, updated: '1w ago', project: 'Orbit Core', desc: 'Secondary text fails WCAG AA on elevated surfaces.', activity: [], subs: [] },
+    { id: 'ORB-097', title: 'SAML SSO for Acme Corp pilot', status: 'done', priority: 'urgent', labels: ['enterprise', 'auth'], assignee: 'AP', due: 'Jun 18', updated: '1w ago', project: 'Auth Revamp', desc: 'IdP metadata configured. Pilot starts Monday.', activity: [], subs: [] },
+    { id: 'ORB-091', title: 'Batch issue import from Jira CSV', status: 'backlog', priority: 'medium', labels: ['migration'], assignee: 'TC', due: 'Aug 01', updated: '2w ago', project: 'Orbit Core', desc: 'Map Jira fields to Orbit schema with preview step.', activity: [], subs: [] },
+    { id: 'ORB-088', title: 'Notification digest email template', status: 'todo', priority: 'low', labels: ['email'], assignee: null, due: 'Jul 12', updated: '4d ago', project: 'Orbit Core', desc: 'Weekly digest of assigned and mentioned issues.', activity: [], subs: [] }
+  ];
+
+  const COMMANDS = [
+    { group: 'Actions', items: [
+      { label: 'Create new issue', kbd: 'C', action: 'new' },
+      { label: 'Switch to board view', kbd: 'B', action: 'board' },
+      { label: 'Switch to list view', kbd: 'L', action: 'list' },
+      { label: 'Toggle sidebar', action: 'sidebar' }
+    ]},
+    { group: 'Navigate', items: [
+      { label: 'Go to Inbox', action: 'nav-inbox' },
+      { label: 'Go to My Issues', action: 'nav-my' },
+      { label: 'Go to Active', action: 'nav-active' }
+    ]}
+  ];
+
+  let state = {
+    view: 'list',
+    selectedId: null,
+    focusedIndex: -1,
+    flatRows: [],
+    collapsedGroups: new Set(),
+    loading: true,
+    paletteOpen: false,
+    paletteIndex: 0,
+    drawerOpen: false,
+    sidebarOpen: false,
+    showDoneEmpty: false
+  };
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  function statusIcon(status) {
+    const colors = { backlog: '#6B7280', todo: '#60A5FA', in_progress: '#FBBF24', in_review: '#A78BFA', done: '#34D399' };
+    const c = colors[status] || '#6B7280';
+    if (status === 'done') return `<svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="${c}" stroke-width="1.5"><path d="M4 8l3 3 5-6"/></svg>`;
+    if (status === 'in_progress') return `<svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="${c}" stroke-width="1.5"><circle cx="8" cy="8" r="5"/><path d="M8 4v4l2 2"/></svg>`;
+    return `<svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="${c}" stroke-width="1.5"><circle cx="8" cy="8" r="5"/></svg>`;
+  }
+
+  function priorityIcon(p) {
+    const colors = { urgent: '#F87171', high: '#FB923C', medium: '#FBBF24', low: '#6B7280' };
+    const c = colors[p] || '#6B7280';
+    const bars = p === 'urgent' ? 3 : p === 'high' ? 2 : p === 'medium' ? 1 : 0;
+    let paths = '';
+    for (let i = 0; i < 3; i++) {
+      const h = 4 + i * 3;
+      const opacity = i < bars + 1 ? 1 : 0.25;
+      paths += `<rect x="${3 + i * 4}" y="${13 - h}" width="3" height="${h}" fill="${c}" opacity="${i <= bars ? 1 : 0.2}"/>`;
+    }
+    return `<svg class="icon-sm" viewBox="0 0 16 16" width="14" height="14">${paths}</svg>`;
+  }
+
+  function renderLabels(labels) {
+    return labels.map(l => `<span class="label-pill">${l}</span>`).join('');
+  }
+
+  function getIssuesByStatus() {
+    const map = {};
+    STATUSES.forEach(s => { map[s.key] = []; });
+    ISSUES.forEach(i => {
+      if (state.showDoneEmpty && i.status === 'done') return;
+      if (map[i.status]) map[i.status].push(i);
+    });
+    return map;
+  }
+
+  function buildFlatRows() {
+    const rows = [];
+    const byStatus = getIssuesByStatus();
+    STATUSES.forEach(st => {
+      const issues = byStatus[st.key];
+      if (!issues.length) return;
+      if (!state.collapsedGroups.has(st.key)) {
+        issues.forEach(i => rows.push(i));
+      }
+    });
+    state.flatRows = rows;
+  }
+
+  function renderList() {
+    const container = $('#listContent');
+    const byStatus = getIssuesByStatus();
+    buildFlatRows();
+    let html = '';
+
+    STATUSES.forEach(st => {
+      const issues = byStatus[st.key];
+      const collapsed = state.collapsedGroups.has(st.key);
+      html += `<section class="status-group" data-status="${st.key}">
+        <button class="group-header" type="button" aria-expanded="${!collapsed}" data-toggle="${st.key}">
+          <svg class="group-chevron icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+          <span class="group-dot" style="background:${st.color}"></span>
+          ${st.label}
+          <span class="group-count mono tnum">${issues.length}</span>
+        </button>`;
+      if (!collapsed) {
+        if (issues.length === 0) {
+          html += `<div class="empty-state" style="padding:24px">
+            <h3>No issues in ${st.label} yet</h3>
+            <p>Issues move here when their status changes. Create one or drag from another column.</p>
+            <button class="btn btn-primary" type="button" data-empty-create>Create issue</button>
+          </div>`;
+        } else {
+          html += `<div role="list" aria-label="${st.label} issues">`;
+          issues.forEach(issue => {
+            const sel = state.selectedId === issue.id ? ' aria-selected="true"' : '';
+            html += `<div class="issue-row" role="listitem" tabindex="-1" data-id="${issue.id}"${sel}>
+              ${statusIcon(issue.status)}
+              ${priorityIcon(issue.priority)}
+              <span class="issue-id mono tnum">${issue.id}</span>
+              <span class="issue-title">${issue.title}</span>
+              <span class="issue-labels">${renderLabels(issue.labels)}</span>
+              <span class="avatar" title="${issue.assignee || 'Unassigned'}">${issue.assignee || '—'}</span>
+              <span class="issue-due mono tnum">${issue.due || '—'}</span>
+              <span class="issue-updated mono tnum">${issue.updated}</span>
+              <span class="row-actions" aria-hidden="true">
+                <span class="row-action"><svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2"/><path d="M1 13c0-2 2-3 5-3s5 1 5 3"/></svg></span>
+                <span class="row-action"><svg class="icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="4" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="8" cy="12" r="1"/></svg></span>
+              </span>
+            </div>`;
+          });
+          html += '</div>';
+        }
+      }
+      html += '</section>';
+    });
+
+    if (ISSUES.length === 0) {
+      html = `<div class="empty-state">
+        <h3>No issues assigned to you</h3>
+        <p>When someone assigns you work, it shows up here. Check Active for team-wide work in flight.</p>
+        <button class="btn btn-primary" type="button" data-empty-create>Create your first issue</button>
+      </div>`;
+    }
+
+    container.innerHTML = html;
+    bindRowEvents(container);
+    updateFocusRow();
+  }
+
+  function renderBoard() {
+    const container = $('#boardContent');
+    const byStatus = getIssuesByStatus();
+    let html = '';
+
+    STATUSES.forEach(st => {
+      const issues = byStatus[st.key];
+      html += `<div class="board-col" data-col="${st.key}">
+        <div class="board-col-header">
+          <span class="group-dot" style="background:${st.color}"></span>
+          ${st.label}
+          <span class="group-count mono tnum" style="margin-left:auto">${issues.length}</span>
+        </div>
+        <div class="board-col-body">`;
+      if (issues.length === 0) {
+        html += `<div class="empty-state" style="padding:24px 12px">
+          <p style="font-size:11px">Drop issues here or create one</p>
+          <button class="btn" type="button" data-empty-create style="margin-top:8px;font-size:11px">Add issue</button>
+        </div>`;
+      } else {
+        issues.forEach(issue => {
+          const sel = state.selectedId === issue.id ? ' aria-selected="true"' : '';
+          html += `<article class="board-card" tabindex="0" data-id="${issue.id}"${sel}>
+            <div class="board-card-id mono tnum">${issue.id}</div>
+            <div class="board-card-title">${issue.title}</div>
+            <div class="board-card-meta">
+              <div class="board-card-labels">${renderLabels(issue.labels)}</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="avatar">${issue.assignee || '—'}</span>
+                ${priorityIcon(issue.priority)}
+                <svg class="drag-hint icon-sm" viewBox="0 0 16 16" fill="currentColor" opacity=".4"><circle cx="5" cy="4" r="1"/><circle cx="11" cy="4" r="1"/><circle cx="5" cy="8" r="1"/><circle cx="11" cy="8" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="11" cy="12" r="1"/></svg>
+              </div>
+            </div>
+          </article>`;
+        });
+      }
+      html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+    bindRowEvents(container);
+  }
+
+  function bindRowEvents(container) {
+    container.querySelectorAll('[data-id]').forEach(el => {
+      el.addEventListener('click', e => {
+        if (e.target.closest('.row-actions')) return;
+        selectIssue(el.dataset.id);
+      });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectIssue(el.dataset.id);
+        }
+      });
+    });
+    container.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const k = btn.dataset.toggle;
+        if (state.collapsedGroups.has(k)) state.collapsedGroups.delete(k);
+        else state.collapsedGroups.add(k);
+        renderList();
+      });
+    });
+    container.querySelectorAll('[data-empty-create]').forEach(btn => {
+      btn.addEventListener('click', () => alert('Create issue flow — prototype'));
+    });
+  }
+
+  function selectIssue(id) {
+    state.selectedId = id;
+    state.focusedIndex = state.flatRows.findIndex(i => i.id === id);
+    openDrawer(id);
+    if (state.view === 'list') renderList();
+    else renderBoard();
+  }
+
+  function openDrawer(id) {
+    const issue = ISSUES.find(i => i.id === id);
+    if (!issue) return;
+    const drawer = $('#drawer');
+    const backdrop = $('#drawerBackdrop');
+    $('#drawerId').textContent = issue.id;
+    $('#drawerTitle').textContent = issue.title;
+    const st = STATUSES.find(s => s.key === issue.status);
+    const pr = PRIORITIES[issue.priority];
+    $('#drawerBody').innerHTML = `
+      <div class="props-grid">
+        <span class="prop-label">Status</span>
+        <button class="prop-control" type="button"><span class="group-dot" style="background:${st?.color}"></span> ${st?.label}</button>
+        <span class="prop-label">Priority</span>
+        <button class="prop-control" type="button">${priorityIcon(issue.priority)} ${pr?.label}</button>
+        <span class="prop-label">Assignee</span>
+        <button class="prop-control" type="button"><span class="avatar">${issue.assignee || '—'}</span> ${issue.assignee ? issue.assignee + ' Chen' : 'Unassigned'}</button>
+        <span class="prop-label">Labels</span>
+        <button class="prop-control" type="button">${renderLabels(issue.labels) || '—'}</button>
+        <span class="prop-label">Project</span>
+        <button class="prop-control" type="button">${issue.project}</button>
+        <span class="prop-label">Due</span>
+        <button class="prop-control mono tnum" type="button">${issue.due || 'No due date'}</button>
+      </div>
+      <div class="desc-block">
+        <h4>Description</h4>
+        ${issue.desc.split('\n').map(line => {
+          if (line.startsWith('- [ ]')) return `<li>${line.slice(5)}</li>`;
+          if (line.startsWith('```') || line.includes('session')) {
+            return `<pre class="code-block mono">redis.connect({
+  host: process.env.REDIS_HOST,
+  cluster: true,
+  tls: { rejectUnauthorized: true }
+});</pre>`;
+          }
+          return line ? `<p>${line}</p>` : '';
+        }).join('')}
+      </div>
+      <div class="timeline">
+        <h4>Activity</h4>
+        ${issue.activity.length ? issue.activity.map(a => `
+          <div class="timeline-item">
+            <span class="timeline-time mono tnum">${a.t}</span>
+            <span class="timeline-text"><strong>${a.who}</strong> ${a.text}</span>
+          </div>
+        `).join('') : '<p style="font-size:12px;color:var(--faint)">No activity yet</p>'}
+      </div>
+      ${issue.subs.length ? `<div class="subissues">
+        <h4>Sub-issues <span class="mono tnum" style="color:var(--faint)">${issue.subs.length}</span></h4>
+        ${issue.subs.map(s => `<div class="subissue-row" data-id="${s.id}"><span class="mono tnum">${s.id}</span> ${s.title}</div>`).join('')}
+      </div>` : ''}
+    `;
+    drawer.hidden = false;
+    backdrop.classList.add('visible');
+    requestAnimationFrame(() => drawer.classList.add('open'));
+    state.drawerOpen = true;
+    trapFocus(drawer);
+    $('#drawerClose').focus();
+  }
+
+  function closeDrawer() {
+    const drawer = $('#drawer');
+    const backdrop = $('#drawerBackdrop');
+    drawer.classList.remove('open');
+    backdrop.classList.remove('visible');
+    state.drawerOpen = false;
+    setTimeout(() => { drawer.hidden = true; releaseFocus(); }, 220);
+  }
+
+  let focusTrap = null;
+  function trapFocus(el) {
+    focusTrap = (e) => {
+      if (e.key !== 'Tab' || !state.drawerOpen) return;
+      const focusable = el.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"]), [contenteditable]');
+      const list = [...focusable].filter(f => !f.disabled);
+      if (!list.length) return;
+      const first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', focusTrap);
+  }
+  function releaseFocus() {
+    if (focusTrap) document.removeEventListener('keydown', focusTrap);
+    focusTrap = null;
+  }
+
+  function switchView(view) {
+    if (state.view === view) return;
+    state.view = view;
+    state.loading = true;
+    $('#tabList').setAttribute('aria-selected', view === 'list');
+    $('#tabBoard').setAttribute('aria-selected', view === 'board');
+    $('#listView').hidden = view !== 'list';
+    $('#boardView').hidden = view !== 'board';
+    showSkeleton();
+    setTimeout(() => {
+      state.loading = false;
+      hideSkeleton();
+      if (view === 'list') renderList();
+      else renderBoard();
+    }, 480);
+  }
+
+  function showSkeleton() {
+    if (state.view === 'list') {
+      $('#listSkeleton').hidden = false;
+      $('#listContent').style.opacity = '0';
+    } else {
+      $('#boardSkeleton').hidden = false;
+      $('#boardContent').style.opacity = '0';
+    }
+  }
+  function hideSkeleton() {
+    $('#listSkeleton').hidden = true;
+    $('#boardSkeleton').hidden = true;
+    $('#listContent').style.opacity = '1';
+    $('#boardContent').style.opacity = '1';
+  }
+
+  function updateFocusRow() {
+    $$('.issue-row').forEach((row, i) => {
+      const id = row.dataset.id;
+      const idx = state.flatRows.findIndex(r => r.id === id);
+      row.tabIndex = idx === state.focusedIndex ? 0 : -1;
+      if (idx === state.focusedIndex) row.focus({ preventScroll: true });
+    });
+  }
+
+  function openPalette() {
+    state.paletteOpen = true;
+    state.paletteIndex = 0;
+    const bd = $('#paletteBackdrop');
+    bd.hidden = false;
+    requestAnimationFrame(() => bd.classList.add('open'));
+    renderPalette('');
+    $('#paletteInput').value = '';
+    $('#paletteInput').focus();
+  }
+
+  function closePalette() {
+    state.paletteOpen = false;
+    const bd = $('#paletteBackdrop');
+    bd.classList.remove('open');
+    setTimeout(() => { bd.hidden = true; }, 160);
+  }
+
+  function renderPalette(query) {
+    const q = query.toLowerCase();
+    const issueMatches = ISSUES.filter(i =>
+      i.id.toLowerCase().includes(q) || i.title.toLowerCase().includes(q)
+    ).slice(0, 6);
+    let html = '';
+    let idx = 0;
+    COMMANDS.forEach(g => {
+      const items = g.items.filter(c => c.label.toLowerCase().includes(q));
+      if (!items.length) return;
+      html += `<div class="palette-group-label">${g.group}</div>`;
+      items.forEach(item => {
+        const sel = idx === state.paletteIndex ? ' aria-selected="true"' : '';
+        html += `<div class="palette-item" role="option" data-pidx="${idx}" data-action="${item.action || ''}"${sel}>
+          ${item.label}
+          ${item.kbd ? `<span class="palette-kbd mono">${item.kbd}</span>` : ''}
+        </div>`;
+        idx++;
+      });
+    });
+    if (issueMatches.length) {
+      html += `<div class="palette-group-label">Issues</div>`;
+      issueMatches.forEach(issue => {
+        const sel = idx === state.paletteIndex ? ' aria-selected="true"' : '';
+        html += `<div class="palette-item" role="option" data-pidx="${idx}" data-issue="${issue.id}"${sel}>
+          ${issue.title}
+          <span class="mono tnum">${issue.id}</span>
+        </div>`;
+        idx++;
+      });
+    }
+    if (!html) html = '<div class="palette-item" style="color:var(--faint)">No results</div>';
+    $('#paletteResults').innerHTML = html;
+    state.paletteItemCount = idx;
+
+    $$('.palette-item[data-pidx]', $('#paletteResults')).forEach(el => {
+      el.addEventListener('click', () => executePaletteItem(el));
+    });
+  }
+
+  function executePaletteItem(el) {
+    const action = el.dataset.action;
+    const issueId = el.dataset.issue;
+    closePalette();
+    if (issueId) selectIssue(issueId);
+    else if (action === 'new') alert('Create issue');
+    else if (action === 'board') switchView('board');
+    else if (action === 'list') switchView('list');
+    else if (action === 'sidebar') toggleSidebar();
+  }
+
+  function toggleSidebar() {
+    state.sidebarOpen = !state.sidebarOpen;
+    $('#sidebar').classList.toggle('open', state.sidebarOpen);
+    $('#menuToggle').setAttribute('aria-expanded', state.sidebarOpen);
+  }
+
+  // Initial load with skeleton
+  showSkeleton();
+  setTimeout(() => {
+    state.loading = false;
+    hideSkeleton();
+    renderList();
+  }, 600);
+
+  // Events
+  $('#tabList').addEventListener('click', () => switchView('list'));
+  $('#tabBoard').addEventListener('click', () => switchView('board'));
+  $('#drawerClose').addEventListener('click', closeDrawer);
+  $('#drawerBackdrop').addEventListener('click', closeDrawer);
+  $('#menuToggle').addEventListener('click', toggleSidebar);
+  $('#closeBanner').addEventListener('click', () => { $('#syncBanner').hidden = true; });
+  $('#dismissBanner').addEventListener('click', () => { $('#syncBanner').querySelector('span').textContent = 'Retrying sync…'; setTimeout(() => { $('#syncBanner').hidden = true; }, 1500); });
+  $('#newIssueBtn').addEventListener('click', () => alert('New issue form'));
+  $('#searchInput').addEventListener('focus', openPalette);
+
+  $('#paletteInput').addEventListener('input', e => {
+    state.paletteIndex = 0;
+    renderPalette(e.target.value);
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (state.paletteOpen) closePalette();
+      else openPalette();
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (state.paletteOpen) { closePalette(); return; }
+      if (state.drawerOpen) { closeDrawer(); return; }
+      if (state.sidebarOpen) { toggleSidebar(); return; }
+    }
+
+    if (state.paletteOpen) {
+      const items = $$('.palette-item[data-pidx]', $('#paletteResults'));
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        state.paletteIndex = Math.min(state.paletteIndex + 1, items.length - 1);
+        renderPalette($('#paletteInput').value);
+        items[state.paletteIndex]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        state.paletteIndex = Math.max(state.paletteIndex - 1, 0);
+        renderPalette($('#paletteInput').value);
+      } else if (e.key === 'Enter' && items[state.paletteIndex]) {
+        e.preventDefault();
+        executePaletteItem(items[state.paletteIndex]);
+      }
+      return;
+    }
+
+    if (state.view === 'list' && !state.drawerOpen && document.activeElement.tagName !== 'INPUT') {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        state.focusedIndex = Math.min(state.focusedIndex + 1, state.flatRows.length - 1);
+        if (state.focusedIndex < 0 && state.flatRows.length) state.focusedIndex = 0;
+        updateFocusRow();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        state.focusedIndex = Math.max(state.focusedIndex - 1, 0);
+        updateFocusRow();
+      } else if (e.key === 'Enter' && state.focusedIndex >= 0) {
+        e.preventDefault();
+        selectIssue(state.flatRows[state.focusedIndex].id);
+      }
+    }
+  });
+
+  $$('.nav-item[data-nav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $$('.nav-item[data-nav]').forEach(b => b.removeAttribute('aria-current'));
+      btn.setAttribute('aria-current', 'page');
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ppt-craft.local/schemas/asset-prompt.schema.json",
+  "title": "PPT Craft Asset Prompt Plan",
+  "type": "object",
+  "required": ["version", "deck_dir", "stage", "slides"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "deck_dir": { "type": "string", "minLength": 1 },
+    "style_direction": { "type": "string" },
+    "stage": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "job", "archetype", "visual_region", "text_safe_zones", "foreground_overlay", "prompt", "negative_prompt", "qa"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "job": { "type": "string", "minLength": 1 },
+          "archetype": { "type": "string" },
+          "visual_region": { "$ref": "#/$defs/box" },
+          "text_safe_zones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "box", "instruction"],
+              "properties": {
+                "name": { "type": "string" },
+                "box": { "$ref": "#/$defs/box" },
+                "instruction": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "no_go_zones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "box", "reason"],
+              "properties": {
+                "name": { "type": "string" },
+                "box": { "$ref": "#/$defs/box" },
+                "reason": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "foreground_overlay": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["object_family", "role", "region"],
+              "properties": {
+                "object_family": { "type": "string" },
+                "role": { "type": "string" },
+                "region": { "$ref": "#/$defs/box" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "prompt": { "type": "string", "minLength": 1 },
+          "negative_prompt": { "type": "string", "minLength": 1 },
+          "qa": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "box": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "additionalProperties": true,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number", "exclusiveMinimum": 0 },
+        "h": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    }
+  }
+}

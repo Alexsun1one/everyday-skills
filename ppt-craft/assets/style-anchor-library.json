@@ -1,0 +1,361 @@
+{
+  "version": "2026-06-27",
+  "default_route": "html-first",
+  "sources": [
+    {
+      "name": "Pitch templates",
+      "url": "https://pitch.com/templates",
+      "use": "Professional template taxonomy and pitch/report/proposal collections."
+    },
+    {
+      "name": "Beautiful.ai presentation templates",
+      "url": "https://www.beautiful.ai/presentations",
+      "use": "Use-case taxonomy: pitch decks, proposals, strategy, reports, sales, branding, research, product launch, investor relations."
+    },
+    {
+      "name": "Canva presentation templates",
+      "url": "https://www.canva.com/presentations/templates/",
+      "use": "Broad style scan for consumer, education, brand, and lightweight social decks."
+    },
+    {
+      "name": "Figma presentation templates",
+      "url": "https://www.figma.com/templates/presentations/",
+      "use": "Modern product, startup, design-led, and collaboration-first deck styles."
+    },
+    {
+      "name": "Slidesgo pitch deck templates",
+      "url": "https://slidesgo.com/pitch-deck",
+      "use": "Downloadable Google Slides/PowerPoint references for pitch deck variety."
+    },
+    {
+      "name": "Adobe Express presentation templates",
+      "url": "https://www.adobe.com/express/templates/presentation",
+      "use": "Brandable presentation template scan and visual asset variety."
+    },
+    {
+      "name": "SlidesCarnival business templates",
+      "url": "https://www.slidescarnival.com/tag/business",
+      "use": "Business, pitch, report, and training deck pattern references."
+    }
+  ],
+  "anchors": [
+    {
+      "id": "dark-technical-investor",
+      "name": "Dark Technical Investor Deck",
+      "deck_types": ["pitch", "investor", "technical", "ai", "deeptech"],
+      "industries": ["ai", "biotech", "security", "infrastructure", "mental health", "robotics"],
+      "style_tags": ["dark", "technical", "premium", "data", "cinematic"],
+      "route": "html-first",
+      "source_anchors": ["InnerScan private reference", "Beautiful.ai Dark Mode Presentation Template", "Pitch pitch deck templates"],
+      "visual_thesis": "A serious dark control room where the product reveals a hidden layer of reality.",
+      "palette": {
+        "background": "#020C1B",
+        "surface": "#0A192F",
+        "primary": "#D4AF37",
+        "signal": "#64FFDA",
+        "danger": "#EF4444",
+        "text": "#E6F1FF",
+        "muted": "#9CA3AF"
+      },
+      "typography": "Mono labels and numbers, clean sans body, occasional serif display for human/emotional claims.",
+      "layout_grammar": "Top system chrome, left thesis or chart, right micro-case/sidebar, thin rules, corner brackets, terminal/status modules.",
+      "slide_archetypes": ["thesis-cover", "pain-binary", "category-stack", "evidence-dashboard", "mechanism-cutaway", "future-split", "ask-page"],
+      "motion": "Slow signal sweep, chart reveal, terminal cursor, section crossfade; never playful bounce.",
+      "html_first_notes": "Use layered panels, canvas/WebGL atmospherics, SVG data overlays, and screenshot-backed proof pages.",
+      "avoid": ["generic neon SaaS gradient", "random dashboard cards", "unverified science visuals", "tiny unreadable terminal text"]
+    },
+    {
+      "id": "studio-product-keynote",
+      "name": "Studio Product Keynote",
+      "deck_types": ["product launch", "keynote", "demo", "vision"],
+      "industries": ["saas", "consumer app", "hardware", "ai product", "creative tools"],
+      "style_tags": ["cinematic", "minimal", "product", "premium", "motion"],
+      "route": "html-first",
+      "source_anchors": ["Apple-style keynote conventions", "Figma presentation templates", "Pitch product/startup templates"],
+      "visual_thesis": "One product promise at a time, staged like a launch film with tactile product moments.",
+      "palette": {
+        "background": "#050505",
+        "surface": "#111111",
+        "primary": "#FFFFFF",
+        "accent": "#5AE6FF",
+        "text": "#F5F5F5",
+        "muted": "#A3A3A3"
+      },
+      "typography": "Large confident sans headlines, minimal body, precise labels near product/UI.",
+      "layout_grammar": "Full-bleed product moments, centered hero claims, wide gutters, sparse copy, section title cards.",
+      "slide_archetypes": ["human-tension", "product-hero", "workflow-demo", "three-pillars", "before-after", "ecosystem-map", "call-to-action"],
+      "motion": "Spatial zoom, product parallax, staged reveals, shared-element transitions.",
+      "html_first_notes": "Prioritize high-fidelity product imagery, video-like transitions, and stage lighting; export PDF after visual QA.",
+      "avoid": ["dense bullets", "feature matrix too early", "decorative gradients without product", "clip-art icons"]
+    },
+    {
+      "id": "swiss-consulting-brief",
+      "name": "Swiss Consulting Brief",
+      "deck_types": ["consulting", "strategy", "board", "proposal", "executive"],
+      "industries": ["enterprise", "finance", "operations", "manufacturing", "public sector"],
+      "style_tags": ["swiss", "executive", "clean", "structured", "credible"],
+      "route": "html-first",
+      "source_anchors": ["Pitch report/proposal templates", "Beautiful.ai proposals and plans/strategies", "consulting issue-tree conventions"],
+      "visual_thesis": "A precise executive argument where every page title states the answer.",
+      "palette": {
+        "background": "#F8FAFC",
+        "surface": "#FFFFFF",
+        "primary": "#0F172A",
+        "accent": "#2563EB",
+        "warning": "#DC2626",
+        "muted": "#64748B"
+      },
+      "typography": "Neutral sans, strong title/body contrast, tabular numbers, restrained bold.",
+      "layout_grammar": "Strict grid, answer-first headlines, issue trees, scenario tables, value bridges, narrow annotations.",
+      "slide_archetypes": ["executive-answer", "current-state", "driver-tree", "options-table", "recommendation", "risk-mitigation", "decision-page"],
+      "motion": "Minimal: build tables row-by-row only when presenting live.",
+      "html_first_notes": "Use HTML tables/SVG charts for precision; keep print/PDF output crisp.",
+      "avoid": ["decorative cards", "hero images without evidence", "ambiguous topic titles", "overly playful icons"]
+    },
+    {
+      "id": "data-desk-board-review",
+      "name": "Data Desk Board Review",
+      "deck_types": ["board", "report", "monthly business review", "investor update", "analytics"],
+      "industries": ["saas", "finance", "growth", "marketplace", "operations"],
+      "style_tags": ["data", "dashboard", "executive", "dense", "credible"],
+      "route": "html-first",
+      "source_anchors": ["Beautiful.ai Reports & Reviews", "Beautiful.ai Monthly Business Review", "Pitch report templates"],
+      "visual_thesis": "A newsroom-grade data desk: clear metrics, visible changes, and one decision per page.",
+      "palette": {
+        "background": "#0B1220",
+        "surface": "#111827",
+        "primary": "#F8FAFC",
+        "accent": "#38BDF8",
+        "positive": "#22C55E",
+        "danger": "#F43F5E",
+        "muted": "#94A3B8"
+      },
+      "typography": "Sans for explanation, mono/tabular figures for metrics, compact captions.",
+      "layout_grammar": "KPI strip, primary chart, variance callout, right-side driver notes, source footer.",
+      "slide_archetypes": ["scorecard", "trend-explainer", "cohort-view", "funnel", "variance-bridge", "forecast", "decision-log"],
+      "motion": "Data draw-on, threshold marker reveal, no decorative flourish.",
+      "html_first_notes": "HTML-first enables sharp custom charts and interactive drill hints; export static PDF for board packet.",
+      "avoid": ["rainbow chart palettes", "unlabeled axes", "charts without takeaway", "dashboard wall with no decision"]
+    },
+    {
+      "id": "editorial-research-atlas",
+      "name": "Editorial Research Atlas",
+      "deck_types": ["research", "insight", "whitepaper", "market report", "culture"],
+      "industries": ["research", "media", "culture", "education", "consumer insights"],
+      "style_tags": ["editorial", "magazine", "research", "premium", "narrative"],
+      "route": "html-first",
+      "source_anchors": ["Beautiful.ai Research & Insights", "Pitch report templates", "editorial magazine layout conventions"],
+      "visual_thesis": "A high-end magazine feature that turns findings into a guided atlas.",
+      "palette": {
+        "background": "#FAFAF7",
+        "surface": "#FFFFFF",
+        "primary": "#111827",
+        "accent": "#B45309",
+        "secondary": "#1D4ED8",
+        "muted": "#6B7280"
+      },
+      "typography": "Serif display for findings, humanist sans body, small caps captions.",
+      "layout_grammar": "Hero finding pages, image crops, marginalia, pull quotes, chapter openers, annotated charts.",
+      "slide_archetypes": ["main-finding", "method-card", "field-map", "quote-page", "evidence-spread", "implication", "recommendation"],
+      "motion": "Page-turn crossfade, gentle map pan, annotation reveal.",
+      "html_first_notes": "Use editorial scroll-like section rhythm inside slide sequence; keep citations readable.",
+      "avoid": ["academic wall of text", "stock photo filler", "uncontrolled serif mixing", "weak evidence notes"]
+    },
+    {
+      "id": "calm-clinical-trust",
+      "name": "Calm Clinical Trust",
+      "deck_types": ["healthcare", "clinical", "public sector", "impact", "trust"],
+      "industries": ["healthcare", "mental health", "biotech", "public health", "nonprofit"],
+      "style_tags": ["calm", "clinical", "trust", "light", "soft"],
+      "route": "html-first",
+      "source_anchors": ["Slidesgo healthcare/clinical templates", "Beautiful.ai Research & Insights", "Adobe presentation templates"],
+      "visual_thesis": "A humane clinical brief: soft surfaces, careful evidence, and no hype.",
+      "palette": {
+        "background": "#F6FAF8",
+        "surface": "#FFFFFF",
+        "primary": "#123C3A",
+        "accent": "#2A9D8F",
+        "warm": "#E9C46A",
+        "danger": "#C2410C",
+        "muted": "#64748B"
+      },
+      "typography": "Highly legible sans, moderate weights, generous line height.",
+      "layout_grammar": "Soft panels, patient journey, protocol steps, evidence notes, conservative charts.",
+      "slide_archetypes": ["trust-cover", "patient-journey", "protocol", "clinical-evidence", "risk-safety", "impact", "next-step"],
+      "motion": "Subtle fade and step progression; avoid flashy transitions.",
+      "html_first_notes": "Use warm imagery or abstract clinical diagrams; cite sources and keep claims conservative.",
+      "avoid": ["medical sensationalism", "over-bright colors", "unverified claims", "tiny compliance text"]
+    },
+    {
+      "id": "premium-minimal-luxury",
+      "name": "Premium Minimal Luxury",
+      "deck_types": ["portfolio", "brand", "luxury", "executive", "investment memo"],
+      "industries": ["luxury", "real estate", "portfolio", "fashion", "hospitality", "private equity"],
+      "style_tags": ["premium", "minimal", "luxury", "sparse", "elegant"],
+      "route": "html-first",
+      "source_anchors": ["Pitch portfolio templates", "Beautiful.ai Branding & Creative", "SlidesCarnival black/gold pitch references"],
+      "visual_thesis": "Restraint as confidence: sparse composition, material cues, and slow reveal.",
+      "palette": {
+        "background": "#F7F4EF",
+        "surface": "#FFFFFF",
+        "primary": "#171717",
+        "accent": "#A37A2C",
+        "muted": "#77716A",
+        "dark": "#0F0F0F"
+      },
+      "typography": "Elegant serif display plus quiet sans captions; fewer words, larger spacing.",
+      "layout_grammar": "One hero object/image, wide margins, thin rules, asymmetry, captioned proof.",
+      "slide_archetypes": ["object-cover", "brand-principle", "portfolio-grid", "craft-detail", "market-position", "numbers-minimal", "closing-card"],
+      "motion": "Slow opacity/scale, material lighting, no kinetic gimmicks.",
+      "html_first_notes": "Use high-resolution product/place imagery and controlled negative space.",
+      "avoid": ["too many cards", "cheap gold gradients", "stock luxury cliches", "small crowded type"]
+    },
+    {
+      "id": "paper-learning-workshop",
+      "name": "Paper Learning Workshop",
+      "deck_types": ["training", "lesson", "course", "workshop", "onboarding"],
+      "industries": ["education", "internal training", "creator course", "community"],
+      "style_tags": ["paper", "learning", "warm", "clear", "friendly"],
+      "route": "html-first",
+      "source_anchors": ["Beautiful.ai Training & Education", "Slidesgo education templates", "Canva education templates"],
+      "visual_thesis": "A guided worksheet: learners see progress, examples, mistakes, and practice.",
+      "palette": {
+        "background": "#FCF7ED",
+        "surface": "#FFFDF7",
+        "primary": "#1F2937",
+        "accent": "#2563EB",
+        "warm": "#F59E0B",
+        "success": "#16A34A",
+        "muted": "#78716C"
+      },
+      "typography": "Friendly sans, occasional handwritten annotation style, clear hierarchy.",
+      "layout_grammar": "Notebook tabs, step blocks, worked examples, practice prompts, mistake callouts.",
+      "slide_archetypes": ["learning-promise", "mental-model", "worked-example", "practice", "common-mistake", "checklist", "recap"],
+      "motion": "Step reveal and annotation drawing; keep classroom pace calm.",
+      "html_first_notes": "HTML-first supports interactive-looking exercises while final PDF remains readable.",
+      "avoid": ["childish clipart for adult training", "too many stickers", "unclear progression", "dense paragraphs"]
+    },
+    {
+      "id": "bold-founder-manifesto",
+      "name": "Bold Founder Manifesto",
+      "deck_types": ["founder talk", "manifesto", "campaign", "vision", "fundraising"],
+      "industries": ["startup", "consumer", "creator", "media", "movement"],
+      "style_tags": ["bold", "poster", "high-contrast", "provocative", "memorable"],
+      "route": "html-first",
+      "source_anchors": ["Pitch startup templates", "Canva campaign templates", "poster/editorial design references"],
+      "visual_thesis": "A series of unforgettable posters that make the thesis feel inevitable.",
+      "palette": {
+        "background": "#111111",
+        "surface": "#F7F7F2",
+        "primary": "#F7F7F2",
+        "accent": "#FFCC00",
+        "danger": "#FF3B30",
+        "muted": "#A3A3A3"
+      },
+      "typography": "Massive condensed or grotesque headlines; very little body copy.",
+      "layout_grammar": "Full-slide declarations, brutal crop, one icon/object, proof slides as interruptions.",
+      "slide_archetypes": ["manifesto-cover", "enemy", "new-belief", "proof-flash", "movement-map", "pledge", "join-us"],
+      "motion": "Hard cuts, type slam, poster stack reveal; still respect reduced motion.",
+      "html_first_notes": "Use CSS typography and image masks for poster-level control.",
+      "avoid": ["long explanatory copy", "cute icons", "weak contrast", "empty provocation without proof"]
+    },
+    {
+      "id": "product-demo-workbench",
+      "name": "Product Demo Workbench",
+      "deck_types": ["sales", "demo", "enablement", "product walkthrough", "proposal"],
+      "industries": ["saas", "enterprise software", "ai tools", "devtools", "crm"],
+      "style_tags": ["product", "workbench", "sales", "clear", "workflow"],
+      "route": "html-first",
+      "source_anchors": ["Beautiful.ai Sales & Enablement", "Beautiful.ai Product Launch", "Figma product deck templates"],
+      "visual_thesis": "The buyer sees their workflow before and after the product.",
+      "palette": {
+        "background": "#F8FAFC",
+        "surface": "#FFFFFF",
+        "primary": "#0F172A",
+        "accent": "#2563EB",
+        "success": "#16A34A",
+        "warning": "#F97316",
+        "muted": "#64748B"
+      },
+      "typography": "Product UI sans, tabular metrics, concise benefit labels.",
+      "layout_grammar": "Workflow lane, product screenshot, callout pins, outcome metric strip, buyer objection sidebar.",
+      "slide_archetypes": ["buyer-pain", "workflow-before", "product-demo", "workflow-after", "roi", "implementation", "next-step"],
+      "motion": "Click path reveal, before-after wipe, callout pins; avoid fake app interactions in final PDF.",
+      "html_first_notes": "Use real product screenshots whenever possible; HTML-first enables clean callout overlays.",
+      "avoid": ["generic SaaS cards", "unreal UI mockups", "feature list without workflow", "too many badges"]
+    },
+    {
+      "id": "civic-policy-brief",
+      "name": "Civic Policy Brief",
+      "deck_types": ["policy", "public sector", "nonprofit", "impact", "grant"],
+      "industries": ["government", "policy", "urban", "climate", "nonprofit", "education"],
+      "style_tags": ["civic", "trust", "report", "maps", "public"],
+      "route": "html-first",
+      "source_anchors": ["Slidesgo policy templates", "Adobe presentation templates", "Beautiful.ai Research & Insights"],
+      "visual_thesis": "A public-interest evidence brief that turns complex policy into accountable decisions.",
+      "palette": {
+        "background": "#F8FAFC",
+        "surface": "#FFFFFF",
+        "primary": "#1E3A5F",
+        "accent": "#0E7490",
+        "warm": "#B45309",
+        "danger": "#B91C1C",
+        "muted": "#64748B"
+      },
+      "typography": "Legible institutional sans, map labels, source footers.",
+      "layout_grammar": "Maps, before-after community impacts, policy levers, stakeholder matrix, funding timeline.",
+      "slide_archetypes": ["public-problem", "map-evidence", "stakeholder-map", "policy-levers", "scenario", "implementation", "accountability"],
+      "motion": "Map layer reveal and timeline progression only.",
+      "html_first_notes": "Use maps/infographics as SVG/HTML layers and keep citations visible.",
+      "avoid": ["campaign fluff", "unlabeled maps", "partisan visual tropes unless requested", "decorative civic seals"]
+    },
+    {
+      "id": "creative-brand-campaign",
+      "name": "Creative Brand Campaign",
+      "deck_types": ["brand", "campaign", "media kit", "creative proposal", "social"],
+      "industries": ["consumer", "fashion", "food", "creator", "entertainment", "agency"],
+      "style_tags": ["creative", "brand", "editorial", "visual", "campaign"],
+      "route": "html-first",
+      "source_anchors": ["Beautiful.ai Branding & Creative", "Canva campaign templates", "Adobe Express brand templates"],
+      "visual_thesis": "The deck feels like the campaign world before the campaign exists.",
+      "palette": {
+        "background": "#FFF7ED",
+        "surface": "#FFFFFF",
+        "primary": "#18181B",
+        "accent": "#E11D48",
+        "secondary": "#7C3AED",
+        "muted": "#71717A"
+      },
+      "typography": "Brand-like display type plus clean presentation body; controlled expressive moments.",
+      "layout_grammar": "Moodboard spread, campaign idea, channel map, sample executions, copy lines, visual territories.",
+      "slide_archetypes": ["brand-world-cover", "audience-insight", "big-idea", "territories", "sample-execution", "channel-plan", "budget-next-step"],
+      "motion": "Moodboard collage reveal, copy line build, sample carousel.",
+      "html_first_notes": "Use real/generated campaign visuals as full-bleed moments; avoid pure template blocks.",
+      "avoid": ["style without strategy", "random stickers", "copyrighted brand assets without permission", "unreadable type experiments"]
+    },
+    {
+      "id": "spatial-experience-showcase",
+      "name": "Spatial Experience Showcase",
+      "deck_types": ["venue", "real estate", "tourism", "event", "museum", "installation"],
+      "industries": ["real estate", "hospitality", "architecture", "culture", "events", "tourism"],
+      "style_tags": ["immersive", "spatial", "cinematic", "premium", "experience"],
+      "route": "html-first",
+      "source_anchors": ["Pitch portfolio templates", "Adobe presentation templates", "architecture/editorial references"],
+      "visual_thesis": "A place is understood through atmosphere, path, program, and proof.",
+      "palette": {
+        "background": "#101820",
+        "surface": "#18232E",
+        "primary": "#F6F1E8",
+        "accent": "#C8A45D",
+        "green": "#6BAA75",
+        "muted": "#B8C0C8"
+      },
+      "typography": "Elegant architectural sans, small spatial labels, map-like captions.",
+      "layout_grammar": "Full-bleed place imagery, route maps, program zones, before-after interventions, visitor moments.",
+      "slide_archetypes": ["place-hero", "experience-path", "zone-map", "before-after-space", "guest-journey", "operations-proof", "investment-ask"],
+      "motion": "Pan, parallax, route tracing, reveal through doorway/window metaphors.",
+      "html_first_notes": "HTML-first is essential for immersive full-bleed scenes, maps, and subtle transitions.",
+      "avoid": ["stock atmosphere without inspectable details", "generic real-estate beige", "tiny floorplan labels", "marketing fluff without proof"]
+    }
+  ]
+}

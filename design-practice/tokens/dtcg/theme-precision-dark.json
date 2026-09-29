@@ -1,0 +1,166 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Precision Tool dark theme: Linear/terminal/monitoring mood, keyboard-first, dense, no card grid.",
+  "$extensions": {
+    "designPractice": {
+      "direction": "precision-dark",
+      "ownedAccent": "#4AE168",
+      "typePersonality": "compact sans plus mono for IDs, metrics, labels and command chrome",
+      "signatureMove": "command palette and shortcut footer"
+    }
+  },
+  "color": {
+    "palette": {
+      "canvas": {
+        "$type": "color",
+        "$value": "#0B0E0C"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#0D1117"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "#C9D1C9"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "#6B7268"
+      },
+      "accentAlt": {
+        "$type": "color",
+        "$value": "#3FB950"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.palette.text}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#9BA39A"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "{color.palette.muted}"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "#0B0E0C"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.palette.canvas}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.palette.surface}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "#111814"
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "#F4F6FA"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "#1F2923"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "#324039"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#4AE168"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "#061008"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "#0F1F14"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Inter Variable\", \"Geist\", system-ui, sans-serif"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Inter Variable\", \"Geist\", system-ui, sans-serif"
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": "\"Berkeley Mono\", \"Geist Mono\", ui-monospace, monospace"
+      }
+    },
+    "display": {
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.linearMedium}"
+      }
+    },
+    "label": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.family.mono}"
+      },
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.strong}"
+      }
+    }
+  },
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.4}"
+    },
+    "card": {
+      "$type": "dimension",
+      "$value": "{radius.8}"
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{radius.12}"
+    }
+  },
+  "motion": {
+    "ui": {
+      "duration": {
+        "$type": "duration",
+        "$value": "{duration.fast}"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.outSoft}"
+      }
+    }
+  }
+}

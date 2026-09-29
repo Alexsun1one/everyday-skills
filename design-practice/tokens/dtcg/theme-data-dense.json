@@ -1,0 +1,184 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Data-Dense Terminal theme: Bloomberg/trading desk density, dark blue-black field, tabular mono, semantic red/green.",
+  "$extensions": {
+    "designPractice": {
+      "direction": "data-dense",
+      "ownedAccent": "#26A69A",
+      "typePersonality": "tabular mono everywhere, right-aligned numbers, micro rows",
+      "signatureMove": "live red/green tabular data as the whole surface"
+    }
+  },
+  "color": {
+    "palette": {
+      "canvas": {
+        "$type": "color",
+        "$value": "#0A0E14"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#101722"
+      },
+      "panel": {
+        "$type": "color",
+        "$value": "#111B28"
+      },
+      "green": {
+        "$type": "color",
+        "$value": "#26A69A"
+      },
+      "red": {
+        "$type": "color",
+        "$value": "#EF5350"
+      },
+      "chrome": {
+        "$type": "color",
+        "$value": "#38BDF8"
+      },
+      "label": {
+        "$type": "color",
+        "$value": "#6B7280"
+      }
+    },
+    "text": {
+      "primary": {
+        "$type": "color",
+        "$value": "#D9E4F2"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#A9B8CA"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "{color.palette.label}"
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      }
+    },
+    "bg": {
+      "canvas": {
+        "$type": "color",
+        "$value": "{color.palette.canvas}"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.palette.surface}"
+      },
+      "elevated": {
+        "$type": "color",
+        "$value": "{color.palette.panel}"
+      }
+    },
+    "border": {
+      "subtle": {
+        "$type": "color",
+        "$value": "#1F2A38"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "#344256"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.palette.chrome}"
+      }
+    },
+    "accent": {
+      "owned": {
+        "$type": "color",
+        "$value": "#26A69A"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{color.accent.owned}"
+      },
+      "contrast": {
+        "$type": "color",
+        "$value": "#03100F"
+      },
+      "soft": {
+        "$type": "color",
+        "$value": "#0E2624"
+      }
+    },
+    "status": {
+      "success": {
+        "$type": "color",
+        "$value": "{color.palette.green}"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "{color.palette.red}"
+      },
+      "info": {
+        "$type": "color",
+        "$value": "{color.palette.chrome}"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": {
+        "$type": "fontFamily",
+        "$value": "\"Geist Mono\", \"Berkeley Mono\", ui-monospace, monospace"
+      },
+      "display": {
+        "$type": "fontFamily",
+        "$value": "\"Geist Mono\", \"Berkeley Mono\", ui-monospace, monospace"
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": "\"Geist Mono\", \"Berkeley Mono\", ui-monospace, monospace"
+      }
+    },
+    "body": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.13}"
+      },
+      "lineHeight": {
+        "$type": "number",
+        "$value": "{font.lineHeight.ui}"
+      }
+    },
+    "display": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{font.size.32}"
+      },
+      "weight": {
+        "$type": "fontWeight",
+        "$value": "{font.weight.semibold}"
+      }
+    }
+  },
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.2}"
+    },
+    "card": {
+      "$type": "dimension",
+      "$value": "{radius.4}"
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{radius.6}"
+    }
+  },
+  "motion": {
+    "ui": {
+      "duration": {
+        "$type": "duration",
+        "$value": "120ms"
+      },
+      "ease": {
+        "$type": "cubicBezier",
+        "$value": "{ease.standard}"
+      }
+    }
+  }
+}
